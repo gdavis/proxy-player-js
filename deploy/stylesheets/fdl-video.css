@@ -1,0 +1,32 @@
+* {
+    margin: 0;
+    padding: 0;
+}
+
+.fdl-video {
+    display: inline-block;
+    position: relative;
+    background-color: #000;
+}
+
+.fdl-video #player object {
+    outline: none;
+}
+
+.fdl-video .controls {
+    position: absolute;
+    bottom: 0;
+    height: 25px;
+    color: #fff;
+}
+
+.fdl-video .controls .stop,
+.fdl-video .controls .play-pause,
+.fdl-video .controls .progressBar {
+    float: left;
+    margin-right: 5px;
+}
+
+.fdl-video .controls .volume {
+    float: right;
+}

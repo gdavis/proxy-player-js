@@ -1,0 +1,75 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+        "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+    <title>Factory Video</title>
+    <link type="text/css" href="stylesheets/fdl-video.css" rel="stylesheet">
+    <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.4.4/jquery.min.js"></script>
+    <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/swfobject/2.2/swfobject.js"></script>
+    <script type="text/javascript" src="javascripts/fdl-html-video.js"></script>
+    <script type="text/javascript" src="javascripts/fdl-flash-video.js"></script>
+    <script type="text/javascript" src="javascripts/fdl-video-model.js"></script>
+    <script type="text/javascript" src="javascripts/fdl-video-controls.js"></script>
+    <script type="text/javascript" src="javascripts/fdl-video.js"></script>
+    <script type="text/javascript">
+
+        var video;
+
+        $(document).ready(function() {
+
+            // video tag specific options
+            var videoOptions =  {
+//                                    audio:"muted",
+                                    volume: 0.001,
+                                    autoplay:false,
+                                    controls:false,
+                                    width:"848px",
+                                    height:"448px",
+                                    loop:"true",
+                                    preload:"true",
+                                    src:"Source-Code.mov", // always should be H.264 that will play in HTML5 and Flash
+                                    poster:"poster.png"
+                                };
+
+            // flash options
+            var flashVariables = {}; // custom flash vars. do not use variable names that exist in the videoOptions object, as they will be overwritten.
+            var flashParams = { scale:"noscale", allowScriptAccess:"sameDomain", quality:"high", wmode:"opaque", allowFullScreen:true };
+            var flashAttributes = { bgcolor:"#333"};
+            var flashOptions = { variables:flashVariables, params:flashParams, attributes: flashAttributes };
+
+            // create the video object
+            video = new FVideo( '#video1', "proxy-player.swf", videoOptions, flashOptions, function() {
+
+                // adding multiple source types for different browsers.
+//                this.addVideoSource( 'Source-Code.mov', 'video/mp4' ); // webkit video
+//                this.addVideoSource( 'Source-Code.ogv', 'video/ogg' ); // firefox/opera video
+
+                    console.log('js:video ready');
+//                  this.play();
+                    this.play("Source-Code.mov");
+            });
+
+            var controls = new FVideoControls( video );
+        });
+    </script>
+</head>
+<body>
+    <div id="video1" class="fdl-video">
+        <!-- primary video controls. these controls have very basic styling and is up to the developer to make some nice controls. -->
+        <div class="controls">
+            <div class="play-pause play">Play-Pause</div>
+            <div class="stop">Stop</div>
+            <div class="progress-bar">
+                <div class="handle"></div>
+                <div class="progress"></div>
+                <div class="downloaded"></div>
+                <div class="bar"></div>
+            </div>
+            <div class="volume">Vol</div>
+        </div>
+
+        <!-- contains the HTML5 video tag or Flash Player SWF -->
+        <div id="player"></div>
+    </div>
+</body>
+</html>

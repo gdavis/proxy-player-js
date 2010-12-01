@@ -1,0 +1,420 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!--
+	Build items for the orange-actionscript project.
+	@author Grant Davis
+	ant howto: http://ant.apache.org/manual/running.html
+	
+	TODO: Look into adding performance testing
+-->
+<project name="proxy-player-js" basedir="../" default="usage">
+
+<!-- PROPERTY ASSIGNMENT & INITIALIZATION ========================================================================== -->	
+    
+    <!-- Setup the prefix for all environment variables -->
+    <property environment="env."/>
+    
+    <!-- System environment must contain FLEX_HOME variable that points to Flex SDK. -->
+    <property name="FLEX_HOME" location="${env.FLEX_HOME}"/>
+    
+	<!-- Include the properties for running builds -->
+	<property file="./build/build.properties"/>
+
+<!-- MELT FACES PUBLICLY =========================================================================================== -->
+    
+    <!-- 
+    public -->
+    <target name="usage" description="So here is how you use this thing.">
+        <echo message="Factory Design Labs: ${project.version} ant tasks"/>
+        <echo message="Note: FDT tasks may only be available within the FDT Eclipse plugin or FDT Stand Alone IDE"/>
+        <echo message="----------------------------------------------------------------------------------------------"/>
+        <echo message="[asdoc] => Generates the ASDocumentation for all orange packages"/>
+        <echo message="[asunit-core] => Compiles, tests and generates reports for the orange.${test.core.packagename} package"/>
+        <echo message="[compile-barebones] => Compiles the barebones package using MXMLC"/>
+        <echo message="[fdt-asunit-core] => FDT specific: debugs the asunit tests for the orange.${test.core.packagename} package via FDT ant tasks"/>
+        <echo message="[fdt-barebones] => FDT specific: debugs the barebones package via FDT ant tasks"/>
+        <echo message="[fdt-gstest-core] => FDT Specific: Generates performance test for the core package"/>
+        <echo message="[fdt-reset-fcsh] => FDT specific: forces the mxmlc to refresh its cached data"/>
+        <echo message="[generate-swc-core] => Generates the swc for the core package"/>
+        <echo message="----------------------------------------------------------------------------------------------"/>
+        <echo message="[init-ignored-github-dirs] => Hidden task generates the directories needed, but ignored from github - use at project initialization"/>
+        <echo message="----------------------------------------------------------------------------------------------"/>
+        <echo message="www.factorylabs.com"/>
+    </target>
+    
+    <!-- 
+    public generate-swc-core --> 
+	<target name="asdoc" description="Generates the ASDocumentation for all orange packages"
+	    depends="-generate-time-stamp, asunit-tests, compile-simple-player, init-asdocs">
+	    
+	    <echo>[asdoc] Generating ASDocs</echo>
+	    <java jar="${FLEX_HOME}/lib/asdoc.jar" dir="${FLEX_HOME}/frameworks" fork="true" failonerror="true">
+	        <arg line="-external-library-path ${libs}"/>
+	        <arg line="-doc-sources ${src}/com"/>
+	        <arg line="-source-path ${src}"/>
+	        <arg line="-output ${docs.asdocs}"/>
+	        <arg line="-window-title 'Factory Design Labs ${project.version}'"/>
+	        <arg line="-main-title 'Factory Design Labs ${project.version}'"/>
+	        <arg line="-footer 'Factory Design Labs - www.factorylabs.com - Generated at: ${date.time}'"/>
+	        <arg line="-left-frameset-width=250" />
+	        <arg line="-package com.factorylabs.orange.core 'This is the core'"/>
+	    </java>
+	    <echo>[asdocs] ASDocs generated</echo>
+	</target>
+    
+    <!-- 
+    public --> 
+    <target name="asunit-tests" 
+        description="Compiles, tests and generates reports for the orange.${test.core.packagename} package">
+        <echo>[asunit-core] Running unit test tasks for the orange.${test.core.packagename} package</echo>
+
+        <antcall target="-compile-mxmlc">
+            <param name="param.mainclass" value="${test.core.runner}"/>
+            <param name="param.classpath" value="${tests}"/>
+            <param name="param.swf" value="${test.core.swf}"/>
+            <param name="param.width" value="${test.core.width}"/>
+            <param name="param.height" value="${test.core.height}"/>
+            <param name="param.color" value="${test.core.color}"/>
+            <param name="param.isHeadless" value="true"/>
+            <param name="param.isDebug" value="true"/>
+            <param name="param.reportname" value="${test.core.reportname}"/>
+        </antcall>
+        <!--
+        <antcall target="init-junitdocs">
+            <param name="param.package" value="${test.core.packagename}"/>
+        </antcall>
+        
+        <antcall target="-publish-junit-report">
+            <param name="param.package" value="${test.core.packagename}"/>
+        </antcall>
+        -->
+        <antcall target="-publish-link-report">
+            <param name="param.reportname" value="${test.core.reportname}"/>
+        </antcall>
+        
+        <echo>[asunit-core] Unit test tasks for the orange.${test.core.packagename} package complete</echo>
+    </target>
+    
+    <!-- 
+    public -->
+    <target name="compile-simple-player"
+    	description="Compiles the Simple Player example">
+        <echo>[compile-barebones] Compiling the barebones package</echo>
+        <antcall target="-compile-mxmlc">
+            <param name="param.mainclass" value="${simple.main}"/>
+            <param name="param.classpath" value="${examples}"/>
+            <param name="param.swf" value="${simple.swf}"/>
+            <param name="param.width" value="${simple.width}"/>
+            <param name="param.height" value="${simple.height}"/>
+            <param name="param.color" value="${simple.color}"/>
+            <param name="param.isHeadless" value="true"/>
+            <param name="param.isDebug" value="false"/>
+            <param name="param.reportname" value="${simple.reportname}"/>
+        </antcall>
+
+        <antcall target="-publish-link-report">
+            <param name="param.reportname" value="${simple.reportname}"/>
+        </antcall>
+        <echo>[compile-simple-player] Compiling of the SimplePlayer is complete.</echo>
+    </target>
+    
+    <!--
+    public -->
+    <target name="generate-swc" description="Generates the swc for the video package">
+        <echo>[generate-swc-core] Compiling the swc for the core package</echo>
+        <antcall target="-compile-compc">
+            <param name="param.packagename" value="${src.video.name}"/>
+            <param name="param.src.loc" value="${src.video.loc}"/>
+        </antcall>
+        <echo>[generate-swc-core] Compiling the swc for the core package complete</echo>
+    </target>
+
+<!-- FDT SPECIFIC TASKS ============================================================================================ -->
+    
+    <!--
+	public -->
+    <target name="fdt-reset-fcsh" description="FDT specific: forces the mxmlc to refresh its cached data">
+        <fdt.launch.resetFCSH/>
+        <echo>[fdt-reset-fcsh] The FCSH in ${project.name} has been reset</echo>
+    </target>
+    
+    <!--
+	public -->
+    <target name="fdt-asunit-tests" description="FDT specific: debugs the asunit tests for the orange.${test.core.packagename} package via FDT ant tasks" >
+        <antcall target="-fdt-start-debugger"></antcall>
+        <antcall target="-compile-fdt">
+            <param name="param.mainclass" value="${test.core.runner}"/>
+            <param name="param.swf" value="${test.core.swf}"/>
+            <param name="param.autostart" value="true"/>
+            <param name="param.launcher" value="Adobe Flash Player"/>
+            <param name="param.width" value="${test.core.width}"/>
+            <param name="param.height" value="${test.core.height}"/>
+            <param name="param.color" value="${test.core.color}"/>
+            <param name="param.isDebug" value="true"/>
+        </antcall>
+    </target>
+	
+	<!--
+    <target name="fdt-gstest-core" description="FDT Specific: Generates performance test for the core package">
+        <antcall target="-compile-fdt">
+            <param name="param.mainclass" value="${perf.core.runner}"/>
+            <param name="param.swf" value="${perf.core.swf}"/>
+            <param name="param.autostart" value="false"/>
+            <param name="param.launcher" value=""/>
+            <param name="param.width" value="${perf.core.width}"/>
+            <param name="param.height" value="${perf.core.height}"/>
+            <param name="param.color" value="${perf.core.color}"/>
+            <param name="param.isDebug" value="false"/>
+        </antcall>
+        <fdt.browse location="${perf.core.url}"/>
+    </target>
+    -->
+    
+    <!--
+	public -->
+    <target name="fdt-simple-player" description="FDT specific: debugs the Simple Player example via FDT ant tasks" >
+        <antcall target="-compile-fdt">
+            <param name="param.mainclass" value="${simple.main}"/>
+            <param name="param.swf" value="${simple.swf}"/>
+            <param name="param.autostart" value="false"/>
+            <param name="param.launcher" value=""/>
+            <param name="param.width" value="${simple.width}"/>
+            <param name="param.height" value="${simple.height}"/>
+            <param name="param.color" value="${simple.color}"/>
+            <param name="param.isDebug" value="true"/>
+        </antcall>
+    	<echo>Simple SWF: ${simple.swf}</echo>
+        <fdt.browse location="${simple.url}"/>
+        <antcall target="-fdt-start-debugger"></antcall>
+    </target>
+    
+    <!--  
+	 	private: Starts up the FDT bugger for logging to the console panel. Requires the FDT plugin or standalone IDE.
+	 	Note: requires the -compile-mxmlc task -debug argument set to true. 
+ 	-->
+    <target name="-fdt-start-debugger">
+    	<fdt.startDebugger projectname="${project.name}" savelocation="build"/>
+    </target>
+    
+<!-- PRIVATE COMPILATION =========================================================================================== -->
+    
+    <!--  
+	 	private: Compiles a swf file using the mxmlc compiler.
+	 	@param param.mainclass	The Main class used to generate the swf.
+	 	@param param.classpath	The class path directory used by the compiler other than src.
+	 	@param param.swf		The output file created by the mxmlc compiler.
+	 	@param param.width		The width value of the swf.
+	 	@param param.height		The height value of the swf.
+	 	@param param.color		The background color of the swf.
+	 	@param param.isHeadless	Whether this swf is compiled as headless.
+	 	@param param.isDebug	Whether to compile in debug mode, benchmark and verbose stack traces.
+	 	@param param.reportname	The name given to the link report file. 
+	-->
+	<target name="-compile-mxmlc">
+	    <echo>[-compile-mxmlc] Compiling MXMLC</echo>
+	    <java jar="${FLEX_HOME}/lib/mxmlc.jar" dir="${FLEX_HOME}/frameworks" fork="true" failonerror="true">
+	    	<arg value="${param.mainclass}"/>
+	        <arg value="-source-path+=${src}"/>
+	        <arg value="-source-path+=${param.classpath}"/>
+	        <arg value="-output=${param.swf}"/>
+	        <arg value="-library-path+=${libs}"/>
+	        <arg value="-target-player=${target.player}"/>
+	        <arg value="-default-size=${param.width},${param.height}"/>
+	        <arg value="-default-background-color=${param.color}"/>
+	        <arg value="-default-frame-rate=${framerate}"/>
+	        <arg value="-headless-server=${param.isHeadless}"/>
+	        <arg value="-debug=${param.isDebug}"/>
+	        <arg value="-benchmark=${param.isDebug}"/>
+	        <arg value="-verbose-stacktraces=${param.isDebug}"/>
+	        <arg value="-incremental=true"/>
+	        <arg value="-use-network=true"/>
+	        <arg value="-as3=true"/>
+	        <arg value="-optimize=true"/>
+	        <arg value="-show-actionscript-warnings=false"/>
+	        <arg value="-link-report=${docs.reports.link}/xml/${param.reportname}.xml"/>
+	    </java>
+	    <echo>[-compile-mxmlc] MXMLC compiled</echo>
+	</target>
+    
+	<!--
+		private: Compiles a swc file using the compc compiler.
+	 	@param param.packagename	The name of the package being compiled to a swc.
+	 	@param param.src.loc		The location of the package being compiled to a swc.
+	-->
+    <target name="-compile-compc">
+        <echo>[-compile-compc] Compiling COMPC release SWC</echo>
+        <java jar="${FLEX_HOME}/lib/compc.jar" dir="${FLEX_HOME}/frameworks" fork="true" failonerror="true">
+            <arg value="-output=${bin}/${project.name}-${param.packagename}-${version}.swc"/>
+            <arg value="-include-sources=${param.src.loc}"/>
+            <arg value="-library-path+=${libs}"/>
+            <arg value="-incremental=true"/>
+            <arg value="-as3=true"/>
+			<arg value="-optimize=true"/>
+        </java>
+        <echo>[-compile-compc] COMPC release SWC compiled</echo>
+    </target>
+    
+    <!--  
+	 	private: Compiles a swf file using FCSH and the fdt.launch.application task.
+	 	@param param.mainclass	The Main class used to generate the swf.
+	 	@param param.swf		The output file created by the mxmlc compiler.
+	 	@param param.autostart	Whether to start up the compiled swf.
+	 	@param param.launcher	The launcher object either External SWF Viewer, Adobe Flash Player, Browser, Internal SWF Viewer or an empty string 
+	 	@param param.width		The width value of the swf.
+	 	@param param.height		The height value of the swf.
+	 	@param param.color		The background color of the swf.
+	 	@param param.isDebug	Whether to compile in debug mode, benchmark and verbose stack traces. 
+	-->
+    <target name="-compile-fdt">
+        <echo>[-compile-fdt] Compiling fdt.launch.application</echo>
+        <fdt.launch.application 
+			projectname="${project.name}" 
+			mainclass="${param.mainclass}"
+			debug="${param.isDebug}"
+			target="${param.swf}" 
+			startswf="${param.autostart}"
+            swflauncher = "${param.launcher}"
+			compilerarguments="
+	        -target-player ${target.player} 
+	        -default-size ${param.width} ${param.height}
+            -default-background-color ${param.color}
+	        -default-frame-rate ${framerate} 
+            -benchmark=true
+            -verbose-stacktraces=true
+            -incremental=true
+            -use-network=true
+	        -as3=true 
+	        -optimize=true
+	        -show-actionscript-warnings=false"
+		/>
+        <echo>[-compile-fdt] fdt.launch.application compiled</echo>
+    </target>
+
+<!-- PRIVATE REPORTING ============================================================================================= -->    
+    
+    <!--  
+	 	private: Publishes the results of the asunit test to a junit style report.
+	 	@param param.package	The package directory to generate a report from the xml results of the tests.
+ 	-->
+    <target name="-publish-junit-report">
+        <echo>[-publish-junit-report] Publishing junit report</echo>
+        <junitreport todir="${docs.reports.tests}/xml/${param.package}">
+            <fileset dir="${docs.reports.tests}/xml/${param.package}">
+                <include name="TEST-*.xml"/>
+            </fileset>
+            <report format="frames" todir="${docs.reports.tests}/html/${param.package}"/>
+        </junitreport>
+        <echo>[-publish-junit-report] junit report published</echo>
+    </target>
+    
+    <!--  
+	 	private: Performs an XSLT transform on the generated link report xml file.
+	 	@param param.reportname	The name of the report, appropriate file extensions will be appended. 
+ 	-->
+    <target name="-publish-link-report">
+        <echo>[-publish-link-report] Publishing ${param.reportname} link report</echo>
+    	<!--
+    	
+        <xslt
+        	in="${docs.reports.link}/xml/${param.reportname}.xml"
+            out="${docs.reports.link}/html/${param.reportname}.html"
+        	style="${docs.reports.link}/xsl/link-report.xsl"
+        />
+        <echo>[-publish-link-report] ${param.reportname} link report published</echo>-->
+    </target>
+    
+    <!--  
+	 	private: Generates a time stamp for properies of date.time and date.year. 
+ 	-->
+    <target name="-generate-time-stamp">
+	    <tstamp>
+	        <format property="date.time" pattern="MM/dd/yyyy hh:mm aa" unit="hour"/>
+	    </tstamp>
+	    <tstamp>
+	        <format property="date.year" pattern="yyyy" unit="year"/>
+	    </tstamp>
+	    <echo>Current time is ${date.time}</echo>
+	</target>
+    
+<!-- PROTECTED TASKS =============================================================================================== -->
+    
+    <!-- 
+    	protected: This is hidden and used internally, but available from the command line.
+    	Cleans out the directories within html and xml for the junit reports.
+    	@param param.package	The directory name to remove. 
+    -->
+    <target name="clean-junitdocs">
+        <echo>[clean-junitdocs] Removing ${param.package} junit directories</echo>
+        <delete includeemptydirs="true" failonerror="false" >
+            <fileset dir="${docs.reports.tests}/html/${param.package}" defaultexcludes="false">
+                <include name="**/*"/>
+            </fileset>
+            <fileset dir="${docs.reports.tests}/xml/${param.package}" defaultexcludes="false">
+                <include name="**/*"/>
+            </fileset>
+        </delete>
+        <echo>[clean-junitdocs] The ${param.package} junit report directories are removed</echo>
+    </target>
+    
+    <!-- 
+    	protected: This is hidden and used internally, but available from the command line.
+    	Creates the directories within html and xml for the junit reports.
+    	@param param.package	The directory name to create. 
+    -->
+    <target name="init-junitdocs">
+        <antcall target="clean-junitdocs">
+            <param name="param.package" value="${param.package}"/>
+        </antcall>
+        <echo>[init-junitdocs] Creating ${param.package} junit report directories</echo>
+        <mkdir dir="${docs.reports.tests}/html/${param.package}"/>
+        <mkdir dir="${docs.reports.tests}/xml/${param.package}"/>
+        <echo>[init-junitdocs] The ${param.package} junit report directories are created</echo>
+    </target>
+    
+    <!-- 
+		protected: This is hidden and used internally, but available from the command line.
+		Cleans out the directories associated with generating ASDocumentation. 
+	-->
+    <target name="clean-asdocs">
+        <echo>[clean-asdocs] Removing ASDoc directories</echo>
+        <delete includeemptydirs="true" failonerror="false">
+            <fileset dir="${docs.asdocs}" defaultexcludes="false">
+                <include name="**/*"/>
+            </fileset>
+        </delete>
+        <echo>[clean-asdocs] ASDoc directories removed</echo>
+    </target>
+    
+	<!-- 
+		protected: This is hidden and used internally, but available from the command line.
+		Creates directories for generating ASDocumentation. Depends on clean-asdocs. 
+	-->
+    <target name="init-asdocs" depends="clean-asdocs">
+        <echo>[init-asdocs] Creating ASDoc directories</echo>
+        <mkdir dir="${docs.asdocs}"/>
+        <echo>[init-asdocs] ASDoc directories created</echo>
+    </target>
+    
+    <!-- 
+		protected: This is hidden and used internally, but available from the command line.
+		Creates directories not included in the clone from the github repository.
+		TODO: There is a an XSLT stylesheet needed for link reports, we will add this in later for now see MK.  
+	-->
+    <target name="init-ignored-github-dirs">
+        <mkdir dir="${bin}"/>
+        <mkdir dir="${deploy}"/>
+        <mkdir dir="${docs}"/>
+        <mkdir dir="${docs.asdocs}"/>
+        <mkdir dir="${docs.diagrams}"/>
+        <mkdir dir="${docs.reports}"/>
+        <mkdir dir="${docs.reports.link}"/>
+        <mkdir dir="${docs.reports.link}/html"/>
+        <mkdir dir="${docs.reports.link}/xml"/>
+        <mkdir dir="${docs.reports.link}/xsl"/>
+        <mkdir dir="${docs.reports.tests}"/>
+        <mkdir dir="${docs.reports.tests}/html"/>
+        <mkdir dir="${docs.reports.tests}/swf"/>
+        <mkdir dir="${docs.reports.tests}/xml"/>
+    </target>
+    
+</project>

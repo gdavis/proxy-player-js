@@ -1,3 +1,19 @@
+/*
+<div class="controls">
+<div class="play-pause playing"></div>
+<div class="stop"></div>
+<div class="progress-bar">
+    <div class="progress-bar-holder">
+        <div class="handle"></div>
+        <div class="play-progress"></div>
+        <div class="load-progress"></div>
+        <div class="bar-bg"></div>
+    </div>
+</div>
+<div class="volume">Vol</div>
+</div>
+ */
+
 var FVideoControls = function( $fVideoInstance ) {
     this.fVideo = $fVideoInstance;
     this.playButton = $('.play-pause', this.fVideo.container );

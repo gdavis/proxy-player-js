@@ -89,7 +89,6 @@ HTMLVideoProxy.prototype = {
         console.log( 'js: resize. width = ' + this.controller.model.getWidth()  + ', height = ' + this.controller.model.getHeight());
         this.video.width = parseInt( this.controller.model.getWidth());
         this.video.height = parseInt( this.controller.model.getHeight());
-        console.log( this.video );
     },
 
     handleMetadata: function() {
@@ -99,7 +98,7 @@ HTMLVideoProxy.prototype = {
     handleError: function( $e ) {
         console.log( 'error event' );
         console.log( $e );
-        this.controller.fallback();
+//        this.controller.fallback();
     },
 
     handleTimeUpdate: function( $e ) {

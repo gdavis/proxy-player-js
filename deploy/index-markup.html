@@ -14,63 +14,38 @@
     <script type="text/javascript" src="javascripts/fdl-video-controls.js"></script>
     <script type="text/javascript" src="javascripts/fdl-video.js"></script>
     <script type="text/javascript">
-
-        var video;
-
         $(document).ready(function() {
-
-            // video tag specific options
-            var videoOptions =  {
-//                                    audio:"muted",
-                                    volume: 0.001,
-                                    autoplay:true,
-                                    controls:false,
-                                    width:"848px",
-                                    height:"448px",
-                                    loop:"true",
-                                    preload:"true",
-                                    src:"Source-Code.mov",
-                                    poster:"poster.png"
-                                };
-
-            // flash options
-            var flashVariables = { src:"" }; // custom flash vars. do not use variable names that exist in the videoOptions object, as they will be overwritten.
-            var flashParams = { scale:"noscale", allowScriptAccess:"sameDomain", quality:"high", wmode:"opaque", allowFullScreen:true };
-            var flashAttributes = { bgcolor:"#333"};
-            var flashOptions = { variables:flashVariables, params:flashParams, attributes: flashAttributes };
-
-            FVideo.activateAll();
-
-
-            //video = new FVideo( '#video1', "proxy-player.swf", videoOptions, flashOptions, sources, function() {
-//            video = new FVideo( '#video1', "proxy-player.swf", videoOptions, flashOptions );
-
-
-//            var controls = new FVideoControls( video );
+            FVideo.activateAll( function( $video ) {
+                console.log( 'new video has been created: ' + $video );
+                $($video.container).css({ border:'1px solid #f00'});
+            });
         });
     </script>
 </head>
 <body>
     <div id="video1" class="fdl-video">
-        <!-- primary video controls. these controls have very basic styling and is up to the developer to make some nice controls.
-        <div class="controls">
-            <div class="play-pause playing"></div>
-            <div class="stop"></div>
-            <div class="progress-bar">
-                <div class="progress-bar-holder">
-                    <div class="handle"></div>
-                    <div class="play-progress"></div>
-                    <div class="load-progress"></div>
-                    <div class="bar-bg"></div>
-                </div>
-            </div>
-            <div class="volume">Vol</div>
-        </div>
--->
         <div class="player">
-            <video width="320" height="240" data-autoplay="true" data-controls="true" poster="poster.png">
-                <source src="http://path/to/video.mov" type="video/mp4" data-label="Sweet Video (m4v)"/>
-                <source src="http://path/to/video.ogv" type="video/ogg" data-label="Sweet Video (OGG)"/>
+            <video width="320" height="240" data-autoplay="true" data-controls="true" data-flash-swf="proxy-player.swf" poster="poster.png">
+                <source src="Source-Code.mov" type="video/mp4" data-label="Sweet Video (m4v)"/>
+                <source src="Source-Code.ogv" type="video/ogg" data-label="Sweet Video (OGG)"/>
+            </video>
+        </div>
+    </div>
+
+    <div id="video2" class="fdl-video">
+        <div class="player">
+            <video width="640" height="480" data-autoplay="false" poster="poster.png">
+                <source src="Source-Code.mov" type="video/mp4" data-label="Sweet Video (m4v)"/>
+                <source src="Source-Code.ogv" type="video/ogg" data-label="Sweet Video (OGG)"/>
+            </video>
+        </div>
+    </div>
+
+    <div id="vid3" class="fdl-video">
+        <div class="player">
+            <video width="720" height="588" data-autoplay="true" data-flash-swf="proxy-player.swf" poster="poster.png">
+                <source src="Source-Code.mov" type="video/mp4" data-label="Sweet Video (m4v)"/>
+                <source src="Source-Code.ogv" type="video/ogg" data-label="Sweet Video (OGG)"/>
             </video>
         </div>
     </div>

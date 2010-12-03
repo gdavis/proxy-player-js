@@ -1,5 +1,6 @@
 var FVideoConfiguration = function ( $width, $height, $videoOptions, $swf, $variables, $parameters, $attributes ){
 
+    $swf = $swf || FVideoConfiguration.DEFAULT_SWF;
     this.width = $width;
     this.height = $height;
 
@@ -31,3 +32,5 @@ var FVideoConfiguration = function ( $width, $height, $videoOptions, $swf, $vari
     
     this.videoOptions = FVideo.mergeOptions( this.DEFAULT_VIDEO_OPTIONS, $videoOptions );
 };
+
+FVideoConfiguration.DEFAULT_SWF = 'proxy-player.swf';

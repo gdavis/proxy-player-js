@@ -29,6 +29,10 @@ var FVideo = function( $element, $options, $sources, $readyCallback ) {
         this.container = $element;
     }
 
+    // variable which contains a reference to either the <video> element for an HTML5 environment, or a flash <object> element.
+    this._videoElement = false;
+    this._options = $options;
+    this._sources = $sources;
     this.readyCallback = $readyCallback;
 
     // proxy object used to communicate to either an HTML5 video object or a Flash player.
@@ -43,23 +47,6 @@ var FVideo = function( $element, $options, $sources, $readyCallback ) {
 
     // create a uniquely named player container for the video. used for flash fallback
     this.playerId = parseInt( Math.random() * 100000 );
-
-    // variable which contains a reference to either the <video> element for an HTML5 environment, or a flash <object> element.
-    this._videoElement = false;
-
-    this._options = $options;
-    this._sources = $sources;
-
-    /*
-    // setup video options
-    this._videoOptions = FVideo.mergeOptions( this.DEFAULT_VIDEO_OPTIONS, $videoOptions );
-
-    // setup flash options
-    this._flashSWF = $swfPlayerPath || this.DEFAULT_FLASH_SWF;
-    this._flashOptions = FVideo.mergeOptions( this.DEFAULT_FLASH_OPTONS, $flashOptions );
-    if( this._videoOptions.src !== undefined ) this._flashOptions.variables.src = this._videoOptions.src;
-    this._flashOptions.variables.playerId = this.playerId;
-    */
 
     // store this instance
     FVideo.instances[this.playerId] = this;
@@ -199,7 +186,7 @@ FVideo.prototype = {
         this.model.setHeight( this._options.height );
 
         // fire ready callback.
-        this.readyCallback();
+        this.readyCallback( this );
 
         // fire DOM event
         this.sendEvent(this.EVENT_PLAYER_READY);
@@ -273,7 +260,8 @@ FVideo.prototype = {
         var video = document.createElement('video');
         FVideo.applyAttributes( video, this._options.videoOptions );
         this._createSourceAnchors( video );
-        $( this.player ).append( video );
+//        $( this.player ).append( video );
+        this.player.appendChild( video );
         return video;
     },
 
@@ -337,27 +325,39 @@ FVideo.prototype = {
  */
 FVideo.instances = {};
 
-FVideo.activateAll = function() {
-
+FVideo.activateAll = function( $callback ) {
+    
     $('.fdl-video').each( function() {
         var video = $('video', this).get(0);
         var sourceList = new FVideoSources();
         var attrs = video.attributes;
         var sources = $('source', video ).each(function() {
-            sourceList.addVideo( this.src, this.type, this.readAttribute('data-label'));
+            sourceList.addVideo( this.src, this.type, this.getAttribute('data-label'));
         });
-
-        console.log('loop');
-        console.log(video.attributes);
-
+        
         var videoOptions = {};
+        var flashSwf = "";
+        var callback;
+        if( video.getAttribute('data-flash-swf')) flashSwf = video.getAttribute('data-flash-swf');
+
+        if( video.width ) videoOptions.width = video.width;
+        if( video.height ) videoOptions.height = video.height;
+        if( video.getAttribute('data-controls')) videoOptions.controls = video.getAttribute('data-controls');
+        if( video.getAttribute('data-volume')) videoOptions.volume = video.getAttribute('data-volume');
+        if( video.getAttribute('data-autoplay')) videoOptions.autoplay = video.getAttribute('data-autoplay');
+        if( video.getAttribute('data-preload')) videoOptions.preload = video.getAttribute('data-preload');
+        if( video.getAttribute('data-loop')) videoOptions.loop = video.getAttribute('data-loop');
+        if( video.getAttribute('data-poster')) videoOptions.poster = video.getAttribute('data-poster');
+        if( video.getAttribute('data-src')) videoOptions.src = video.getAttribute('data-src');
 
         // create options for video
-        // $width, $height, $videoOptions, $swf, $variables, $parameters, $attributes ){
-//        this._options = new FVideoConfiguration( video.width, video.height, );
+        var options = new FVideoConfiguration( video.width, video.height, videoOptions, flashSwf );
+
+        // clear out container contents
+        this.innerHTML = '';
 
         // create new FVideo obj
-
+        var fVideo = new FVideo( this, options, sourceList, $callback );
     });
 
 };
@@ -369,6 +369,7 @@ FVideo.activateAll = function() {
  * @param $attr An object populated with name/value pairs to map as attributes onto the HTMLElement
  */
 FVideo.applyAttributes = function( $elem, $attr ) {
+    console.log($attr);
     for( var it in $attr ) {
         if( it.toLowerCase() == 'width' || it.toLowerCase() == 'height' ) $elem[it] = parseInt( $attr[it] );
         // make sure we only map values that aren't false

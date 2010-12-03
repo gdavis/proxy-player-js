@@ -6,7 +6,7 @@
 .fdl-video {
     display: inline-block;
     position: relative;
-    background-color: #000;
+    /*background-color: #000;*/
 }
 
 .fdl-video #player object {
@@ -18,13 +18,73 @@
     bottom: 0;
     height: 25px;
     color: #fff;
+    width: 100%;
+    left:0;
+    right:0;
+    background-color: #333;
 }
 
-.fdl-video .controls .stop,
-.fdl-video .controls .play-pause,
-.fdl-video .controls .progressBar {
+.fdl-video .controls > div {
+    position: absolute;
     float: left;
-    margin-right: 5px;
+    margin: 5px 5px 0 0;
+    text-align: center;
+}
+
+.fdl-video .controls .play-pause {
+    width: 10px;
+    height: 10px;
+    left: 5px;
+}
+
+.fdl-video .controls .play-pause.playing {
+    background-color: #ff0;
+}
+
+.fdl-video .controls .play-pause.paused {
+    background-color: #0f0;
+}
+
+.fdl-video .controls .stop {
+    width: 10px;
+    height: 10px;
+    left: 25px;
+    background-color: #f00;
+}
+
+.fdl-video .controls .volume {
+    width: 10px;
+    right: 5px;
+}
+
+.fdl-video .controls .progress-bar {
+    display: none;
+    position: relative;
+    width: 100%;
+}
+
+.fdl-video .controls .progress-bar-holder {
+    position: relative;
+    height: 10px;
+    margin: 0 5px;
+    overflow: hidden;
+}
+
+
+.fdl-video .controls .progress-bar .handle {
+    width: 10px;
+    height: 10px;
+    background-color: #00f;
+}
+
+.fdl-video .controls .progress-bar .play-progress {
+    width: 100px;
+    background-color: #999;
+}
+
+.fdl-video .controls .progress-bar .load-progress {
+    width: 200px;
+    background-color: #666;
 }
 
 .fdl-video .controls .volume {

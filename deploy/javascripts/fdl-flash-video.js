@@ -20,6 +20,11 @@ FlashVideoProxy.prototype = {
 
     },
 
+    load: function( $url ) {
+        if( $url ) this.video.load( $url );
+        else this.video.load();
+    },
+
     play: function( $url ) {
         if( $url ) this.video.play( $url );
         else this.video.play();

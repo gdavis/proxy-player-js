@@ -22,11 +22,13 @@ HTMLVideoProxy.prototype = {
         $( this.video).append(source);
     },
 
+    load: function( $url ) {
+        if( $url !== undefined ) this.video.src = $url;
+        this.video.load();
+    },
+
     play: function( $url ) {
-        if( $url !== undefined ) {
-//            console.log('setting new src: ' + $url );
-            this.video.src = $url;
-        }
+        if( $url !== undefined ) this.video.src = $url;
         this.video.play();
     },
 
@@ -66,6 +68,7 @@ HTMLVideoProxy.prototype = {
 
     addVideoListeners: function( $video ) {
         var self = this;
+        $video.addEventListener('metadata',function( $e ){ self.handleMetadata( $e ) },false);
         $video.addEventListener('error',function( $e ){ self.handleError( $e ) },false);
         $video.addEventListener('progress',function( $e ){ self.handleProgress( $e ) },false);
         $video.addEventListener('play',function( $e ){ self.handlePlay( $e ) },false);
@@ -83,28 +86,37 @@ HTMLVideoProxy.prototype = {
     },
 
     resize: function() {
-        this.video.width = this.controller.model.getWidth();
-        this.video.height = this.controller.model.getHeight();
+        console.log( 'js: resize. width = ' + this.controller.model.getWidth()  + ', height = ' + this.controller.model.getHeight());
+        this.video.width = parseInt( this.controller.model.getWidth());
+        this.video.height = parseInt( this.controller.model.getHeight());
+        console.log( this.video );
+    },
+
+    handleMetadata: function() {
+        this.controller._updateDuration( this.video.duration );
     },
 
     handleError: function( $e ) {
         console.log( 'error event' );
         console.log( $e );
+        this.controller.fallback();
     },
 
     handleTimeUpdate: function( $e ) {
 //        console.log( this.video.currentTime );
-        this.controller.setTime( this.video.currentTime );
+        this.controller._updatePlayheadTime( this.video.currentTime );
     },
 
     handleProgress: function( $e ) {
-        console.log( 'progress event' );
-        console.log( $e );
+//        console.log( 'progress event' );
+//        console.log( $e );
+        this.controller._updateLoadProgress( $e.loaded, $e.total );
     },
 
     handlePlay: function( $e ) {
         console.log( 'play event' );
         console.log( $e );
+        this.controller._updateIsPlaying( true );
     },
 
     handlePause: function( $e ) {

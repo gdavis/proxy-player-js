@@ -9,6 +9,8 @@
     <script type="text/javascript" src="javascripts/fdl-html-video.js"></script>
     <script type="text/javascript" src="javascripts/fdl-flash-video.js"></script>
     <script type="text/javascript" src="javascripts/fdl-video-model.js"></script>
+    <script type="text/javascript" src="javascripts/fdl-video-config.js"></script>
+    <script type="text/javascript" src="javascripts/fdl-video-source.js"></script>
     <script type="text/javascript" src="javascripts/fdl-video-controls.js"></script>
     <script type="text/javascript" src="javascripts/fdl-video.js"></script>
     <script type="text/javascript">
@@ -21,55 +23,56 @@
             var videoOptions =  {
 //                                    audio:"muted",
                                     volume: 0.001,
-                                    autoplay:false,
+                                    autoplay:true,
                                     controls:false,
                                     width:"848px",
                                     height:"448px",
                                     loop:"true",
                                     preload:"true",
-                                    src:"Source-Code.mov", // always should be H.264 that will play in HTML5 and Flash
+                                    src:"Source-Code.mov",
                                     poster:"poster.png"
                                 };
 
             // flash options
-            var flashVariables = {}; // custom flash vars. do not use variable names that exist in the videoOptions object, as they will be overwritten.
+            var flashVariables = { src:"" }; // custom flash vars. do not use variable names that exist in the videoOptions object, as they will be overwritten.
             var flashParams = { scale:"noscale", allowScriptAccess:"sameDomain", quality:"high", wmode:"opaque", allowFullScreen:true };
             var flashAttributes = { bgcolor:"#333"};
             var flashOptions = { variables:flashVariables, params:flashParams, attributes: flashAttributes };
 
-            // create the video object
-            video = new FVideo( '#video1', "proxy-player.swf", videoOptions, flashOptions, function() {
+            FVideo.activateAll();
 
-                // adding multiple source types for different browsers.
-//                this.addVideoSource( 'Source-Code.mov', 'video/mp4' ); // webkit video
-//                this.addVideoSource( 'Source-Code.ogv', 'video/ogg' ); // firefox/opera video
 
-                    console.log('js:video ready');
-//                  this.play();
-                    this.play("Source-Code.mov");
-            });
+            //video = new FVideo( '#video1', "proxy-player.swf", videoOptions, flashOptions, sources, function() {
+//            video = new FVideo( '#video1', "proxy-player.swf", videoOptions, flashOptions );
 
-            var controls = new FVideoControls( video );
+
+//            var controls = new FVideoControls( video );
         });
     </script>
 </head>
 <body>
     <div id="video1" class="fdl-video">
-        <!-- primary video controls. these controls have very basic styling and is up to the developer to make some nice controls. -->
+        <!-- primary video controls. these controls have very basic styling and is up to the developer to make some nice controls.
         <div class="controls">
-            <div class="play-pause play">Play-Pause</div>
-            <div class="stop">Stop</div>
+            <div class="play-pause playing"></div>
+            <div class="stop"></div>
             <div class="progress-bar">
-                <div class="handle"></div>
-                <div class="progress"></div>
-                <div class="downloaded"></div>
-                <div class="bar"></div>
+                <div class="progress-bar-holder">
+                    <div class="handle"></div>
+                    <div class="play-progress"></div>
+                    <div class="load-progress"></div>
+                    <div class="bar-bg"></div>
+                </div>
             </div>
             <div class="volume">Vol</div>
         </div>
-
-        <!-- contains the HTML5 video tag or Flash Player SWF -->
-        <div id="player"></div>
+-->
+        <div class="player">
+            <video width="320" height="240" data-autoplay="true" data-controls="true" poster="poster.png">
+                <source src="http://path/to/video.mov" type="video/mp4" data-label="Sweet Video (m4v)"/>
+                <source src="http://path/to/video.ogv" type="video/ogg" data-label="Sweet Video (OGG)"/>
+            </video>
+        </div>
     </div>
 </body>
 </html>

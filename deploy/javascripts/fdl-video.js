@@ -1,5 +1,5 @@
 /**
- * FactoryVideo
+ * FVideo
  *
  * Requirements:
  *  jQuery library (1.4.4):
@@ -260,7 +260,6 @@ FVideo.prototype = {
         var video = document.createElement('video');
         FVideo.applyAttributes( video, this._options.videoOptions );
         this._createSourceAnchors( video );
-//        $( this.player ).append( video );
         this.player.appendChild( video );
         return video;
     },
@@ -282,11 +281,15 @@ FVideo.prototype = {
      * returns a flash <object> tag
      */
     _createFlashVideoObject: function() {
-
+        
         // create empty div for swfobject to replace
         var div = document.createElement('div');
         div.id = "fdl-player-" + this.playerId;
         $( this.player ).append( div );
+
+        // map the default video file as the source for flash.
+        this._options.flashOptions.variables.src = this._sources.flashVideo;
+        this._options.flashOptions.variables.autoplay = this._options.videoOptions.autoplay;
 
         // embed the SWF
         var self = this;
@@ -301,6 +304,7 @@ FVideo.prototype = {
                             this._options.flashOptions.attributes,
                             function( $e ) { self._videoElement = $e.ref; }
                             );
+        
         // we don't yet have access to the object tag, so it is directly set in the callback method from embedding the SWF
         return null;
     },
@@ -332,16 +336,15 @@ FVideo.activateAll = function( $callback ) {
         var sourceList = new FVideoSources();
         var attrs = video.attributes;
         var sources = $('source', video ).each(function() {
-            sourceList.addVideo( this.src, this.type, this.getAttribute('data-label'));
+            sourceList.addVideo( this.src, this.type, this.getAttribute('data-label'), this.getAttribute('data-flash-default') || false );
         });
         
         var videoOptions = {};
-        var flashSwf = "";
+        var flashSwf;
         var callback;
-        if( video.getAttribute('data-flash-swf')) flashSwf = video.getAttribute('data-flash-swf');
-
         if( video.width ) videoOptions.width = video.width;
         if( video.height ) videoOptions.height = video.height;
+        if( video.getAttribute('data-flash-swf')) flashSwf = video.getAttribute('data-flash-swf');
         if( video.getAttribute('data-controls')) videoOptions.controls = video.getAttribute('data-controls');
         if( video.getAttribute('data-volume')) videoOptions.volume = video.getAttribute('data-volume');
         if( video.getAttribute('data-autoplay')) videoOptions.autoplay = video.getAttribute('data-autoplay');
@@ -353,13 +356,25 @@ FVideo.activateAll = function( $callback ) {
         // create options for video
         var options = new FVideoConfiguration( video.width, video.height, videoOptions, flashSwf );
 
+        // stop loading of all video elements
+        $('video', this ).each(function(){
+            this.pause();
+            this.src = '';      // stop video download
+            this.load();        // initiate new load, required in FF 3.x as noted at http://blog.pearce.org.nz/2010/11/how-to-stop-video-or-audio-element.html
+        });
+
         // clear out container contents
         this.innerHTML = '';
 
         // create new FVideo obj
         var fVideo = new FVideo( this, options, sourceList, $callback );
-    });
 
+        // build controls for video, if specified
+        var controlsClass = video.getAttribute('data-controls-class');
+        if(controlsClass) {
+            new window[controlsClass]( video );
+        }
+    });
 };
 
 
@@ -369,7 +384,6 @@ FVideo.activateAll = function( $callback ) {
  * @param $attr An object populated with name/value pairs to map as attributes onto the HTMLElement
  */
 FVideo.applyAttributes = function( $elem, $attr ) {
-    console.log($attr);
     for( var it in $attr ) {
         if( it.toLowerCase() == 'width' || it.toLowerCase() == 'height' ) $elem[it] = parseInt( $attr[it] );
         // make sure we only map values that aren't false
@@ -405,6 +419,25 @@ FVideo.mergeOptions = function( $original, $modified ) {
         }
     }
     return obj;
+};
+
+
+FVideo.createElement = function( type, params, parent ) {
+    var type = type || params.tag,
+        prop,
+        el = document.createElement(type);
+
+    for (prop in params) {
+        switch( prop ){
+            case 'text':
+                el.appendChild( document.createTextNode( params[prop] ) );
+                break;
+            default:
+                el.setAttribute( prop, params[prop] );
+        }
+    }
+    if( parent ) parent.appendChild( el );
+    return el;
 };
 
 /*

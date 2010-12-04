@@ -13,80 +13,72 @@
     outline: none;
 }
 
-.fdl-video .controls {
+/***********************************************************/
+
+.fdl-video .fdl-controls {
     position: absolute;
     bottom: 0;
     height: 25px;
     color: #fff;
     width: 100%;
-    left:0;
-    right:0;
     background-color: #333;
 }
 
-.fdl-video .controls > div {
-    position: absolute;
+.fdl-video .fdl-controls .fdl-controls-bar > div {
     float: left;
-    margin: 5px 5px 0 0;
-    text-align: center;
 }
 
-.fdl-video .controls .play-pause {
-    width: 10px;
-    height: 10px;
-    left: 5px;
+.fdl-video .fdl-controls .fdl-play-pause {
+    width: 20px;
+    height: 20px;
 }
 
-.fdl-video .controls .play-pause.playing {
+.fdl-video .fdl-controls .fdl-play-pause.playing {
     background-color: #ff0;
 }
 
-.fdl-video .controls .play-pause.paused {
+.fdl-video .fdl-controls .fdl-play-pause.paused {
     background-color: #0f0;
 }
 
-.fdl-video .controls .stop {
-    width: 10px;
-    height: 10px;
-    left: 25px;
+.fdl-video .fdl-controls .fdl-stop {
+    width: 20px;
+    height: 20px;
     background-color: #f00;
 }
 
-.fdl-video .controls .volume {
-    width: 10px;
-    right: 5px;
+.fdl-video .fdl-controls .fdl-volume {
+    width: 20px;
+    height: 20px;
 }
 
-.fdl-video .controls .progress-bar {
-    display: none;
-    position: relative;
-    width: 100%;
+.fdl-video .fdl-controls .fdl-progress-bar {
+    height: 20px;
+    background-color: #0ff;
 }
 
-.fdl-video .controls .progress-bar-holder {
-    position: relative;
-    height: 10px;
-    margin: 0 5px;
-    overflow: hidden;
-}
-
-
-.fdl-video .controls .progress-bar .handle {
+.fdl-video .fdl-controls .fdl-progress-bar .fdl-handle {
     width: 10px;
     height: 10px;
     background-color: #00f;
 }
 
-.fdl-video .controls .progress-bar .play-progress {
+.fdl-video .fdl-controls .fdl-progress-bar .fdl-play-progress {
     width: 100px;
     background-color: #999;
 }
 
-.fdl-video .controls .progress-bar .load-progress {
+.fdl-video .fdl-controls .fdl-progress-bar .fdl-load-progress {
     width: 200px;
     background-color: #666;
 }
 
-.fdl-video .controls .volume {
-    float: right;
+.fdl-video .fdl-controls .fdl-volume {
+    background-color: chocolate;
+}
+
+.fdl-video .fdl-controls .fdl-fullscreen {
+    width: 20px;
+    height: 20px;
+    background-color: #f0f;
 }

@@ -121,6 +121,7 @@ HTMLVideoProxy.prototype = {
     handlePause: function( $e ) {
         console.log( 'pause event' );
         console.log( $e );
+        this.controller._updateIsPlaying( false );
     },
 
     handleSeek: function( $e ) {
@@ -131,6 +132,7 @@ HTMLVideoProxy.prototype = {
     handleEnd: function( $e ) {
         console.log( 'end event' );
         console.log( $e );
+        this.controller._updateIsPlaying( false );
     },
 
     handleVolume: function( $e ) {

@@ -1,5 +1,6 @@
 var FVideoSources = function() {
     this.videos = [];
+    this.flashVideo = '';
 };
 
 var FVideoSource = function( $file, $type, $label ) {
@@ -10,8 +11,12 @@ var FVideoSource = function( $file, $type, $label ) {
 
 FVideoSources.prototype = {
 
-    addVideo: function( $file, $type, $label ) {
+    addVideo: function( $file, $type, $label, $isFlashDefault ) {
         this.videos.push( new FVideoSource( $file, $type, $label ));
+
+        if( $isFlashDefault == 'true' ) {
+            this.flashVideo = $file;
+        }
     }
 };
 

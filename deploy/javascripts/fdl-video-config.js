@@ -1,28 +1,29 @@
 var FVideoConfiguration = function ( $width, $height, $videoOptions, $swf, $variables, $parameters, $attributes ){
 
-    $swf = $swf || FVideoConfiguration.DEFAULT_SWF;
     this.width = $width;
     this.height = $height;
+    $swf = $swf || FVideoConfiguration.DEFAULT_SWF;
+    $variables = $variables || {};
 
     // "constants"
     this.DEFAULT_VIDEO_OPTIONS =        {   audio: false,
-                                            autoplay: true,
+                                            autoplay: false,
                                             controls: false,
                                             width:$width,
                                             height:$height,
                                             loop: false,
-                                            preload: true,
+                                            preload: false,
                                             src: false,
                                             poster: false
                                             };
-    this.DEFAULT_FLASH_ATTRIBUTES =     {   bgcolor:"#666" };
+    this.DEFAULT_FLASH_ATTRIBUTES =     {   bgcolor:"#000" };
     this.DEFAULT_FLASH_PARAMS =         {   scale:"noscale",
                                             allowScriptAccess:"always",
                                             quality:"best",
                                             wmode:"opaque",
                                             allowFullScreen:"true"
                                             };
-    this.flashOptions =         {   expressInstall:"/media/swfs/expressinstall.swf",
+    this.flashOptions =         {   expressInstall:"expressinstall.swf",
                                             version:"10",
                                             swf: $swf,
                                             variables: $variables,

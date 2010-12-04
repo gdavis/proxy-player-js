@@ -1,5 +1,4 @@
-<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
-        "http://www.w3.org/TR/html4/loose.dtd">
+<!DOCTYPE html>
 <html>
 <head>
     <title>Factory Video</title>
@@ -25,16 +24,17 @@
 <body>
     <div id="video1" class="fdl-video">
         <div class="player">
-            <video width="320" height="240" data-autoplay="true" data-controls="true" data-flash-swf="proxy-player.swf" poster="poster.png">
+            <video width="320" height="240" data-volume=".5" data-controls="true" data-flash-swf="proxy-player.swf" poster="poster.png">
+                <source src="Source-Code.flv" type="video/flv" data-label="Sweet Video (m4v)" data-flash-default="true" />
                 <source src="Source-Code.mov" type="video/mp4" data-label="Sweet Video (m4v)"/>
                 <source src="Source-Code.ogv" type="video/ogg" data-label="Sweet Video (OGG)"/>
             </video>
         </div>
     </div>
-
     <div id="video2" class="fdl-video">
         <div class="player">
-            <video width="640" height="480" data-autoplay="false" poster="poster.png">
+            <video width="640" height="480" data-volume="0" data-autoplay="true" data-controls-class="FVideoControls" poster="poster.png">
+                <source src="Source-Code.mov" type="video/mp4" data-label="Sweet Video (m4v)" data-flash-default='true' />
                 <source src="Source-Code.mov" type="video/mp4" data-label="Sweet Video (m4v)"/>
                 <source src="Source-Code.ogv" type="video/ogg" data-label="Sweet Video (OGG)"/>
             </video>
@@ -43,7 +43,8 @@
 
     <div id="vid3" class="fdl-video">
         <div class="player">
-            <video width="720" height="588" data-autoplay="true" data-flash-swf="proxy-player.swf" poster="poster.png">
+            <video width="720" height="588" data-autoplay="false" data-flash-swf="proxy-player.swf" poster="poster.png">
+                <source src="Source-Code.flv" type="video/flv" data-label="Sweet Video (m4v)" data-flash-default='true' />
                 <source src="Source-Code.mov" type="video/mp4" data-label="Sweet Video (m4v)"/>
                 <source src="Source-Code.ogv" type="video/ogg" data-label="Sweet Video (OGG)"/>
             </video>

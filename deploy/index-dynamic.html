@@ -20,16 +20,16 @@
         $(document).ready(function() {
 
             // var FVideoConfiguration = function ( $width, $height, $videoOptions, $swf, $variables, $parameters, $attributes ){
-            var options = new FVideoConfiguration( 848, 448, null, "proxy-player.swf" );
+            var options = new FVideoConfiguration( 848, 448, { autoplay:true }, "proxy-player.swf" );
 
             // create the video object
             var sources = new FVideoSources();
             sources.addVideo( 'Source-Code.mov', 'video/mp4', 'Link Label' );
+            sources.addVideo( 'Source-Code.ogv', 'video/ogg', 'Link Label' );
 
             video = new FVideo( '#video1', options, sources, function() {
                 console.log('ready');
             });
-
 
             var controls = new FVideoControls( video );
         });

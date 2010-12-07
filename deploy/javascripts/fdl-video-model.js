@@ -37,12 +37,14 @@ FVideoModel.prototype = {
 
     getWidth: function() { return this._width },
     setWidth: function( $value ) {
+        if( this._width === $value ) return;
         this._width = $value;
         this.video.sendEvent(FVideoModel.EVENT_RESIZE);
     },
 
     getHeight: function() { return this._height },
     setHeight: function( $value ) {
+        if( this._height === $value ) return;
         this._height = $value;
         this.video.sendEvent(FVideoModel.EVENT_RESIZE);
     },
@@ -51,43 +53,51 @@ FVideoModel.prototype = {
     setVolume: function( $value ) {
         // normalize value
         $value = ( $value > 1 ) ? 1 : ( $value < 0 ) ? 0 : $value;
+        if( this._volume == $value ) return;
         this._volume = $value;
         this.video.sendEvent(FVideoModel.EVENT_VOLUME_UPDATE);
     },
 
     getTime: function() { return this._time; },
-    setTime: function( $t ) {
-        this._time = $t;
+    setTime: function( $value ) {
+        if( this._time == $value ) return;
+        this._time = $value;
         this.video.sendEvent(FVideoModel.EVENT_TIME_UPDATE);
     },
 
-    getDuration: function() { return this._time; },
-    setDuration: function( $t ) {
-        this._duration = $t;
+    getDuration: function() { return this._duration; },
+    setDuration: function( $value ) {
+        if( this._duration == $value ) return;
+        this._duration = $value;
         this.video.sendEvent(FVideoModel.EVENT_TIME_UPDATE);
     },
 
     getPlaying: function() { return this._playing; },
-    setPlaying: function( $playing ) {
-        this._playing = $playing;
+    setPlaying: function( $value ) {
+        if( this._playing == $value ) return;
+        this._playing = $value;
         this.video.sendEvent(FVideoModel.EVENT_PLAY_STATE_CHANGE);
     },
 
     getPlayerState: function() { return this._playerState; },
-    setPlayerState: function( $state ) {
-        this._playerState = $state;
+    setPlayerState: function( $value ) {
+        if( this._playerState === $value ) return;
+        this._playerState = $value;
         this.video.sendEvent(FVideoModel.EVENT_PLAYER_STATE_CHANGE);
     },
 
-    getBytesLoaded: function() { },
-    setBytesLoaded: function( $bytes ) {
-        this._bytesLoaded = $bytes;
+    getBytesLoaded: function() { return this._bytesLoaded },
+    setBytesLoaded: function( $value ) {
+        if( this._bytesLoaded == $value ) return;
+        this._bytesLoaded = $value;
         this.video.sendEvent(FVideoModel.EVENT_LOAD_PROGRESS);
     },
 
-    getBytesTotal: function() { },
-    setBytesTotal: function( $bytes ) {
-        this._bytesTotal = $bytes;
+    getBytesTotal: function() { return this._bytesTotal },
+    setBytesTotal: function( $value ) {
+        if( this._bytesTotal == $value ) return;
+        this._bytesTotal = $value;
+        this.video.sendEvent(FVideoModel.EVENT_LOAD_PROGRESS);
     }
 
 };

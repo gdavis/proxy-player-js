@@ -16,6 +16,7 @@ FlashVideoProxy.prototype = {
         this.addModelListeners();
     },
 
+    // TODO: Refactor into FVideo
     addVideoSource: function( $path ) {
 
     },
@@ -60,7 +61,7 @@ FlashVideoProxy.prototype = {
     },
 
     getTime: function() {
-
+        
     },
 
     isPlaying: function() {

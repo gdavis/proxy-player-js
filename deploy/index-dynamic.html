@@ -6,13 +6,16 @@
     <link type="text/css" href="stylesheets/fdl-video.css" rel="stylesheet">
     <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.4.4/jquery.min.js"></script>
     <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/swfobject/2.2/swfobject.js"></script>
-    <script type="text/javascript" src="javascripts/fdl-html-video.js"></script>
-    <script type="text/javascript" src="javascripts/fdl-flash-video.js"></script>
+    <script type="text/javascript" src="javascripts/fdl-video.js"></script>
+    <script type="text/javascript" src="javascripts/fdl-video-controls-time-display.js"></script>
+    <script type="text/javascript" src="javascripts/fdl-video-controls-progressbar.js"></script>
+    <script type="text/javascript" src="javascripts/fdl-video-controls-volume.js"></script>
+    <script type="text/javascript" src="javascripts/fdl-video-controls.js"></script>
+    <script type="text/javascript" src="javascripts/fdl-proxy-html.js"></script>
+    <script type="text/javascript" src="javascripts/fdl-proxy-flash.js"></script>
     <script type="text/javascript" src="javascripts/fdl-video-model.js"></script>
     <script type="text/javascript" src="javascripts/fdl-video-config.js"></script>
     <script type="text/javascript" src="javascripts/fdl-video-source.js"></script>
-    <script type="text/javascript" src="javascripts/fdl-video-controls.js"></script>
-    <script type="text/javascript" src="javascripts/fdl-video.js"></script>
     <script type="text/javascript">
 
         var video;
@@ -20,18 +23,19 @@
         $(document).ready(function() {
 
             // var FVideoConfiguration = function ( $width, $height, $videoOptions, $swf, $variables, $parameters, $attributes ){
-            var options = new FVideoConfiguration( 848, 448, { autoplay:true }, "proxy-player.swf" );
+            var options = new FVideoConfiguration( 848, 448, { autoplay:true, volume:0.01 }, "proxy-player.swf" );
 
             // create the video object
             var sources = new FVideoSources();
-            sources.addVideo( 'Source-Code.mov', 'video/mp4', 'Link Label' );
-            sources.addVideo( 'Source-Code.ogv', 'video/ogg', 'Link Label' );
+            sources.addVideo( 'http://video-js.zencoder.com/oceans-clip.mp4', 'video/mp4', 'Link Label', true );
+            sources.addVideo( 'http://video-js.zencoder.com/oceans-clip.ogv', 'video/ogg', 'Link Label' );
 
             video = new FVideo( '#video1', options, sources, function() {
                 console.log('ready');
             });
 
             var controls = new FVideoControls( video );
+
         });
     </script>
 </head>

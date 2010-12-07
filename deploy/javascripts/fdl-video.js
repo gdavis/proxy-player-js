@@ -70,6 +70,7 @@ FVideo.prototype = {
      * @param $path Path to the video file.
      * @param $type The type (MIME type) of the video located at the source path. e.g. 'video/mp4', 'video/ogg'.
      */
+    // TODO: Refactor to not be routed through the proxy
     addVideoSource: function( $path, $type ) {
         this._proxy.addVideoSource( $path, $type );
     },
@@ -114,10 +115,6 @@ FVideo.prototype = {
         this._proxy.seek( parseFloat( $time ));
     },
     
-    updateVolume: function( $volume ) {
-        this.model.setVolume( $volume );
-    },
-
     getWidth: function() { return this.model.getWidth(); },
     setWidth: function( $width ) {
         this.model.setWidth( $width );
@@ -163,7 +160,7 @@ FVideo.prototype = {
     },
 
     //////////////////////////////////////////////////////////////////////////////////
-    // Methods called from Flash
+    // Methods called from the video player to update state
     //////////////////////////////////////////////////////////////////////////////////
 
     _ready: function() {
@@ -198,12 +195,12 @@ FVideo.prototype = {
     },
 
     _updateDuration: function( $duration ) {
-        console.log('js: _updateDuration = ' + $duration );
+//        console.log('js: _updateDuration = ' + $duration );
         this.model.setDuration( $duration );
     },
 
     _updateIsPlaying: function( $value ) {
-        console.log('js: _setIsPlaying ' + $value );
+//        console.log('js: _setIsPlaying ' + $value );
         this.model.setPlaying( $value );
     },
 
@@ -212,12 +209,17 @@ FVideo.prototype = {
         this.model.setPlayerState( $state );
     },
 
+    // TODO: Merge with setVolume/getVolume and deprecate
+    _updateVolume: function( $volume ) {
+        this.model.setVolume( $volume );
+    },
+
     _complete: function() {
         console.log('js: complete');
     },
 
     _updateLoadProgress: function( $bytesLoaded, $bytesTotal ) {
-        console.log('js: _updateLoadProgress( ' + $bytesLoaded + ', ' + $bytesTotal + ' )' );
+//        console.log('js: _updateLoadProgress( ' + $bytesLoaded + ', ' + $bytesTotal + ' )' );
         this.model.setBytesTotal( $bytesTotal );
         this.model.setBytesLoaded( $bytesLoaded );
     },
@@ -232,6 +234,8 @@ FVideo.prototype = {
         this._videoElement = this._createVideo();
         this.model = new FVideoModel( this );
         this._addModelListeners();
+        this.model.setWidth( this._options.width );
+        this.model.setHeight( this._options.height );
         if( this._useHTMLVideo ) this._ready();
     },
 
@@ -288,6 +292,7 @@ FVideo.prototype = {
         $( this.player ).append( div );
 
         // map the default video file as the source for flash.
+        this._options.flashOptions.variables.playerId = this.playerId;
         this._options.flashOptions.variables.src = this._sources.flashVideo;
         this._options.flashOptions.variables.autoplay = this._options.videoOptions.autoplay;
 
@@ -360,6 +365,7 @@ FVideo.activateAll = function( $callback ) {
         $('video', this ).each(function(){
             this.pause();
             this.src = '';      // stop video download
+            // TODO: include a check to only do this under FF3
             this.load();        // initiate new load, required in FF 3.x as noted at http://blog.pearce.org.nz/2010/11/how-to-stop-video-or-audio-element.html
         });
 
@@ -431,6 +437,9 @@ FVideo.createElement = function( type, params, parent ) {
         switch( prop ){
             case 'text':
                 el.appendChild( document.createTextNode( params[prop] ) );
+                break;
+            case 'className':
+                el.setAttribute( 'class', params[prop]);
                 break;
             default:
                 el.setAttribute( prop, params[prop] );

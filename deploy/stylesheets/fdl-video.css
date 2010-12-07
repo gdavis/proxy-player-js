@@ -53,8 +53,13 @@
 }
 
 .fdl-video .fdl-controls .fdl-progress-bar {
+    position: relative;
     height: 20px;
     background-color: #0ff;
+}
+
+.fdl-video .fdl-controls .fdl-progress-bar > div {
+    position: absolute;
 }
 
 .fdl-video .fdl-controls .fdl-progress-bar .fdl-handle {
@@ -64,21 +69,44 @@
 }
 
 .fdl-video .fdl-controls .fdl-progress-bar .fdl-play-progress {
-    width: 100px;
+    height: 100%;
     background-color: #999;
 }
 
 .fdl-video .fdl-controls .fdl-progress-bar .fdl-load-progress {
-    width: 200px;
+    height: 100%;
     background-color: #666;
-}
-
-.fdl-video .fdl-controls .fdl-volume {
-    background-color: chocolate;
 }
 
 .fdl-video .fdl-controls .fdl-fullscreen {
     width: 20px;
     height: 20px;
     background-color: #f0f;
+}
+
+.fdl-video .fdl-controls .fdl-time-separator {
+    display: inline-block;
+    width: 1px;
+    height: 10px;
+    margin: 0 6px;
+    background-color: #f00;
+}
+
+.fdl-video .fdl-controls .fdl-volume-display {
+    width: 40px;
+    background-color: #000;
+}
+
+.fdl-video .fdl-controls .fdl-volume-display {
+    position: relative;
+}
+
+.fdl-video .fdl-controls .fdl-volume-wrapper div {
+    float: left;
+    margin-right: 2px;
+    background-color: #f0f;
+}
+
+.fdl-video .fdl-controls .fdl-volume-wrapper div.on {
+    background-color: #0f0;
 }

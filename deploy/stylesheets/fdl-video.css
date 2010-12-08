@@ -83,6 +83,13 @@
     background-color: #666;
 }
 
+.fdl-video .fdl-controls .fdl-progress-bar .fdl-handle {
+    width: 1px;
+    height: 100%;
+    background-color: #f00;
+    position: absolute;
+}
+
 .fdl-video .fdl-controls .fdl-fullscreen {
     width: 20px;
     height: 20px;

@@ -39,7 +39,7 @@ package com.factorylabs.html5.video
 		private var _player	:FVideo;
 		private var _prevBytesLoaded	:int;
 		private var _prevBytesTotal	:int;
-		private var _objectIDInterval	:int;
+		private var _videoElementInterval	:int;
 		
 		
 		/**
@@ -104,6 +104,11 @@ package com.factorylabs.html5.video
 			log('as: returning the volume');
 			return _player.volume;
 		}
+		
+		public function getIsPlaying() :Boolean
+		{
+			return _player.playing;
+		}
 
 		/*
 		 * Internal Methods
@@ -129,9 +134,10 @@ package com.factorylabs.html5.video
 			createPlayer();
 			registerCallbacks();
 			addVideoListeners();
-//			_objectIDInterval = setInterval( checkForObjectIDAndStart, 50 );
+//			checkForVideoElementAndStart();
+//			_videoElementInterval = setInterval( checkForVideoElementAndStart, 50 );
 //			setTimeout( startup, 1000 );
-			log('ExternalInterface available? ' + ExternalInterface.available );
+//			log('ExternalInterface available? ' + ExternalInterface.available );
 			startup();
 		}
 		
@@ -149,13 +155,13 @@ package com.factorylabs.html5.video
 		protected function registerCallbacks() :void
 		{
 			log('registering callbacks on object id: ' + ExternalInterface.objectID );
-			ExternalInterface.addCallback( 'addVideoSource', jsAddVideoSource );
-			ExternalInterface.addCallback( 'play', playVideo );
-			ExternalInterface.addCallback( 'pause', _player.pause );
-			ExternalInterface.addCallback( 'seek', _player.seek );
-			ExternalInterface.addCallback( 'stop', _player.stop );
-			ExternalInterface.addCallback( 'setVolume', setVolume );
-			ExternalInterface.addCallback( 'getVolume', getVolume );
+			ExternalInterface.addCallback( '_addVideoSource', jsAddVideoSource );
+			ExternalInterface.addCallback( '_play', playVideo );
+			ExternalInterface.addCallback( '_pause', _player.pause );
+			ExternalInterface.addCallback( '_seek', _player.seek );
+			ExternalInterface.addCallback( '_stop', _player.stop );
+			ExternalInterface.addCallback( '_setVolume', setVolume );			ExternalInterface.addCallback( '_isPlaying', getIsPlaying );
+			ExternalInterface.addCallback( '_getVolume', getVolume );
 		}
 		
 		protected function addVideoListeners() :void
@@ -172,20 +178,27 @@ package com.factorylabs.html5.video
 			_player.loadProgressSignal.add( handleLoadProgress );
 		}
 		
-		protected function checkForObjectIDAndStart() :void
+		/*
+		protected function checkForVideoElementAndStart() :void
 		{
-			log('ObjectID = ' + ExternalInterface.objectID );
-			if( ExternalInterface.objectID != null ) {
-				clearInterval(_objectIDInterval);
-//				startup();
+			var js :XML =	<![CDATA[function( $instanceId ){
+								var el = FVideo.instances[$instanceId]; //._videoElement;
+								console.log("element from flash: " + el._videoElement);
+								return el != null;
+							}]]>;
+			var isElement :* = ExternalInterface.call( js, _playerId );
+			if( isElement ) {
+				clearInterval( _videoElementInterval );
+				startup();
 			}
-		}
+		}*/
 		
 		protected function startup() :void
 		{
-			log('as: startup!');
+//			log('as: startup!');
+						
 			// notify the controller that we're ready for commands. 
-			updateController( '_ready' );
+			updateController( '_videoReady' );
 			
 			var autoPlay :String = _vars.get('autoplay');
 			if( autoPlay && autoPlay.match(/true/i))  {
@@ -195,8 +208,11 @@ package com.factorylabs.html5.video
 		
 		private function updateController( $function :String, $args :Array=null ) :void
 		{
-			var js :XML =	<![CDATA[function( $instanceId, $function, $arguments ){ 
-								FVideo.instances[$instanceId][$function].apply( FVideo.instances[$instanceId], $arguments );
+			var js :XML =	<![CDATA[function( $instanceId, $function, $arguments ){
+								if( $arguments ) 
+									FVideo.instances[$instanceId][$function].apply( FVideo.instances[$instanceId], $arguments );
+								else 
+									FVideo.instances[$instanceId][$function].apply( FVideo.instances[$instanceId] );
 							}]]>;
 			ExternalInterface.call( js, _playerId, $function, $args );
 		}
@@ -265,7 +281,7 @@ package com.factorylabs.html5.video
 		
 		
 		/*
-		 * Logging Methods
+		 *  ging Methods
 		**************************************************************************************************** */
 		
 		private function error( $msg:String ) :void

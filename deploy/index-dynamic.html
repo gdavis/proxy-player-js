@@ -31,6 +31,7 @@
             sources.addVideo( 'http://video-js.zencoder.com/oceans-clip.ogv', 'video/ogg', 'Link Label' );
 
             video = new FVideo( '#video1', options, sources, function() {
+                // ready handler
             });
 
             var controls = new FVideoControls( video );

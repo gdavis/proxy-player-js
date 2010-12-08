@@ -43,7 +43,9 @@ var FVideo = function( $element, $options, $sources, $readyCallback ) {
     this._proxy = false;
     this._useHTMLVideo = true;
     this._initialized = false;
-    
+    this._isVideoEmbedded = false;
+    this._isReady = false;
+
     this.wrapper = document.createElement('div');
     this.wrapper.className = 'fdl-video-wrapper';
     this.container.appendChild( this.wrapper );
@@ -117,11 +119,13 @@ FVideo.prototype = {
     },
 
     seek: function( $time ) {
+        console.log('seek to: ' + $time );
         this._proxy.seek( parseFloat( $time ));
     },
 
 
     setSize: function( $width, $height ) {
+        console.log('setSize: '+ $width + ", " + $height );
         this.model.setSize( $width, $height );
     },
     
@@ -168,24 +172,34 @@ FVideo.prototype = {
         }
     },
 
+    setVideo: function( $video ) {
+//        console.log('setting video to:' + $video.outerHTML );
+        this._videoElement = $( "#"+ $video.id ).get(0);
+        if( this._videoElement ){ this._isVideoEmbedded = true; }
+    },
+
     //////////////////////////////////////////////////////////////////////////////////
     // Methods called from the video player to update state
     //////////////////////////////////////////////////////////////////////////////////
 
-    _ready: function() {
+    _videoReady: function() {
+//        console.log('video is ready');
+        this._isVideoReady = true;
+        this._checkReady();
+    },
 
-        if( this._initialized ) {
-            // check if we are in FF and using Flash
-            if( !this._useHTMLVideo ) {
-                var el = $( 'object', this.player ).get(0);
-                this._proxy.video = $( 'object', this.player ).get(0);
-            }
-            return;
+    _checkReady: function() {
+        if( this._isVideoReady && this._isVideoEmbedded ) {
+            this._startupVideo();
         }
-        console.log('js: ready!');
+    },
 
-        this._initialized = true;
+    _startupVideo: function() {
+//        console.log('video startup! video element: ' + this._videoElement );
+//        console.log('is video embedded: ' + this._isVideoEmbedded );
+//        console.log( this.player.innerHTML );
 
+//        this._videoElement = $( '#'+ this._videoElement ).get(0);
         // create the proxy object once our video is ready to receive commands
         this._proxy = this._createVideoProxy();
 
@@ -248,7 +262,7 @@ FVideo.prototype = {
         this.model = new FVideoModel( this );
         this._addModelListeners();
         this.setSize( this._options.width, this._options.height );
-        if( this._useHTMLVideo ) { this._ready(); }
+        if( this._useHTMLVideo ) { this._videoReady(); }
     },
 
     _addModelListeners: function() {
@@ -277,6 +291,7 @@ FVideo.prototype = {
         FVideo.applyAttributes( video, this._options.videoOptions );
         this._createSourceAnchors( video );
         this.player.appendChild( video );
+        this._isVideoEmbedded = true;
         return video;
     },
 
@@ -298,15 +313,16 @@ FVideo.prototype = {
      */
     _createFlashVideoObject: function() {
 
+        var replaceID = 'player-wrapper-' + this.playerId;
         var flashID = "fdl-player-" + this.playerId;
 
         // create empty div for swfobject to replace
         var div = document.createElement('div');
-        div.id = flashID;
+        div.id = replaceID;
         $( this.player ).append( div );
 
         // map the default video file as the source for flash.
-        this._options.flashOptions.attributes.id = "testID";
+        this._options.flashOptions.attributes.id = flashID;
         this._options.flashOptions.variables.playerId = this.playerId;
         this._options.flashOptions.variables.src = this._sources.flashVideo;
         this._options.flashOptions.variables.autoplay = this._options.videoOptions.autoplay;
@@ -314,22 +330,45 @@ FVideo.prototype = {
         // embed the SWF
         var self = this;
         swfobject.embedSWF( this._options.flashOptions.swf,
-                            flashID,
+                            replaceID,
                             this._options.width,
                             this._options.height,
                             this._options.flashOptions.version,
                             this._options.flashOptions.expressInstall,
                             this._options.flashOptions.variables,
                             this._options.flashOptions.params,
-                            this._options.flashOptions.attributes,
-                            function( $e ) {
-                                $e.ref.setAttribute('type','application/x-shockwave-flash');
-                                self._videoElement = $e.ref;
-                            }
+                            this._options.flashOptions.attributes //,
+//                            function( $e ) {
+//                                console.log('embed callback');
+//                                self.setVideo( $e.ref );
+//                                self._checkReady();
+                                //self._videoElement = $e.ref;
+                                /*
+                                if( !self._isReady ) {
+                                    console.log('calling ready from callback');
+                                    self._ready();
+                                }
+                                */
+                            //}
                             );
-        
+
+        this._findFlashPlayer(flashID);
         // we don't yet have access to the object tag, so it is directly set in the callback method from embedding the SWF
         return null;
+    },
+
+    _findFlashPlayer: function(flashID) {
+        var self = this;
+        self.flashFinderInterval = setInterval(function() {
+            console.log('looking for ...');
+            var flash_element = $('#' + flashID);
+            if(flash_element.length > 0) {
+                console.log('found it!');
+                self.setVideo( flash_element.get(0) );
+                self._checkReady();
+                clearInterval(self.flashFinderInterval);
+            }
+        }, 10);
     },
 
     _createVideoProxy: function() {
@@ -491,6 +530,17 @@ FVideo.createElement = function( type, params, parent ) {
         parent.appendChild( el );
     }
     return el;
+};
+
+FVideo.getEventPosition = function( $event, $relativeContainer ){
+    var children = $relativeContainer.parentNode.children;
+    var dl = children.length;
+    var wv = 0;
+    for( var i=0; i<dl; i++ ) {
+        if( children[i] === $relativeContainer ) break;
+        wv += children[i].offsetWidth;
+    }
+    return $event.clientX - wv;
 };
 
 /*

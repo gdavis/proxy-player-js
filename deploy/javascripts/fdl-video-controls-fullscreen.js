@@ -48,8 +48,9 @@ FFullscreen.prototype = {
     },
 
     exitFullscreen: function() {
-        this.fVideo.setSize( this.origWidth, this.origHeight );
+        console.log('origWidth: ' + this.origWidth + ", origHeight: " + this.origHeight);
         $(window).unbind('resize');
+        this.fVideo.setSize( this.origWidth, this.origHeight );
     },
 
     getViewportSize: function() {

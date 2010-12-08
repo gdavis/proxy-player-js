@@ -20,6 +20,9 @@ FProgressBar.prototype = {
 
         // create play progress bar
         this.progressBar = FVideo.createElement('div', { className:"fdl-play-progress"}, this.container );
+
+        // create a handle
+        this.handle = FVideo.createElement('div', { className:"fdl-handle"}, this.container );
     },
 
     addModelListeners: function() {
@@ -35,7 +38,11 @@ FProgressBar.prototype = {
     },
 
     handleMouseMove: function( $e ) {
-        var clickedTime = ( $e.layerX / this.container.offsetWidth ) * this.video.model.getDuration();
+        // loop through the children of the contols container, add up the width
+        // and subtract from the clientX value to get the relative method.
+        var dx = FVideo.getEventPosition( $e, this.container );
+        this.handle.style.left = dx + "px";
+        var clickedTime = (dx / parseInt( this.container.offsetWidth )) * this.video.model.getDuration();
         this.video.seek( clickedTime );
     },
 

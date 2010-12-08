@@ -58,8 +58,9 @@ FVolume.prototype = {
 //        console.log('move! x: ' + $e.layerX + ", y: " + $e.layerY );
 //        console.log('offsetWidth: ' + this.container.offsetWidth + ", offsetHeight: " + this.container.offsetHeight );
 
-        this.lastMouseX = $e.layerX;
-        var vol = $e.layerX / this.wrapper.offsetWidth;
+        var dx = FVideo.getEventPosition( $e, this.container );
+        this.lastMouseX = dx;
+        var vol = dx / this.wrapper.offsetWidth;
         this.video._updateVolume( vol );
     },
 

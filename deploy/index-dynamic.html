@@ -1,12 +1,12 @@
-<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
-        "http://www.w3.org/TR/html4/loose.dtd">
+<!DOCTYPE html>
 <html>
 <head>
-    <title>Factory Video</title>
+    <title>Factory Video (Dynamic)</title>
     <link type="text/css" href="stylesheets/fdl-video.css" rel="stylesheet">
     <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.4.4/jquery.min.js"></script>
     <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/swfobject/2.2/swfobject.js"></script>
     <script type="text/javascript" src="javascripts/fdl-video.js"></script>
+    <script type="text/javascript" src="javascripts/fdl-video-controls-fullscreen.js"></script>
     <script type="text/javascript" src="javascripts/fdl-video-controls-time-display.js"></script>
     <script type="text/javascript" src="javascripts/fdl-video-controls-progressbar.js"></script>
     <script type="text/javascript" src="javascripts/fdl-video-controls-volume.js"></script>
@@ -31,7 +31,6 @@
             sources.addVideo( 'http://video-js.zencoder.com/oceans-clip.ogv', 'video/ogg', 'Link Label' );
 
             video = new FVideo( '#video1', options, sources, function() {
-                console.log('ready');
             });
 
             var controls = new FVideoControls( video );
@@ -40,6 +39,10 @@
     </script>
 </head>
 <body>
-    <div id="video1" class="fdl-video"></div>
+    <div>
+        <div>
+            <div id="video1" class="fdl-video"></div>
+        </div>
+    </div>
 </body>
 </html>

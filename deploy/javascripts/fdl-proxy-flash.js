@@ -6,14 +6,13 @@ var FlashVideoProxy = function( $controller, $container, $flashObject ) {
     this.controller = $controller;
     this.container = $container;
     this.video = $flashObject;
-    this.init();
+    this.addModelListeners();
 };
 
 FlashVideoProxy.prototype = {
 
-    init: function() {
-        this.addVideoListeners( this.video );
-        this.addModelListeners();
+    setVideo:function( $el ) {
+        this.video = $el;
     },
 
     // TODO: Refactor into FVideo
@@ -66,13 +65,6 @@ FlashVideoProxy.prototype = {
 
     isPlaying: function() {
         return this._proxy.isPlaying();
-    },
-
-    addVideoListeners: function( $video ) {
-        
-    },
-
-    removeVideoListeners: function( $video ) {
     },
 
     addModelListeners: function() {

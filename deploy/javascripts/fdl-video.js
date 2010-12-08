@@ -29,6 +29,9 @@ var FVideo = function( $element, $options, $sources, $readyCallback ) {
         this.container = $element;
     }
 
+    // store parent so we can reattach the player 
+    this.parent = this.container.parentNode;
+
     // variable which contains a reference to either the <video> element for an HTML5 environment, or a flash <object> element.
     this._videoElement = false;
     this._options = $options;
@@ -39,14 +42,19 @@ var FVideo = function( $element, $options, $sources, $readyCallback ) {
     this.model = false;
     this._proxy = false;
     this._useHTMLVideo = true;
+    this._initialized = false;
+    
+    this.wrapper = document.createElement('div');
+    this.wrapper.className = 'fdl-video-wrapper';
+    this.container.appendChild( this.wrapper );
 
-    // find the player div
+    // create container for the player
     this.player = document.createElement('div');
     this.player.className = "player";
-    this.container.appendChild( this.player );
+    this.wrapper.appendChild( this.player );
 
     // create a uniquely named player container for the video. used for flash fallback
-    this.playerId = parseInt( Math.random() * 100000 );
+    this.playerId = parseInt( Math.random() * 100000, 10 );
 
     // store this instance
     FVideo.instances[this.playerId] = this;
@@ -89,15 +97,12 @@ FVideo.prototype = {
     play: function( $url ) {
         if( $url ) {
             this._proxy.play( $url );
-            console.log('js: playing new video');
         }
         else {
             if( this.model.getPlaying() ) {
-                console.log('js: pausing video');
                 this._proxy.pause();
             }
             else {
-                console.log('js: resuming video');
                 this._proxy.play();
             }
         }
@@ -113,6 +118,11 @@ FVideo.prototype = {
 
     seek: function( $time ) {
         this._proxy.seek( parseFloat( $time ));
+    },
+
+
+    setSize: function( $width, $height ) {
+        this.model.setSize( $width, $height );
     },
     
     getWidth: function() { return this.model.getWidth(); },
@@ -153,7 +163,6 @@ FVideo.prototype = {
     destroy: function() {
         if( this.player ) {
             if( this.player.parentNode ) {
-                console.log('remove me!');
                 this.player.parentNode.removeChild( this.player );
             }
         }
@@ -164,7 +173,18 @@ FVideo.prototype = {
     //////////////////////////////////////////////////////////////////////////////////
 
     _ready: function() {
-        console.log('js: flash is ready');
+
+        if( this._initialized ) {
+            // check if we are in FF and using Flash
+            if( !this._useHTMLVideo ) {
+                var el = $( 'object', this.player ).get(0);
+                this._proxy.video = $( 'object', this.player ).get(0);
+            }
+            return;
+        }
+        console.log('js: ready!');
+
+        this._initialized = true;
 
         // create the proxy object once our video is ready to receive commands
         this._proxy = this._createVideoProxy();
@@ -178,9 +198,8 @@ FVideo.prototype = {
 
         // sync relevant values from the player onto the model.
         // by setting these on the model we also dispatch events which update the UI to its default state.
-        this.model.setVolume( this._proxy.getVolume() );
-        this.model.setWidth( this._options.width );
-        this.model.setHeight( this._options.height );
+        this.setVolume( this._proxy.getVolume() );
+        this.setSize( this._options.width, this._options.height );
 
         // fire ready callback.
         this.readyCallback( this );
@@ -190,22 +209,18 @@ FVideo.prototype = {
     },
 
     _updatePlayheadTime: function( $time ){
-//        console.log('js: _updatePlayheadTime = ' + $time );
         this.model.setTime( $time );
     },
 
     _updateDuration: function( $duration ) {
-//        console.log('js: _updateDuration = ' + $duration );
         this.model.setDuration( $duration );
     },
 
     _updateIsPlaying: function( $value ) {
-//        console.log('js: _setIsPlaying ' + $value );
         this.model.setPlaying( $value );
     },
 
     _updatePlayerState: function( $state ) {
-        console.log('js: _setPlayerState = ' + $state );
         this.model.setPlayerState( $state );
     },
 
@@ -215,11 +230,9 @@ FVideo.prototype = {
     },
 
     _complete: function() {
-        console.log('js: complete');
     },
 
     _updateLoadProgress: function( $bytesLoaded, $bytesTotal ) {
-//        console.log('js: _updateLoadProgress( ' + $bytesLoaded + ', ' + $bytesTotal + ' )' );
         this.model.setBytesTotal( $bytesTotal );
         this.model.setBytesLoaded( $bytesLoaded );
     },
@@ -234,27 +247,26 @@ FVideo.prototype = {
         this._videoElement = this._createVideo();
         this.model = new FVideoModel( this );
         this._addModelListeners();
-        this.model.setWidth( this._options.width );
-        this.model.setHeight( this._options.height );
-        if( this._useHTMLVideo ) this._ready();
+        this.setSize( this._options.width, this._options.height );
+        if( this._useHTMLVideo ) { this._ready(); }
     },
 
     _addModelListeners: function() {
         var self = this;
         $(this.container).bind(FVideoModel.EVENT_RESIZE, function() { self._handleResize(); });
+        $(this.container).bind(FVideoModel.EVENT_TOGGLE_FULLSCREEN, function() { self._handleFullscreen(); });
     },
 
     _canBrowserPlayVideo: function() {
         var vid = document.createElement('video');
         var canPlay = vid.play;
-        delete vid;
-        return canPlay;
-//        return false;
+//        return canPlay !== undefined;
+        return false;
     },
 
     _createVideo: function() {
-        if( this._useHTMLVideo ) return this._createHTMLVideoObject();
-        else return this._createFlashVideoObject();
+        if( this._useHTMLVideo ) { return this._createHTMLVideoObject(); }
+        else { return this._createFlashVideoObject(); }
     },
 
     /**
@@ -285,13 +297,16 @@ FVideo.prototype = {
      * returns a flash <object> tag
      */
     _createFlashVideoObject: function() {
-        
+
+        var flashID = "fdl-player-" + this.playerId;
+
         // create empty div for swfobject to replace
         var div = document.createElement('div');
-        div.id = "fdl-player-" + this.playerId;
+        div.id = flashID;
         $( this.player ).append( div );
 
         // map the default video file as the source for flash.
+        this._options.flashOptions.attributes.id = "testID";
         this._options.flashOptions.variables.playerId = this.playerId;
         this._options.flashOptions.variables.src = this._sources.flashVideo;
         this._options.flashOptions.variables.autoplay = this._options.videoOptions.autoplay;
@@ -299,7 +314,7 @@ FVideo.prototype = {
         // embed the SWF
         var self = this;
         swfobject.embedSWF( this._options.flashOptions.swf,
-                            "fdl-player-" + this.playerId,
+                            flashID,
                             this._options.width,
                             this._options.height,
                             this._options.flashOptions.version,
@@ -307,7 +322,10 @@ FVideo.prototype = {
                             this._options.flashOptions.variables,
                             this._options.flashOptions.params,
                             this._options.flashOptions.attributes,
-                            function( $e ) { self._videoElement = $e.ref; }
+                            function( $e ) {
+                                $e.ref.setAttribute('type','application/x-shockwave-flash');
+                                self._videoElement = $e.ref;
+                            }
                             );
         
         // we don't yet have access to the object tag, so it is directly set in the callback method from embedding the SWF
@@ -315,8 +333,16 @@ FVideo.prototype = {
     },
 
     _createVideoProxy: function() {
-        if( this._useHTMLVideo ) return new HTMLVideoProxy( this, this.container, this._videoElement );
-        else return new FlashVideoProxy( this, this.container, this._videoElement );
+        if( this._useHTMLVideo ) { return new HTMLVideoProxy( this, this.container, this._videoElement ); }
+        else { return new FlashVideoProxy( this, this.container, this._videoElement ); }
+    },
+
+    _enterFullscreen: function() {
+        this.wrapper.position = "fixed";
+    },
+    
+    _exitFullscreen: function() {
+        this.wrapper.position = "absolute";
     },
 
     _handleResize: function() {
@@ -324,7 +350,17 @@ FVideo.prototype = {
         var hv = this.model.getHeight();
         var wStr = typeof wv == 'string' ? wv : wv + "px";
         var hStr = typeof hv == 'string' ? hv : hv + "px";
-        $( this.container ).css({width:wStr, height:hStr});
+        this.container.style.width = wStr;
+        this.container.style.height = hStr;
+    },
+
+    _handleFullscreen: function() {
+        if( this.model.getFullscreen() ) {
+            this._enterFullscreen();
+        }
+        else {
+            this._exitFullscreen();
+        }
     }
 };
 
@@ -339,7 +375,6 @@ FVideo.activateAll = function( $callback ) {
     $('.fdl-video').each( function() {
         var video = $('video', this).get(0);
         var sourceList = new FVideoSources();
-        var attrs = video.attributes;
         var sources = $('source', video ).each(function() {
             sourceList.addVideo( this.src, this.type, this.getAttribute('data-label'), this.getAttribute('data-flash-default') || false );
         });
@@ -347,16 +382,19 @@ FVideo.activateAll = function( $callback ) {
         var videoOptions = {};
         var flashSwf;
         var callback;
-        if( video.width ) videoOptions.width = video.width;
-        if( video.height ) videoOptions.height = video.height;
-        if( video.getAttribute('data-flash-swf')) flashSwf = video.getAttribute('data-flash-swf');
-        if( video.getAttribute('data-controls')) videoOptions.controls = video.getAttribute('data-controls');
-        if( video.getAttribute('data-volume')) videoOptions.volume = video.getAttribute('data-volume');
-        if( video.getAttribute('data-autoplay')) videoOptions.autoplay = video.getAttribute('data-autoplay');
-        if( video.getAttribute('data-preload')) videoOptions.preload = video.getAttribute('data-preload');
-        if( video.getAttribute('data-loop')) videoOptions.loop = video.getAttribute('data-loop');
-        if( video.getAttribute('data-poster')) videoOptions.poster = video.getAttribute('data-poster');
-        if( video.getAttribute('data-src')) videoOptions.src = video.getAttribute('data-src');
+        if( video.width ){ videoOptions.width = video.width; }
+        if( video.height ){ videoOptions.height = video.height; }
+        if( video.getAttribute('data-flash-swf')){ flashSwf = video.getAttribute('data-flash-swf'); }
+        if( video.getAttribute('data-controls')){ videoOptions.controls = video.getAttribute('data-controls'); }
+        if( video.getAttribute('data-volume')){ videoOptions.volume = video.getAttribute('data-volume'); }
+        if( video.getAttribute('data-autoplay')){ videoOptions.autoplay = video.getAttribute('data-autoplay'); }
+        if( video.getAttribute('data-preload')){ videoOptions.preload = video.getAttribute('data-preload'); }
+        if( video.getAttribute('data-loop')){ videoOptions.loop = video.getAttribute('data-loop'); }
+        if( video.getAttribute('data-poster')){ videoOptions.poster = video.getAttribute('data-poster'); }
+        if( video.getAttribute('data-src')){ videoOptions.src = video.getAttribute('data-src'); }
+
+        // store controls class
+        var controlsClass = video.getAttribute('data-controls-class');
 
         // create options for video
         var options = new FVideoConfiguration( video.width, video.height, videoOptions, flashSwf );
@@ -376,9 +414,8 @@ FVideo.activateAll = function( $callback ) {
         var fVideo = new FVideo( this, options, sourceList, $callback );
 
         // build controls for video, if specified
-        var controlsClass = video.getAttribute('data-controls-class');
         if(controlsClass) {
-            new window[controlsClass]( video );
+            new window[controlsClass]( fVideo );
         }
     });
 };
@@ -391,13 +428,18 @@ FVideo.activateAll = function( $callback ) {
  */
 FVideo.applyAttributes = function( $elem, $attr ) {
     for( var it in $attr ) {
-        if( it.toLowerCase() == 'width' || it.toLowerCase() == 'height' ) $elem[it] = parseInt( $attr[it] );
+        if( it.toLowerCase() == 'width' || it.toLowerCase() == 'height' ){
+            $elem[it] = parseInt( $attr[it], 10 ); 
+        }
         // make sure we only map values that aren't false
         else if( $attr[it] && typeof $attr[it] === 'string' ) {
-            if( $attr[it].toLowerCase() !== 'false' )
+            if( $attr[it].toLowerCase() !== 'false' ) {
                 $elem[it] = $attr[it];
+            }
         }
-        else if( $attr[it]) $elem[it] = $attr[it];
+        else if( $attr[it]) {
+            $elem[it] = $attr[it];
+        } 
     }
 };
 
@@ -408,7 +450,7 @@ FVideo.applyAttributes = function( $elem, $attr ) {
  * @param $modified
  */
 FVideo.mergeOptions = function( $original, $modified ) {
-    if( $modified === undefined ) return $original;
+    if( $modified === undefined ) { return $original; }
     var obj = {};
     var it;
     // map original values.
@@ -419,7 +461,7 @@ FVideo.mergeOptions = function( $original, $modified ) {
     for( it in $modified ) {
         // recurse through child objects
         if(typeof $modified[it] === 'object' ) {
-            obj[it] = FVideo.mergeOptions($original[it], $modified[it])
+            obj[it] = FVideo.mergeOptions($original[it], $modified[it]);
         } else {
             obj[it] = $modified[it];
         }
@@ -429,14 +471,14 @@ FVideo.mergeOptions = function( $original, $modified ) {
 
 
 FVideo.createElement = function( type, params, parent ) {
-    var type = type || params.tag,
-        prop,
+    type = type || params.tag;
+    var prop,
         el = document.createElement(type);
 
     for (prop in params) {
         switch( prop ){
             case 'text':
-                el.appendChild( document.createTextNode( params[prop] ) );
+                el.appendChild( document.createTextNode( params[prop] ));
                 break;
             case 'className':
                 el.setAttribute( 'class', params[prop]);
@@ -445,7 +487,9 @@ FVideo.createElement = function( type, params, parent ) {
                 el.setAttribute( prop, params[prop] );
         }
     }
-    if( parent ) parent.appendChild( el );
+    if( parent ) {
+        parent.appendChild( el );
+    }
     return el;
 };
 

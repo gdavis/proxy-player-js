@@ -6,6 +6,7 @@ var FVolume = function( $container, $video, $numBars, $barWidth, $maxBarHeight )
     this.numBars = $numBars || 7;
     this.barWidth = $barWidth || 3;
     this.maxBarHeight = $maxBarHeight || 15;
+    this.lastMouseX = 0;
     this.build();
     this.addModelListeners();
 };
@@ -15,7 +16,7 @@ FVolume.prototype = {
     build: function() {
         var self = this;
         this.wrapper = FVideo.createElement('div', { className:'fdl-volume-wrapper' }, this.container );
-        $(this.wrapper).mousedown(function( $e ){ self.handleMouseDown( $e ); });
+        $(this.container).mousedown(function( $e ){ self.handleMouseDown( $e ); });
 
         // create volume bars
         for(var i = 0; i < this.numBars; i++ ) {
@@ -47,20 +48,28 @@ FVolume.prototype = {
 
     handleMouseDown: function( $e ) {
         var self = this;
-        $( this.wrapper ).mousemove(function( $e ){ self.handleMouseMove( $e ); });
+        $( this.container ).mousemove(function( $e ){ self.handleMouseMove( $e ); });
         $( document ).mouseup(function( $e ){ self.handleMouseUp( $e ); });
+        this.handleMouseMove($e);
     },
 
     handleMouseMove: function( $e ) {
+
+//        console.log('move! x: ' + $e.layerX + ", y: " + $e.layerY );
+//        console.log('offsetWidth: ' + this.container.offsetWidth + ", offsetHeight: " + this.container.offsetHeight );
+
+        this.lastMouseX = $e.layerX;
         var vol = $e.layerX / this.wrapper.offsetWidth;
         this.video._updateVolume( vol );
     },
 
     handleMouseUp: function( $e ) {
         // do the update
-        this.handleMouseMove( $e );
+        var vol = this.lastMouseX / this.wrapper.offsetWidth;
+        this.video._updateVolume( vol );
+
         // remove listener
-        $( this.wrapper ).unbind('mousemove');
+        $( this.container ).unbind('mousemove');
         $( document ).unbind('mouseup');
     }
 

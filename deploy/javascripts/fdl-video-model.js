@@ -14,6 +14,7 @@ var FVideoModel = function( $fVideo ) {
     this._playerState = false;
     this._bytesLoaded = 0;
     this._bytesTotal = 0;
+    this._fullscreen = false;
 };
 
 // events
@@ -24,6 +25,7 @@ FVideoModel.EVENT_LOAD_PROGRESS         = "FVideoModelEvent.LoadProgress";
 FVideoModel.EVENT_VOLUME_UPDATE         = "FVideoModelEvent.VolumeUpdate";
 FVideoModel.EVENT_PLAY_STATE_CHANGE     = "FVideoModelEvent.PlayStateChange";
 FVideoModel.EVENT_PLAYER_STATE_CHANGE   = "FVideoModelEvent.PlayerStateChange";
+FVideoModel.EVENT_TOGGLE_FULLSCREEN     = "FVideoModelEvent.ToggleFullscreen";
 
 // states
 FVideoModel.STATE_CONNECTING            = "FVideoModelEvent.Connecting";
@@ -34,6 +36,13 @@ FVideoModel.STATE_PAUSED                = "FVideoModelEvent.Paused";
 FVideoModel.STATE_SEEKING               = "FVideoModelEvent.Seeking";
 
 FVideoModel.prototype = {
+
+    setSize: function( $width, $height ) {
+        if( this._width == $width && this._height == $height ) return;
+        this._width = $width;
+        this._height = $height;
+        this.video.sendEvent(FVideoModel.EVENT_RESIZE);
+    },
 
     getWidth: function() { return this._width },
     setWidth: function( $value ) {
@@ -98,6 +107,13 @@ FVideoModel.prototype = {
         if( this._bytesTotal == $value ) return;
         this._bytesTotal = $value;
         this.video.sendEvent(FVideoModel.EVENT_LOAD_PROGRESS);
+    },
+
+    getFullscreen: function() { return this._fullscreen },
+    setFullscreen: function( $value ) {
+        if( this._fullscreen == $value ) return;
+        this._fullscreen = $value;
+        this.video.sendEvent(FVideoModel.EVENT_TOGGLE_FULLSCREEN);
     }
 
 };

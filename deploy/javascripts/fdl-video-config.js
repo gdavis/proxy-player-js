@@ -20,7 +20,7 @@ var FVideoConfiguration = function ( $width, $height, $videoOptions, $swf, $vari
     this.DEFAULT_FLASH_PARAMS =         {   scale:"noscale",
                                             allowScriptAccess:"always",
                                             quality:"best",
-                                            wmode:"opaque",
+                                            wmode:"transparent",
                                             allowFullScreen:"true"
                                             };
     this.flashOptions =         {   expressInstall:"expressinstall.swf",

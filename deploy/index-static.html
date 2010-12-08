@@ -1,11 +1,12 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Factory Video</title>
+    <title>Factory Video (Static)</title>
     <link type="text/css" href="stylesheets/fdl-video.css" rel="stylesheet">
     <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.4.4/jquery.min.js"></script>
     <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/swfobject/2.2/swfobject.js"></script>
     <script type="text/javascript" src="javascripts/fdl-video.js"></script>
+    <script type="text/javascript" src="javascripts/fdl-video-controls-fullscreen.js"></script>
     <script type="text/javascript" src="javascripts/fdl-video-controls-time-display.js"></script>
     <script type="text/javascript" src="javascripts/fdl-video-controls-progressbar.js"></script>
     <script type="text/javascript" src="javascripts/fdl-video-controls-volume.js"></script>    
@@ -18,40 +19,35 @@
     <script type="text/javascript">
         $(document).ready(function() {
             FVideo.activateAll( function( $video ) {
-                console.log( 'new video has been created: ' + $video );
-                $($video.container).css({ border:'1px solid #f00'});
+//                $($video.container).css({ border:'1px solid #f00'});
             });
         });
     </script>
 </head>
 <body>
+    <!--
     <div id="video1" class="fdl-video">
-        <div class="player">
-            <video width="320" height="240" data-volume=".5" data-controls="true" data-flash-swf="proxy-player.swf" poster="poster.png">
-                <source src="Source-Code.flv" type="video/flv" data-label="Sweet Video (m4v)" data-flash-default="true" />
-                <source src="Source-Code.mov" type="video/mp4" data-label="Sweet Video (m4v)"/>
-                <source src="Source-Code.ogv" type="video/ogg" data-label="Sweet Video (OGG)"/>
-            </video>
-        </div>
+        <video width="320" height="240" data-volume=".5" data-controls="true" data-flash-swf="proxy-player.swf" poster="poster.png">
+            <source src="Source-Code.flv" type="video/flv" data-label="Sweet Video (m4v)" data-flash-default="true" />
+            <source src="Source-Code.mov" type="video/mp4" data-label="Sweet Video (m4v)"/>
+            <source src="Source-Code.ogv" type="video/ogg" data-label="Sweet Video (OGG)"/>
+        </video>
     </div>
+    -->
     <div id="video2" class="fdl-video">
-        <div class="player">
-            <video width="640" height="480" data-volume="0" data-autoplay="true" data-controls-class="FVideoControls" poster="poster.png">
-                <source src="Source-Code.mov" type="video/mp4" data-label="Sweet Video (m4v)" data-flash-default='true' />
-                <source src="Source-Code.mov" type="video/mp4" data-label="Sweet Video (m4v)"/>
-                <source src="Source-Code.ogv" type="video/ogg" data-label="Sweet Video (OGG)"/>
-            </video>
-        </div>
+        <video width="640" height="480" data-volume="0" data-autoplay="true" data-controls-class="FVideoControls" poster="poster.png">
+            <source src="http://video-js.zencoder.com/oceans-clip.mp4" type="video/mp4" data-label="Sweet Video (m4v)" data-flash-default='true' />
+            <source src="http://video-js.zencoder.com/oceans-clip.ogv" type="video/ogg" data-label="Sweet Video (OGG)"/>
+        </video>
     </div>
-
+    <!--
     <div id="vid3" class="fdl-video">
-        <div class="player">
-            <video width="720" height="588" data-autoplay="false" data-flash-swf="proxy-player.swf" poster="poster.png">
-                <source src="Source-Code.flv" type="video/flv" data-label="Sweet Video (m4v)" data-flash-default='true' />
-                <source src="Source-Code.mov" type="video/mp4" data-label="Sweet Video (m4v)"/>
-                <source src="Source-Code.ogv" type="video/ogg" data-label="Sweet Video (OGG)"/>
-            </video>
-        </div>
+        <video width="720" height="588" data-autoplay="false" data-flash-swf="proxy-player.swf" poster="poster.png">
+            <source src="Source-Code.flv" type="video/flv" data-label="Sweet Video (m4v)" data-flash-default='true' />
+            <source src="Source-Code.mov" type="video/mp4" data-label="Sweet Video (m4v)"/>
+            <source src="Source-Code.ogv" type="video/ogg" data-label="Sweet Video (OGG)"/>
+        </video>
     </div>
+    -->
 </body>
 </html>

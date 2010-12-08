@@ -1,5 +1,9 @@
 package com.factorylabs.html5.video
 {	
+	import flash.utils.clearInterval;
+	import flash.utils.setInterval;
+	import flash.utils.setTimeout;
+	import flash.events.Event;
 	import com.factorylabs.orange.core.collections.Map;
 	import com.factorylabs.orange.video.FVideo;
 
@@ -35,6 +39,7 @@ package com.factorylabs.html5.video
 		private var _player	:FVideo;
 		private var _prevBytesLoaded	:int;
 		private var _prevBytesTotal	:int;
+		private var _objectIDInterval	:int;
 		
 		
 		/**
@@ -43,6 +48,7 @@ package com.factorylabs.html5.video
 		 */
 		public function ProxyPlayer()
 		{
+			log('as: ProxyPlayer created.');
 			stop();
 			mapFlashVars();
 			initialize();
@@ -123,6 +129,9 @@ package com.factorylabs.html5.video
 			createPlayer();
 			registerCallbacks();
 			addVideoListeners();
+//			_objectIDInterval = setInterval( checkForObjectIDAndStart, 50 );
+//			setTimeout( startup, 1000 );
+			log('ExternalInterface available? ' + ExternalInterface.available );
 			startup();
 		}
 		
@@ -139,6 +148,7 @@ package com.factorylabs.html5.video
 		
 		protected function registerCallbacks() :void
 		{
+			log('registering callbacks on object id: ' + ExternalInterface.objectID );
 			ExternalInterface.addCallback( 'addVideoSource', jsAddVideoSource );
 			ExternalInterface.addCallback( 'play', playVideo );
 			ExternalInterface.addCallback( 'pause', _player.pause );
@@ -150,6 +160,8 @@ package com.factorylabs.html5.video
 		
 		protected function addVideoListeners() :void
 		{
+			this.stage.addEventListener( Event.RESIZE, handleResize );
+			
 			_player.metadataSignal.add( handleMetadata );
 			_player.playingSignal.add( handlePlay );
 			_player.pauseSignal.add( handleStop );
@@ -160,8 +172,18 @@ package com.factorylabs.html5.video
 			_player.loadProgressSignal.add( handleLoadProgress );
 		}
 		
+		protected function checkForObjectIDAndStart() :void
+		{
+			log('ObjectID = ' + ExternalInterface.objectID );
+			if( ExternalInterface.objectID != null ) {
+				clearInterval(_objectIDInterval);
+//				startup();
+			}
+		}
+		
 		protected function startup() :void
 		{
+			log('as: startup!');
 			// notify the controller that we're ready for commands. 
 			updateController( '_ready' );
 			
@@ -177,6 +199,12 @@ package com.factorylabs.html5.video
 								FVideo.instances[$instanceId][$function].apply( FVideo.instances[$instanceId], $arguments );
 							}]]>;
 			ExternalInterface.call( js, _playerId, $function, $args );
+		}
+		
+		
+		private function handleResize( $e :Event ) :void
+		{
+			_player.width = this.stage.stageWidth;			_player.height = this.stage.stageHeight;
 		}
 		
 		/*

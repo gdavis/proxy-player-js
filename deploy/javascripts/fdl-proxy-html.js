@@ -92,7 +92,6 @@ HTMLVideoProxy.prototype = {
     },
 
     resize: function() {
-        console.log( 'js: resize. width = ' + this.controller.model.getWidth()  + ', height = ' + this.controller.model.getHeight());
         this.video.width = parseInt( this.controller.model.getWidth());
         this.video.height = parseInt( this.controller.model.getHeight());
     },
@@ -108,18 +107,15 @@ HTMLVideoProxy.prototype = {
     },
 
     handleMetadata: function( $e ) {
-        console.log('found metadata!');
     },
 
     handleError: function( $e ) {
-        console.log( 'error event' );
-        console.log( $e );
         this.controller._updatePlayerState('error');
+        // TODO: Add this back with certain error states
 //        this.controller.fallback();
     },
 
     handleTimeUpdate: function( $e ) {
-//        console.log( this.video.currentTime );
         this.controller._updatePlayheadTime( this.video.currentTime );
     },
 
@@ -148,29 +144,21 @@ HTMLVideoProxy.prototype = {
     },
 
     handlePlay: function( $e ) {
-//        console.log( 'play event' );
-//        console.log( $e );
         this.startBufferInterval();
         this.controller._updateIsPlaying( true );
         this.controller._updatePlayerState('playing');
     },
 
     handlePause: function( $e ) {
-//        console.log( 'pause event' );
-//        console.log( $e );
         this.controller._updateIsPlaying( false );
         this.controller._updatePlayerState('paused');
     },
 
     handleSeek: function( $e ) {
-        console.log( 'seek event' );
-        console.log( $e );
         this.controller._updatePlayerState('seeking');
     },
 
     handleEnd: function( $e ) {
-        console.log( 'end event' );
-        console.log( $e );
         this.controller._updateIsPlaying( false );
         this.controller._updatePlayerState('stopped');
     },

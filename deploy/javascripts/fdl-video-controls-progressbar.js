@@ -13,6 +13,7 @@ FProgressBar.prototype = {
         var self = this;
 
         $( this.container ).mousedown(function( $e ){ self.handleMouseDown( $e ); });
+        $( this.video.container ).bind('resize',function( $e ){ self.handleLoadProgress( $e ); self.handlePlayheadUpdate( $e ); });
 
         // create download bar
         this.downloadBar = FVideo.createElement('div', { className:"fdl-load-progress"}, this.container );
@@ -41,6 +42,7 @@ FProgressBar.prototype = {
     handleMouseUp: function( $e ) {
         // do the update
         this.handleMouseMove( $e );
+        
         // remove listener
         $( this.container ).unbind('mousemove');
         $( document ).unbind('mouseup');
@@ -48,11 +50,11 @@ FProgressBar.prototype = {
 
     handleLoadProgress: function( $e ) {
         var dw = ( this.video.model.getBytesLoaded() / this.video.model.getBytesTotal() ) * this.container.offsetWidth;
-        this.downloadBar.style.width = dw + "px";
+        this.downloadBar.setAttribute('style','width:' + dw + "px" );
     },
 
     handlePlayheadUpdate: function( $e ) {
         var dw = ( this.video.model.getTime() / this.video.model.getDuration() ) * this.container.offsetWidth;
-        this.progressBar.style.width = dw + "px";
+        this.progressBar.setAttribute('style','width:' + dw + "px" );
     }
 };

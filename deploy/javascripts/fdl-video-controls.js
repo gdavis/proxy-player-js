@@ -1,8 +1,8 @@
 var FVideoControls = function( $fVideoInstance ) {
     this.fVideo = $fVideoInstance;
-    this.container = FVideo.createElement( 'div', { className:'fdl-controls' }, this.fVideo.container );
-    this.bigPlayButton = FVideo.createElement( 'div', { className:'fdl-big-play-button' }, this.container );
-    this.controlsBar = FVideo.createElement( 'div', { className:'fdl-controls-bar' }, this.container );
+    this.container = false;
+    this.bigPlayButton = false;
+    this.controlsBar = false;
     this.playButton = false;
     this.stopButton = false;
     this.progressBar = false;
@@ -19,12 +19,17 @@ FVideoControls.prototype = {
 
     buildControls: function() {
 
+        // build main containers.
+        this.container = FVideo.createElement( 'div', { className:'fdl-controls' }, this.fVideo.wrapper );
+        this.bigPlayButton = FVideo.createElement( 'div', { className:'fdl-big-play-button' }, this.container );
+        this.controlsBar = FVideo.createElement( 'div', { className:'fdl-controls-bar' }, this.container );
+
+        // create controls
         this.playButton = FVideo.createElement('div',{ className:'fdl-play-pause' }, this.controlsBar );
         this.stopButton = FVideo.createElement('div',{ className:'fdl-stop' }, this.controlsBar );
 
         this.progressBar = FVideo.createElement('div',{ className:'fdl-progress-bar' }, this.controlsBar );
-
-        var progressBarController = new FProgressBar( this.progressBar, this.fVideo );
+        new FProgressBar( this.progressBar, this.fVideo );
 
         this.timeDisplay = FVideo.createElement('div',{ className:'fdl-time-display' }, this.controlsBar);
         new FTimeDisplay( this.timeDisplay, this.fVideo );
@@ -33,6 +38,7 @@ FVideoControls.prototype = {
         new FVolume( this.volumeDisplay, this.fVideo );
 
         this.fullscreenButton = FVideo.createElement('div',{ className:'fdl-fullscreen' }, this.controlsBar );
+        new FFullscreen( this.fullscreenButton, this.fVideo );
     },
 
     setupInteractionHandlers: function() {
@@ -41,13 +47,14 @@ FVideoControls.prototype = {
         $(this.stopButton).click(function(){ self.fVideo.stop(); });
 
         // prevent dragging
-        this.container.onmousedown = function($e){return false;};
-        this.container.onselectstart = function($e){return false;}
+        this.container.onmousedown = function(){return false;};
+        this.container.onselectstart = function(){return false;}
     },
 
     addModelListeners: function() {
         var self = this;
         $(this.fVideo.container).bind(FVideoModel.EVENT_PLAY_STATE_CHANGE, function(){ self.updatePlayButton(); });
+        $(this.fVideo.container).bind(FVideoModel.EVENT_RESIZE, function(){ self.position(); });
     },
 
     updatePlayButton: function() {
@@ -66,8 +73,13 @@ FVideoControls.prototype = {
         var dl = children.length;
         var sum = 0;
         for( var i=0; i<dl; i++) {
-            sum += children[i].offsetWidth;
+            if(children[i] !== this.progressBar )
+                sum += children[i].offsetWidth;
         }
-        this.progressBar.style.width = this.container.offsetWidth - sum + "px";
+        this.progressBar.style.width = Math.floor( this.container.offsetWidth - sum ) + "px";
+
+        // redispatch a resize event off the top-level container.
+        // this allows the progress bar and other controls to update individually.
+        $(this.fVideo.container).trigger('resize');
     }
 };

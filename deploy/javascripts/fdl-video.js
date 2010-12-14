@@ -195,11 +195,6 @@ FVideo.prototype = {
     },
 
     _startupVideo: function() {
-//        console.log('video startup! video element: ' + this._videoElement );
-//        console.log('is video embedded: ' + this._isVideoEmbedded );
-//        console.log( this.player.innerHTML );
-
-//        this._videoElement = $( '#'+ this._videoElement ).get(0);
         // create the proxy object once our video is ready to receive commands
         this._proxy = this._createVideoProxy();
 
@@ -274,8 +269,8 @@ FVideo.prototype = {
     _canBrowserPlayVideo: function() {
         var vid = document.createElement('video');
         var canPlay = vid.play;
-//        return canPlay !== undefined;
-        return false;
+        return canPlay !== undefined;
+//        return false;
     },
 
     _createVideo: function() {
@@ -337,19 +332,7 @@ FVideo.prototype = {
                             this._options.flashOptions.expressInstall,
                             this._options.flashOptions.variables,
                             this._options.flashOptions.params,
-                            this._options.flashOptions.attributes //,
-//                            function( $e ) {
-//                                console.log('embed callback');
-//                                self.setVideo( $e.ref );
-//                                self._checkReady();
-                                //self._videoElement = $e.ref;
-                                /*
-                                if( !self._isReady ) {
-                                    console.log('calling ready from callback');
-                                    self._ready();
-                                }
-                                */
-                            //}
+                            this._options.flashOptions.attributes
                             );
 
         this._findFlashPlayer(flashID);
@@ -360,10 +343,8 @@ FVideo.prototype = {
     _findFlashPlayer: function(flashID) {
         var self = this;
         self.flashFinderInterval = setInterval(function() {
-            console.log('looking for ...');
             var flash_element = $('#' + flashID);
             if(flash_element.length > 0) {
-                console.log('found it!');
                 self.setVideo( flash_element.get(0) );
                 self._checkReady();
                 clearInterval(self.flashFinderInterval);
@@ -408,6 +389,19 @@ FVideo.prototype = {
  * @param $type
  */
 FVideo.instances = {};
+
+FVideo.ua = navigator.userAgent.toLowerCase();
+FVideo.isWebkit = (FVideo.ua.match(/webkit/i) != null);
+FVideo.isMoz = (FVideo.ua.match(/mozilla/i) != null);
+FVideo.isIPhone = (FVideo.ua.match(/iphone/i) != null);
+FVideo.isIPad = (FVideo.ua.match(/ipad/i) != null);
+FVideo.isAndriod = (FVideo.ua.match(/android/i) != null);
+
+console.log('isMoz: '+ FVideo.isMoz );
+console.log('isWebkit: '+ FVideo.isWebkit );
+console.log('isIPhone: '+ FVideo.isIPhone );
+console.log('isIPad: '+ FVideo.isIPad );
+console.log('isAndriod: '+ FVideo.isAndriod );
 
 FVideo.activateAll = function( $callback ) {
     
@@ -467,8 +461,12 @@ FVideo.activateAll = function( $callback ) {
  */
 FVideo.applyAttributes = function( $elem, $attr ) {
     for( var it in $attr ) {
-        if( it.toLowerCase() == 'width' || it.toLowerCase() == 'height' ){
+        it = it.toLowerCase();
+        if( it == 'width' || it == 'height' ){
             $elem[it] = parseInt( $attr[it], 10 ); 
+        }
+        else if( it.match(/poster/i) != null && (FVideo.isIPad || FVideo.isIPhone )) {
+            // ignore the 'poster' attribute on iPhone/iPad
         }
         // make sure we only map values that aren't false
         else if( $attr[it] && typeof $attr[it] === 'string' ) {

@@ -533,14 +533,11 @@ FVideo.createElement = function( type, params, parent ) {
 };
 
 FVideo.getEventPosition = function( $event, $relativeContainer ){
-    var children = $relativeContainer.parentNode.children;
-    var dl = children.length;
-    var wv = 0;
-    for( var i=0; i<dl; i++ ) {
-        if( children[i] === $relativeContainer ) break;
-        wv += children[i].offsetWidth;
+    var curleft = $relativeContainer.offsetLeft;
+    while($relativeContainer = $relativeContainer.offsetParent) {
+      curleft += $relativeContainer.offsetLeft;
     }
-    return $event.clientX - wv;
+    return $event.clientX - curleft;
 };
 
 /*

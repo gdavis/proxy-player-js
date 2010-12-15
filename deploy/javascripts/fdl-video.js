@@ -510,7 +510,7 @@ FVideo.mergeOptions = function( $original, $modified ) {
     return obj;
 };
 
-
+/*
 FVideo.createElement = function( type, params, parent ) {
     type = type || params.tag;
     var prop,
@@ -534,6 +534,7 @@ FVideo.createElement = function( type, params, parent ) {
     return el;
 };
 
+
 FVideo.getEventPosition = function( $event, $relativeContainer ){
     var curleft = $relativeContainer.offsetLeft;
     while($relativeContainer = $relativeContainer.offsetParent) {
@@ -541,6 +542,8 @@ FVideo.getEventPosition = function( $event, $relativeContainer ){
     }
     return $event.clientX - curleft;
 };
+
+*/
 
 /*
 At time of writing (May 20, 2010), the iPad has a bug that prevents it from noticing anything but the first video source

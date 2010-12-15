@@ -67,7 +67,7 @@ var FlashVideoProxy = Class.create({
     },
 
     isPlaying: function() {
-        return this._proxy._isPlaying();
+        return this.video._isPlaying();
     },
 
     addModelListeners: function() {

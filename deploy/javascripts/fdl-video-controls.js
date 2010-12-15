@@ -19,24 +19,24 @@ var FVideoControls = Class.create({
     buildControls: function() {
 
         // build main containers.
-        this.container = FVideo.createElement( 'div', { className:'fdl-controls' }, this.fVideo.wrapper );
-        this.bigPlayButton = FVideo.createElement( 'div', { className:'fdl-big-play-button' }, this.container );
-        this.controlsBar = FVideo.createElement( 'div', { className:'fdl-controls-bar' }, this.container );
+        this.container = DOMUtil.createElement( 'div', { className:'fdl-controls' }, this.fVideo.wrapper );
+        this.bigPlayButton = DOMUtil.createElement( 'div', { className:'fdl-big-play-button' }, this.container );
+        this.controlsBar = DOMUtil.createElement( 'div', { className:'fdl-controls-bar' }, this.container );
 
         // create controls
-        this.playButton = FVideo.createElement('div',{ className:'fdl-play-pause' }, this.controlsBar );
-        this.stopButton = FVideo.createElement('div',{ className:'fdl-stop' }, this.controlsBar );
+        this.playButton = DOMUtil.createElement('div',{ className:'fdl-play-pause' }, this.controlsBar );
+        this.stopButton = DOMUtil.createElement('div',{ className:'fdl-stop' }, this.controlsBar );
 
-        this.progressBar = FVideo.createElement('div',{ className:'fdl-progress-bar' }, this.controlsBar );
+        this.progressBar = DOMUtil.createElement('div',{ className:'fdl-progress-bar' }, this.controlsBar );
         new FProgressBar( this.progressBar, this.fVideo );
 
-        this.timeDisplay = FVideo.createElement('div',{ className:'fdl-time-display' }, this.controlsBar);
+        this.timeDisplay = DOMUtil.createElement('div',{ className:'fdl-time-display' }, this.controlsBar);
         new FTimeDisplay( this.timeDisplay, this.fVideo );
 
-        this.volumeDisplay = FVideo.createElement('div',{ className:'fdl-volume-display' }, this.controlsBar);
+        this.volumeDisplay = DOMUtil.createElement('div',{ className:'fdl-volume-display' }, this.controlsBar);
         new FVolume( this.volumeDisplay, this.fVideo );
 
-        this.fullscreenButton = FVideo.createElement('div',{ className:'fdl-fullscreen' }, this.controlsBar );
+        this.fullscreenButton = DOMUtil.createElement('div',{ className:'fdl-fullscreen' }, this.controlsBar );
         new FFullscreen( this.fullscreenButton, this.fVideo );
     },
 

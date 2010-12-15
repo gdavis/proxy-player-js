@@ -11,9 +11,9 @@ var FTimeDisplay = Class.create({
 
     build: function() {
         var self = this;
-        this.currentTime = FVideo.createElement('span', { className:"fdl-current-time"}, this.container );
-        this.separator = FVideo.createElement('span', { className:"fdl-time-separator"}, this.container );
-        this.totalTime = FVideo.createElement('span', { className:"fdl-total-time"}, this.container );
+        this.currentTime = DOMUtil.createElement('span', { className:"fdl-current-time"}, this.container );
+        this.separator = DOMUtil.createElement('span', { className:"fdl-time-separator"}, this.container );
+        this.totalTime = DOMUtil.createElement('span', { className:"fdl-total-time"}, this.container );
     },
 
     addModelListeners: function() {

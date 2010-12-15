@@ -15,14 +15,14 @@ var FVolume = Class.create({
 
     build: function() {
         var self = this;
-        this.wrapper = FVideo.createElement('div', { className:'fdl-volume-wrapper' }, this.container );
+        this.wrapper = DOMUtil.createElement('div', { className:'fdl-volume-wrapper' }, this.container );
         $(this.container).mousedown(function( $e ){ self.handleMouseDown( $e ); });
 
         // create volume bars
         for(var i = 0; i < this.numBars; i++ ) {
             var hv = Math.ceil( i / this.numBars * this.maxBarHeight );
             var yp = this.maxBarHeight - hv;
-            var el = FVideo.createElement('div', {}, this.wrapper );
+            var el = DOMUtil.createElement('div', {}, this.wrapper );
             el.style.marginTop = yp + 'px';
             el.style.width = this.barWidth + 'px';
             el.style.height = hv + 'px';
@@ -54,11 +54,7 @@ var FVolume = Class.create({
     },
 
     handleMouseMove: function( $e ) {
-
-//        console.log('move! x: ' + $e.layerX + ", y: " + $e.layerY );
-//        console.log('offsetWidth: ' + this.container.offsetWidth + ", offsetHeight: " + this.container.offsetHeight );
-
-        var dx = FVideo.getEventPosition( $e, this.container );
+        var dx = MouseUtil.getRelativeXFromEvent( $e, this.container );
         this.lastMouseX = dx;
         var vol = dx / this.wrapper.offsetWidth;
         this.video._updateVolume( vol );

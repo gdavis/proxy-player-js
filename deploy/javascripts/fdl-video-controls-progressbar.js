@@ -16,13 +16,13 @@ var FProgressBar = Class.create({
         $( this.video.container ).bind('resize',function( $e ){ self.handleLoadProgress( $e ); self.handlePlayheadUpdate( $e ); });
 
         // create download bar
-        this.downloadBar = FVideo.createElement('div', { className:"fdl-load-progress"}, this.container );
+        this.downloadBar = DOMUtil.createElement('div', { className:"fdl-load-progress"}, this.container );
 
         // create play progress bar
-        this.progressBar = FVideo.createElement('div', { className:"fdl-play-progress"}, this.container );
+        this.progressBar = DOMUtil.createElement('div', { className:"fdl-play-progress"}, this.container );
 
         // create a handle
-        this.handle = FVideo.createElement('div', { className:"fdl-handle"}, this.container );
+        this.handle = DOMUtil.createElement('div', { className:"fdl-handle"}, this.container );
     },
 
     addModelListeners: function() {
@@ -40,7 +40,7 @@ var FProgressBar = Class.create({
     handleMouseMove: function( $e ) {
         // loop through the children of the contols container, add up the width
         // and subtract from the clientX value to get the relative method.
-        var dx = FVideo.getEventPosition( $e, this.container );
+        var dx = MouseUtil.getRelativeXFromEvent( $e, this.container );
         this.handle.style.left = dx + "px";
         var clickedTime = (dx / parseInt( this.container.offsetWidth )) * this.video.model.getDuration();
         this.video.seek( clickedTime );

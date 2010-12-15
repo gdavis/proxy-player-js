@@ -1,21 +1,20 @@
-var FVideoControls = function( $fVideoInstance ) {
-    this.fVideo = $fVideoInstance;
-    this.container = false;
-    this.bigPlayButton = false;
-    this.controlsBar = false;
-    this.playButton = false;
-    this.stopButton = false;
-    this.progressBar = false;
-    this.timeDisplay = false;
-    this.volumeDisplay = false;
-    this.fullscreenButton = false;
-    this.buildControls();
-    this.setupInteractionHandlers();
-    this.addModelListeners();
-    this.position();
-};
-
-FVideoControls.prototype = {
+var FVideoControls = Class.create({
+    initialize: function( $fVideoInstance ) {
+        this.fVideo = $fVideoInstance;
+        this.container = false;
+        this.bigPlayButton = false;
+        this.controlsBar = false;
+        this.playButton = false;
+        this.stopButton = false;
+        this.progressBar = false;
+        this.timeDisplay = false;
+        this.volumeDisplay = false;
+        this.fullscreenButton = false;
+        this.buildControls();
+        this.setupInteractionHandlers();
+        this.addModelListeners();
+        this.position();
+    },
 
     buildControls: function() {
 
@@ -82,4 +81,4 @@ FVideoControls.prototype = {
         // this allows the progress bar and other controls to update individually.
         $(this.fVideo.container).trigger('resize');
     }
-};
+});

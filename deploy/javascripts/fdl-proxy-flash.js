@@ -2,14 +2,13 @@
 /**
  * Proxy which controls a Flash video object.
  */
-var FlashVideoProxy = function( $controller, $container, $flashObject ) {
-    this.controller = $controller;
-    this.container = $container;
-    this.video = $flashObject;
-    this.addModelListeners();
-};
-
-FlashVideoProxy.prototype = {
+var FlashVideoProxy = Class.create({
+    initialize: function( $controller, $container, $flashObject ) {
+        this.controller = $controller;
+        this.container = $container;
+        this.video = $flashObject;
+        this.addModelListeners();
+    },
 
     setVideo:function( $el ) {
         this.video = $el;
@@ -64,7 +63,7 @@ FlashVideoProxy.prototype = {
     },
 
     getTime: function() {
-        
+
     },
 
     isPlaying: function() {
@@ -81,4 +80,4 @@ FlashVideoProxy.prototype = {
         this.setWidth(this.controller.model.getWidth());
         this.setHeight(this.controller.model.getHeight());
     }
-};
+});

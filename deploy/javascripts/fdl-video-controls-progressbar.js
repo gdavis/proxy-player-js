@@ -1,14 +1,14 @@
-var FProgressBar = function( $container, $video ) {
-    this.container = $container;
-    this.video = $video;
-    this.downloadBar = false;
-    this.progressBar = false;
-    this.build();
-    this.addModelListeners();
-};
+var FProgressBar = Class.create({
 
-FProgressBar.prototype = {
-
+    initialize: function( $container, $video ) {
+        this.container = $container;
+        this.video = $video;
+        this.downloadBar = false;
+        this.progressBar = false;
+        this.build();
+        this.addModelListeners();
+    },
+    
     build: function() {
         var self = this;
 
@@ -49,7 +49,7 @@ FProgressBar.prototype = {
     handleMouseUp: function( $e ) {
         // do the update
         this.handleMouseMove( $e );
-        
+
         // remove listener
         $( this.container ).unbind('mousemove');
         $( document ).unbind('mouseup');
@@ -64,4 +64,5 @@ FProgressBar.prototype = {
         var dw = ( this.video.model.getTime() / this.video.model.getDuration() ) * this.container.offsetWidth;
         this.progressBar.setAttribute('style','width:' + dw + "px" );
     }
-};
+
+});

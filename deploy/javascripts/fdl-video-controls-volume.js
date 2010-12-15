@@ -1,17 +1,17 @@
-var FVolume = function( $container, $video, $numBars, $barWidth, $maxBarHeight ) {
-    this.container = $container;
-    this.video = $video;
-    this.wrapper = false;
-    this.progressBar = false;
-    this.numBars = $numBars || 7;
-    this.barWidth = $barWidth || 3;
-    this.maxBarHeight = $maxBarHeight || 15;
-    this.lastMouseX = 0;
-    this.build();
-    this.addModelListeners();
-};
-
-FVolume.prototype = {
+var FVolume = Class.create({
+    
+    initialize: function( $container, $video, $numBars, $barWidth, $maxBarHeight ) {
+        this.container = $container;
+        this.video = $video;
+        this.wrapper = false;
+        this.progressBar = false;
+        this.numBars = $numBars || 7;
+        this.barWidth = $barWidth || 3;
+        this.maxBarHeight = $maxBarHeight || 15;
+        this.lastMouseX = 0;
+        this.build();
+        this.addModelListeners();
+    },
 
     build: function() {
         var self = this;
@@ -42,7 +42,7 @@ FVolume.prototype = {
             if( i <= maxOnIndex ) {
                 $(child).addClass('on');
             }
-            else $(child).removeClass('on');
+            else{ $(child).removeClass('on');}
         }
     },
 
@@ -73,5 +73,4 @@ FVolume.prototype = {
         $( this.container ).unbind('mousemove');
         $( document ).unbind('mouseup');
     }
-
-};
+});

@@ -18,55 +18,57 @@
  */
 
 //var FVideo = function( $element, $swfPlayerPath, $videoOptions, $flashOptions, $readyCallback ) {
-var FVideo = function( $element, $options, $sources, $readyCallback ) {
+//var FVideo = function( $element, $options, $sources, $readyCallback ) {
+var FVideo = Class.create({
 
-    this.EVENT_PLAYER_READY = "FVideo:PlayerReady";
+//    this.EVENT_PLAYER_READY = "FVideo:PlayerReady";
+    initialize: function( $element, $options, $sources, $readyCallback ) {
+        // lookup the main video container
+        if (typeof $element === 'string' ) {
+            this.container = $( $element ).get(0);
+        } else {
+            this.container = $element;
+        }
 
-    // lookup the main video container
-    if (typeof $element === 'string' ) {
-        this.container = $( $element ).get(0);
-    } else {
-        this.container = $element;
-    }
+        // store parent so we can reattach the player
+        this.parent = this.container.parentNode;
 
-    // store parent so we can reattach the player 
-    this.parent = this.container.parentNode;
+        // variable which contains a reference to either the <video> element for an HTML5 environment, or a flash <object> element.
+        this._videoElement = false;
+        this._options = $options;
+        this._sources = $sources;
+        this.readyCallback = $readyCallback;
 
-    // variable which contains a reference to either the <video> element for an HTML5 environment, or a flash <object> element.
-    this._videoElement = false;
-    this._options = $options;
-    this._sources = $sources;
-    this.readyCallback = $readyCallback;
+        // proxy object used to communicate to either an HTML5 video object or a Flash player.
+        this.model = false;
+        this._proxy = false;
+        this._useHTMLVideo = true;
+        this._initialized = false;
+        this._isVideoEmbedded = false;
+        this._isReady = false;
 
-    // proxy object used to communicate to either an HTML5 video object or a Flash player.
-    this.model = false;
-    this._proxy = false;
-    this._useHTMLVideo = true;
-    this._initialized = false;
-    this._isVideoEmbedded = false;
-    this._isReady = false;
+        this.wrapper = document.createElement('div');
+        this.wrapper.className = 'fdl-video-wrapper';
+        this.container.appendChild( this.wrapper );
 
-    this.wrapper = document.createElement('div');
-    this.wrapper.className = 'fdl-video-wrapper';
-    this.container.appendChild( this.wrapper );
+        // create container for the player
+        this.player = document.createElement('div');
+        this.player.className = "player";
+        this.wrapper.appendChild( this.player );
 
-    // create container for the player
-    this.player = document.createElement('div');
-    this.player.className = "player";
-    this.wrapper.appendChild( this.player );
+        // create a uniquely named player container for the video. used for flash fallback
+        this.playerId = parseInt( Math.random() * 100000, 10 );
 
-    // create a uniquely named player container for the video. used for flash fallback
-    this.playerId = parseInt( Math.random() * 100000, 10 );
+        // store this instance
+        FVideo.instances[this.playerId] = this;
 
-    // store this instance
-    FVideo.instances[this.playerId] = this;
-
-    // setup player
-    this._init();
-};
+        // setup player
+        this._init();
+    },
+//};
 
 // define object API
-FVideo.prototype = {
+//FVideo.prototype = {
 
     //////////////////////////////////////////////////////////////////////////////////
     // Public API
@@ -119,13 +121,13 @@ FVideo.prototype = {
     },
 
     seek: function( $time ) {
-        console.log('seek to: ' + $time );
+//        console.log('seek to: ' + $time );
         this._proxy.seek( parseFloat( $time ));
     },
 
 
     setSize: function( $width, $height ) {
-        console.log('setSize: '+ $width + ", " + $height );
+//        console.log('setSize: '+ $width + ", " + $height );
         this.model.setSize( $width, $height );
     },
     
@@ -214,7 +216,7 @@ FVideo.prototype = {
         this.readyCallback( this );
 
         // fire DOM event
-        this.sendEvent(this.EVENT_PLAYER_READY);
+        this.sendEvent(FVideo.EVENT_PLAYER_READY);
     },
 
     _updatePlayheadTime: function( $time ){
@@ -233,7 +235,6 @@ FVideo.prototype = {
         this.model.setPlayerState( $state );
     },
 
-    // TODO: Merge with setVolume/getVolume and deprecate
     _updateVolume: function( $volume ) {
         this.model.setVolume( $volume );
     },
@@ -382,7 +383,9 @@ FVideo.prototype = {
             this._exitFullscreen();
         }
     }
-};
+});
+
+FVideo.EVENT_PLAYER_READY = "FVideo:PlayerReady";
 
 /**
  * Hash which stores all created instances of FVideo objects.
@@ -397,6 +400,7 @@ FVideo.isIPhone = (FVideo.ua.match(/iphone/i) != null);
 FVideo.isIPad = (FVideo.ua.match(/ipad/i) != null);
 FVideo.isAndriod = (FVideo.ua.match(/android/i) != null);
 
+console.log('ua: ' + FVideo.ua );
 console.log('isMoz: '+ FVideo.isMoz );
 console.log('isWebkit: '+ FVideo.isWebkit );
 console.log('isIPhone: '+ FVideo.isIPhone );

@@ -1,14 +1,13 @@
-var FTimeDisplay = function( $container, $video ) {
-    this.container = $container;
-    this.video = $video;
-    this.currentTime = false;
-    this.totalTime = false;
-    this.build();
-    this.addModelListeners();
-    this.updateTime();
-};
-
-FTimeDisplay.prototype = {
+var FTimeDisplay = Class.create({
+    initialize: function( $container, $video ) {
+        this.container = $container;
+        this.video = $video;
+        this.currentTime = false;
+        this.totalTime = false;
+        this.build();
+        this.addModelListeners();
+        this.updateTime();
+    },
 
     build: function() {
         var self = this;
@@ -35,11 +34,10 @@ FTimeDisplay.prototype = {
     },
 
     formattedDigit: function( $value ) {
-        return ( $value < 10 ) ? '0' + $value : $value; 
+        return ( $value < 10 ) ? '0' + $value : $value;
     },
 
     handlePlayheadUpdate: function( $e ) {
         this.updateTime();
     }
-
-};
+});

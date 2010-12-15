@@ -1,17 +1,17 @@
-var FFullscreen = function( $container, $fVideoInstance ) {
-    this.container = $container;
-    this.fVideo = $fVideoInstance;
-    this.viewportWidth = 0;
-    this.viewportHeight = 0;
-    this.origWidth = this.fVideo.model.getWidth();
-    this.origHeight = this.fVideo.model.getHeight();
-    this.origPosition = false;
-    this.getViewportSize();
-    this.setupInteractionHandlers();
-    this.addModelListeners();
-};
+var FFullscreen = Class.create({
+    initialize: function( $container, $fVideoInstance ) {
+        this.container = $container;
+        this.fVideo = $fVideoInstance;
+        this.viewportWidth = 0;
+        this.viewportHeight = 0;
+        this.origWidth = this.fVideo.model.getWidth();
+        this.origHeight = this.fVideo.model.getHeight();
+        this.origPosition = false;
+        this.getViewportSize();
+        this.setupInteractionHandlers();
+        this.addModelListeners();
+    },
 
-FFullscreen.prototype = {
     setupInteractionHandlers: function() {
         var self = this;
         $(this.container).click(function( $e ){
@@ -73,4 +73,6 @@ FFullscreen.prototype = {
             this.viewportHeight = document.getElementsByTagName('body')[0].clientHeight;
         }
     }
-};
+    
+});
+

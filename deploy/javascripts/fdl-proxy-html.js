@@ -1,15 +1,14 @@
 /**
  * Proxy which controlls an HTML video object.
  */
-var HTMLVideoProxy = function( $controller, $container, $video ) {
-    this.controller = $controller;
-    this.container = $container;
-    this.video = $video;
-    this.bufferInterval = false;
-    this.init();
-};
-
-HTMLVideoProxy.prototype = {
+var HTMLVideoProxy = Class.create({
+    initialize: function( $controller, $container, $video ) {
+        this.controller = $controller;
+        this.container = $container;
+        this.video = $video;
+        this.bufferInterval = false;
+        this.init();
+    },
 
     init: function() {
         this.addVideoListeners( this.video );
@@ -58,7 +57,7 @@ HTMLVideoProxy.prototype = {
 
     getVolume: function() { return this.video.volume },
     setVolume: function( $volume ) {
-        this.video.volume = parseInt( $volume );
+        this.video.volume = parseFloat( $volume );
     },
 
     getTime: function() {
@@ -89,7 +88,7 @@ HTMLVideoProxy.prototype = {
     addModelListeners: function() {
         var self = this;
         $(this.container).bind(FVideoModel.EVENT_RESIZE, function(){ self.resize(); });
-        $(this.container).bind(FVideoModel.EVENT_VOLUME_UPDATE, function(){ self.setVolume( self.video.volume ); });
+        $(this.container).bind(FVideoModel.EVENT_VOLUME_UPDATE, function(){ self.setVolume( self.controller.model.getVolume() ); });
     },
 
     resize: function() {
@@ -123,9 +122,11 @@ HTMLVideoProxy.prototype = {
     handleProgress: function( $e ) {
         // modern browsers that are up to spec
         if( this.video.buffered ) {
-            this.controller._updateLoadProgress( this.video.buffered.end(0), this.video.duration );
-            if (this.video.buffered.end(0) == this.video.duration) {
-              clearInterval(this.bufferInterval);
+            if( this.video.buffered.length > 0 ) {
+                this.controller._updateLoadProgress( this.video.buffered.end(0), this.video.duration );
+                if (this.video.buffered.end(0) == this.video.duration) {
+                  clearInterval(this.bufferInterval);
+                }
             }
         }
         // check for FF versions that support the loaded/total event values
@@ -167,4 +168,4 @@ HTMLVideoProxy.prototype = {
     handleVolume: function( $e ) {
         this.controller._updateVolume( this.video.volume );
     }
-};
+});

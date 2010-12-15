@@ -1,41 +1,23 @@
-var FVideoModel = function( $fVideo ) {
-    // properties
-    this.video = $fVideo;
-    this.isIE = false;
-    this.isMoz = false;
-    this.isWebkit = false;
-    this._volume = 1;
-    this._time = 0;
-    this._duration = 0;
-    this._width = 0;
-    this._height = 0;
-    this._playing = false;
-    this._playerID = false;
-    this._playerState = false;
-    this._bytesLoaded = 0;
-    this._bytesTotal = 0;
-    this._fullscreen = false;
-};
+var FVideoModel = Class.create({
 
-// events
-FVideoModel.EVENT_RESIZE                = "FVideoModelEvent.Resize";
-FVideoModel.EVENT_METADATA              = "FVideoModelEvent.Metadata";
-FVideoModel.EVENT_TIME_UPDATE           = "FVideoModelEvent.TimeUpdate";
-FVideoModel.EVENT_LOAD_PROGRESS         = "FVideoModelEvent.LoadProgress";
-FVideoModel.EVENT_VOLUME_UPDATE         = "FVideoModelEvent.VolumeUpdate";
-FVideoModel.EVENT_PLAY_STATE_CHANGE     = "FVideoModelEvent.PlayStateChange";
-FVideoModel.EVENT_PLAYER_STATE_CHANGE   = "FVideoModelEvent.PlayerStateChange";
-FVideoModel.EVENT_TOGGLE_FULLSCREEN     = "FVideoModelEvent.ToggleFullscreen";
-
-// states
-FVideoModel.STATE_CONNECTING            = "FVideoModelEvent.Connecting";
-FVideoModel.STATE_BUFFERING             = "FVideoModelEvent.Buffering";
-FVideoModel.STATE_PLAYING               = "FVideoModelEvent.Playing";
-FVideoModel.STATE_STOPPED               = "FVideoModelEvent.Stopped";
-FVideoModel.STATE_PAUSED                = "FVideoModelEvent.Paused";
-FVideoModel.STATE_SEEKING               = "FVideoModelEvent.Seeking";
-
-FVideoModel.prototype = {
+    initialize: function( $fVideo ) {
+        // properties
+        this.video = $fVideo;
+        this.isIE = false;
+        this.isMoz = false;
+        this.isWebkit = false;
+        this._volume = 1;
+        this._time = 0;
+        this._duration = 0;
+        this._width = 0;
+        this._height = 0;
+        this._playing = false;
+        this._playerID = false;
+        this._playerState = false;
+        this._bytesLoaded = 0;
+        this._bytesTotal = 0;
+        this._fullscreen = false;
+    },
 
     setSize: function( $width, $height ) {
         if( this._width == $width && this._height == $height ) return;
@@ -115,5 +97,22 @@ FVideoModel.prototype = {
         this._fullscreen = $value;
         this.video.sendEvent(FVideoModel.EVENT_TOGGLE_FULLSCREEN);
     }
+});
 
-};
+// events
+FVideoModel.EVENT_RESIZE                = "FVideoModelEvent.Resize";
+FVideoModel.EVENT_METADATA              = "FVideoModelEvent.Metadata";
+FVideoModel.EVENT_TIME_UPDATE           = "FVideoModelEvent.TimeUpdate";
+FVideoModel.EVENT_LOAD_PROGRESS         = "FVideoModelEvent.LoadProgress";
+FVideoModel.EVENT_VOLUME_UPDATE         = "FVideoModelEvent.VolumeUpdate";
+FVideoModel.EVENT_PLAY_STATE_CHANGE     = "FVideoModelEvent.PlayStateChange";
+FVideoModel.EVENT_PLAYER_STATE_CHANGE   = "FVideoModelEvent.PlayerStateChange";
+FVideoModel.EVENT_TOGGLE_FULLSCREEN     = "FVideoModelEvent.ToggleFullscreen";
+
+// states
+FVideoModel.STATE_CONNECTING            = "FVideoModelEvent.Connecting";
+FVideoModel.STATE_BUFFERING             = "FVideoModelEvent.Buffering";
+FVideoModel.STATE_PLAYING               = "FVideoModelEvent.Playing";
+FVideoModel.STATE_STOPPED               = "FVideoModelEvent.Stopped";
+FVideoModel.STATE_PAUSED                = "FVideoModelEvent.Paused";
+FVideoModel.STATE_SEEKING               = "FVideoModelEvent.Seeking";

@@ -20,7 +20,7 @@ var FVideoControls = Class.create({
     buildControls: function() {
 
         // build main containers.
-        this.container = DOMUtil.createElement( 'div', { className:'fdl-controls' }, this.fVideo.wrapper );
+        this.container = DOMUtil.createElement( 'div', { className:'fdl-controls' }, this.fVideo.container );
         this.bigPlayButton = DOMUtil.createElement( 'div', { className:'fdl-big-play-button' }, this.container );
         this.controlsBar = DOMUtil.createElement( 'div', { className:'fdl-controls-bar' }, this.container );
 

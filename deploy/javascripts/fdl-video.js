@@ -47,14 +47,17 @@ var FVideo = Class.create({
         this._isVideoEmbedded = false;
         this._isReady = false;
 
+        /*
         this.wrapper = document.createElement('div');
         this.wrapper.className = 'fdl-video-wrapper';
         this.container.appendChild( this.wrapper );
+        */
 
         // create container for the player
         this.player = document.createElement('div');
         this.player.className = "player";
-        this.wrapper.appendChild( this.player );
+        this.container.appendChild( this.player );
+//        this.wrapper.appendChild( this.player );
 
         // create a uniquely named player container for the video. used for flash fallback
         this.playerId = parseInt( Math.random() * 100000, 10 );
@@ -359,11 +362,11 @@ var FVideo = Class.create({
     },
 
     _enterFullscreen: function() {
-        this.wrapper.position = "fixed";
+        $(this.container).addClass('fdl-fullscreen');
     },
     
     _exitFullscreen: function() {
-        this.wrapper.position = "absolute";
+        $(this.container).removeClass('fdl-fullscreen');
     },
 
     _handleResize: function() {

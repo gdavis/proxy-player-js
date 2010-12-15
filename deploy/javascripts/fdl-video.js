@@ -453,8 +453,8 @@ FVideo.applyAttributes = function( $elem, $attr ) {
         if( it == 'width' || it == 'height' ){
             $elem[it] = parseInt( $attr[it], 10 ); 
         }
-        else if( it.match(/poster/i) != null && (FVideo.isIPad || FVideo.isIPhone )) {
-            // ignore the 'poster' attribute on iPhone/iPad
+        else if( it.match(/poster/i) != null && FUserPlatform.iOS ) {
+            // ignore the 'poster' attribute on iOS
         }
         // make sure we only map values that aren't false
         else if( $attr[it] && typeof $attr[it] === 'string' ) {

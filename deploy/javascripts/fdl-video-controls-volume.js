@@ -11,6 +11,7 @@ var FVolume = Class.create({
         this.lastMouseX = 0;
         this.build();
         this.addModelListeners();
+        this.handleVolumeUpdate();
     },
 
     build: function() {

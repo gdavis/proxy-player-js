@@ -8,6 +8,7 @@
     <script type="text/javascript" src="javascripts/class.js"></script>
     <script type="text/javascript" src="javascripts/mouse_util.js"></script>
     <script type="text/javascript" src="javascripts/dom_util.js"></script>
+    <script type="text/javascript" src="javascripts/fdl-user.js"></script>
     <script type="text/javascript" src="javascripts/fdl-video.js"></script>
     <script type="text/javascript" src="javascripts/fdl-video-controls-fullscreen.js"></script>
     <script type="text/javascript" src="javascripts/fdl-video-controls-time-display.js"></script>
@@ -30,8 +31,7 @@
 
             // create the video object
             var sources = new FVideoSources();
-            sources.addVideo( 'http://video-js.zencoder.com/oceans-clip.mov', 'video/mov', 'Link Label' );
-//            sources.addVideo( 'http://video-js.zencoder.com/oceans-clip.mp4', 'video/mp4', 'Link Label', true );
+            sources.addVideo( 'http://video-js.zencoder.com/oceans-clip.mp4', 'video/mp4', 'Link Label', true );
             sources.addVideo( 'http://video-js.zencoder.com/oceans-clip.ogv', 'video/ogg', 'Link Label' );
 
             video = new FVideo( '#video1', options, sources, function() {

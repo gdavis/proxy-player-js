@@ -385,27 +385,11 @@ var FVideo = Class.create({
     }
 });
 
+// constants
 FVideo.EVENT_PLAYER_READY = "FVideo:PlayerReady";
 
-/**
- * Hash which stores all created instances of FVideo objects.
- * @param $type
- */
+// class variable for storing all created FVideo instances on the page.
 FVideo.instances = {};
-
-FVideo.ua = navigator.userAgent.toLowerCase();
-FVideo.isWebkit = (FVideo.ua.match(/webkit/i) != null);
-FVideo.isMoz = (FVideo.ua.match(/mozilla/i) != null);
-FVideo.isIPhone = (FVideo.ua.match(/iphone/i) != null);
-FVideo.isIPad = (FVideo.ua.match(/ipad/i) != null);
-FVideo.isAndriod = (FVideo.ua.match(/android/i) != null);
-
-console.log('ua: ' + FVideo.ua );
-console.log('isMoz: '+ FVideo.isMoz );
-console.log('isWebkit: '+ FVideo.isWebkit );
-console.log('isIPhone: '+ FVideo.isIPhone );
-console.log('isIPad: '+ FVideo.isIPad );
-console.log('isAndriod: '+ FVideo.isAndriod );
 
 FVideo.activateAll = function( $callback ) {
     
@@ -509,41 +493,6 @@ FVideo.mergeOptions = function( $original, $modified ) {
     }
     return obj;
 };
-
-/*
-FVideo.createElement = function( type, params, parent ) {
-    type = type || params.tag;
-    var prop,
-        el = document.createElement(type);
-
-    for (prop in params) {
-        switch( prop ){
-            case 'text':
-                el.appendChild( document.createTextNode( params[prop] ));
-                break;
-            case 'className':
-                el.setAttribute( 'class', params[prop]);
-                break;
-            default:
-                el.setAttribute( prop, params[prop] );
-        }
-    }
-    if( parent ) {
-        parent.appendChild( el );
-    }
-    return el;
-};
-
-
-FVideo.getEventPosition = function( $event, $relativeContainer ){
-    var curleft = $relativeContainer.offsetLeft;
-    while($relativeContainer = $relativeContainer.offsetParent) {
-      curleft += $relativeContainer.offsetLeft;
-    }
-    return $event.clientX - curleft;
-};
-
-*/
 
 /*
 At time of writing (May 20, 2010), the iPad has a bug that prevents it from noticing anything but the first video source

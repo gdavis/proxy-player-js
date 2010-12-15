@@ -20,7 +20,7 @@ var HTMLVideoProxy = Class.create({
         var source = document.createElement('source');
         source.src = $path;
         // don't add the 'type' attribute if we are in andriod.
-        if( !FVideo.isAndriod ){ source.type = $type; }
+        if( !FUserPlatform.android ){ source.type = $type; }
         $( this.video).append(source);
     },
 

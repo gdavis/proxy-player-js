@@ -1,4 +1,5 @@
 var FVideoControls = Class.create({
+    
     initialize: function( $fVideoInstance ) {
         this.fVideo = $fVideoInstance;
         this.container = false;

@@ -32,15 +32,17 @@ DOMUtil.createElement = function( type, params, parent ) {
     el = document.createElement(type);
 
   for (prop in params) {
-    switch( prop ){
-      case 'text':
-        el.appendChild( document.createTextNode( params[prop] ) );
-        break;
-      case 'className':
-        el.setAttribute( 'class', params[prop]);
-        break;
-      default:
-        el.setAttribute( prop, params[prop] );
+    if( typeof params[prop] !== 'function' ) {
+        switch( prop ){
+          case 'text':
+            el.appendChild( document.createTextNode( params[prop] ) );
+            break;
+          case 'className':
+            el.setAttribute( 'class', params[prop]);
+            break;
+          default:
+            el.setAttribute( prop, params[prop] );
+        }
     }
   }
   if( parent ) parent.appendChild( el );

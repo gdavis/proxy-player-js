@@ -17,12 +17,9 @@
  * @param $flashOptions
  */
 
-//var FVideo = function( $element, $swfPlayerPath, $videoOptions, $flashOptions, $readyCallback ) {
-//var FVideo = function( $element, $options, $sources, $readyCallback ) {
 var FVideo = Class.create({
 
-//    this.EVENT_PLAYER_READY = "FVideo:PlayerReady";
-    initialize: function( $element, $options, $sources, $readyCallback ) {
+    initialize: function( $element, $options, $sources, $controlsClass, $readyCallback ) {
         // lookup the main video container
         if (typeof $element === 'string' ) {
             this.container = $( $element ).get(0);
@@ -30,49 +27,24 @@ var FVideo = Class.create({
             this.container = $element;
         }
 
-        // store parent so we can reattach the player
         this.parent = this.container.parentNode;
-
-        // variable which contains a reference to either the <video> element for an HTML5 environment, or a flash <object> element.
-        this._videoElement = false;
-        this._options = $options;
-        this._sources = $sources;
+        this._options = $options || new FVideoConfiguration();
+        this._sources = $sources || new FVideoSources();
+        this._controlsClass = $controlsClass;
         this.readyCallback = $readyCallback;
 
-        // proxy object used to communicate to either an HTML5 video object or a Flash player.
+        this._videoElement = false;
         this.model = false;
+        this.controls = false;
         this._proxy = false;
         this._useHTMLVideo = true;
         this._initialized = false;
         this._isVideoEmbedded = false;
         this._isReady = false;
 
-        /*
-        this.wrapper = document.createElement('div');
-        this.wrapper.className = 'fdl-video-wrapper';
-        this.container.appendChild( this.wrapper );
-        */
-
-        // create container for the player
-        this.player = document.createElement('div');
-        this.player.className = "player";
-        this.container.appendChild( this.player );
-//        this.wrapper.appendChild( this.player );
-
-        // create a uniquely named player container for the video. used for flash fallback
-        this.playerId = parseInt( Math.random() * 100000, 10 );
-
-        // store this instance
-        FVideo.instances[this.playerId] = this;
-
-        // setup player
         this._init();
     },
-//};
-
-// define object API
-//FVideo.prototype = {
-
+    
     //////////////////////////////////////////////////////////////////////////////////
     // Public API
     //////////////////////////////////////////////////////////////////////////////////
@@ -200,6 +172,10 @@ var FVideo = Class.create({
     },
 
     _startupVideo: function() {
+
+        if( this._isReady ) return;
+        this._isReady = true;
+
         // create the proxy object once our video is ready to receive commands
         this._proxy = this._createVideoProxy();
 
@@ -212,8 +188,17 @@ var FVideo = Class.create({
 
         // sync relevant values from the player onto the model.
         // by setting these on the model we also dispatch events which update the UI to its default state.
-        this.setVolume( this._proxy.getVolume() );
+        this.setVolume( this._options.videoOptions.volume );
         this.setSize( this._options.width, this._options.height );
+
+        // construct the controls, if specified
+        if( this._controlsClass ) {
+            if( typeof this._controlsClass === 'function' ) {
+                this.controls = new this._controlsClass(this);
+            } else if ( this._controlsClass === 'string' ) {
+                this.controls = new window[this._controlsClass]( this );
+            }
+        }
 
         // fire ready callback.
         this.readyCallback( this );
@@ -256,6 +241,14 @@ var FVideo = Class.create({
     //////////////////////////////////////////////////////////////////////////////////
 
     _init: function() {
+
+        // create container for the player
+        this.player = DOMUtil.createElement( 'div', {className:'player'}, this.container );
+
+        // create a uniquely named player container for the video. used for flash fallback
+        this.playerId = parseInt( Math.random() * 100000, 10 );
+        FVideo.instances[this.playerId] = this;
+
         this._useHTMLVideo = this._canBrowserPlayVideo();
         this._videoElement = this._createVideo();
         this.model = new FVideoModel( this );
@@ -266,6 +259,7 @@ var FVideo = Class.create({
 
     _addModelListeners: function() {
         var self = this;
+        $(this.container).bind(FVideoModel.EVENT_PLAY_STATE_CHANGE, function(){ self._handlePlayState(); });
         $(this.container).bind(FVideoModel.EVENT_RESIZE, function() { self._handleResize(); });
         $(this.container).bind(FVideoModel.EVENT_TOGGLE_FULLSCREEN, function() { self._handleFullscreen(); });
     },
@@ -316,9 +310,11 @@ var FVideo = Class.create({
         var flashID = "fdl-player-" + this.playerId;
 
         // create empty div for swfobject to replace
-        var div = document.createElement('div');
-        div.id = replaceID;
-        $( this.player ).append( div );
+        DOMUtil.createElement( 'div', { id:replaceID }, this.player );
+
+//        var div = document.createElement('div');
+//        div.id = replaceID;
+//        $( this.player ).append( div );
 
         // map the default video file as the source for flash.
         this._options.flashOptions.attributes.id = flashID;
@@ -367,6 +363,15 @@ var FVideo = Class.create({
     
     _exitFullscreen: function() {
         $(this.container).removeClass('fdl-fullscreen');
+    },
+
+    _handlePlayState: function() {
+        if( this.model.getPlaying() ) {
+            $(this.container).addClass('playing');
+        }
+        else {
+            $(this.container).removeClass('playing');
+        }
     },
 
     _handleResize: function() {
@@ -456,9 +461,10 @@ FVideo.applyAttributes = function( $elem, $attr ) {
         if( it == 'width' || it == 'height' ){
             $elem[it] = parseInt( $attr[it], 10 ); 
         }
-        else if( it.match(/poster/i) != null && FUserPlatform.iOS ) {
+//        else if( it.match(/poster/i) != null && FUserEnvironment.iOS && FUserEnvironment.iOS_3 ) {
             // ignore the 'poster' attribute on iOS
-        }
+//            alert('ignoring poster!');
+//        }
         // make sure we only map values that aren't false
         else if( $attr[it] && typeof $attr[it] === 'string' ) {
             if( $attr[it].toLowerCase() !== 'false' ) {

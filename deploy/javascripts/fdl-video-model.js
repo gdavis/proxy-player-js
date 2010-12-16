@@ -40,11 +40,13 @@ var FVideoModel = Class.create({
         this.video.sendEvent(FVideoModel.EVENT_RESIZE);
     },
 
-    getVolume: function() { return this._volume; },
+    getVolume: function() { /*console.log('returning vol of: ' + this._volume );*/ return this._volume; },
     setVolume: function( $value ) {
         // normalize value
+        $value = parseFloat( $value );
         $value = ( $value > 1 ) ? 1 : ( $value < 0 ) ? 0 : $value;
         if( this._volume == $value ) return;
+//        console.log('setting vol to: ' + $value );
         this._volume = $value;
         this.video.sendEvent(FVideoModel.EVENT_VOLUME_UPDATE);
     },
@@ -73,6 +75,7 @@ var FVideoModel = Class.create({
     getPlayerState: function() { return this._playerState; },
     setPlayerState: function( $value ) {
         if( this._playerState === $value ) return;
+//        console.log( 'state: ' + $value );
         this._playerState = $value;
         this.video.sendEvent(FVideoModel.EVENT_PLAYER_STATE_CHANGE);
     },
@@ -95,6 +98,7 @@ var FVideoModel = Class.create({
     setFullscreen: function( $value ) {
         if( this._fullscreen == $value ) return;
         this._fullscreen = $value;
+//        console.log('setting fullscreen to: ' + $value );
         this.video.sendEvent(FVideoModel.EVENT_TOGGLE_FULLSCREEN);
     }
 });

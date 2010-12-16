@@ -5,7 +5,6 @@
 
 .fdl-video {
     position: relative;
-    overflow: hidden;
 }
 
 .fdl-video.fdl-fullscreen {
@@ -13,21 +12,56 @@
     top: 0;
     left: 0;
     margin: 0;
+    overflow: hidden;
+}
+
+.fdl-video .player {
+    z-index:665;
+    position: absolute;
 }
 
 .fdl-video .player object {
     outline: none;
 }
 
+
+
 /***********************************************************/
 
 .fdl-video .fdl-controls {
     position: absolute;
-    bottom: 0;
-    height: 25px;
-    color: #fff;
+    z-index:666;
     width: 100%;
+    height: 100%;
+}
+
+.fdl-video .fdl-controls .fdl-hit-area {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+}
+
+.fdl-video .fdl-controls .fdl-controls-bar {
+    position: absolute;
+    height: 25px;
+    bottom: 0;
+    color: #fff;
     background-color: #333;
+}
+
+.fdl-video .fdl-controls .fdl-video-play-button {
+    position: absolute;
+    left: 50%;
+    top: 50%;
+}
+
+.playing .fdl-controls .fdl-video-play-button {
+    display: none;
+}
+
+
+.fdl-fullscreen .fdl-controls {
+    bottom: 0;
 }
 
 .fdl-video .fdl-controls .fdl-controls-bar div {
@@ -62,25 +96,20 @@
     position: relative;
     height: 20px;
     background-color: #0ff;
+    overflow: hidden; 
 }
 
-.fdl-video .fdl-controls .fdl-progress-bar > div {
+.fdl-video .fdl-controls .fdl-progress-bar .fdl-load-progress,
+.fdl-video .fdl-controls .fdl-progress-bar .fdl-play-progress {
     position: absolute;
-}
-
-.fdl-video .fdl-controls .fdl-progress-bar .fdl-handle {
-    width: 10px;
-    height: 10px;
-    background-color: #00f;
+    height: 100%;
 }
 
 .fdl-video .fdl-controls .fdl-progress-bar .fdl-play-progress {
-    height: 100%;
     background-color: #999;
 }
 
 .fdl-video .fdl-controls .fdl-progress-bar .fdl-load-progress {
-    height: 100%;
     background-color: #666;
 }
 
@@ -106,12 +135,9 @@
 }
 
 .fdl-video .fdl-controls .fdl-volume-display {
+    position: relative;
     width: 40px;
     background-color: #000;
-}
-
-.fdl-video .fdl-controls .fdl-volume-display {
-    position: relative;
 }
 
 .fdl-video .fdl-controls .fdl-volume-wrapper div {

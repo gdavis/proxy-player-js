@@ -1,21 +1,23 @@
 var FVideoConfiguration = Class.create({
 
     initialize: function ( $width, $height, $videoOptions, $swf, $variables, $parameters, $attributes ) {
-        this.width = $width;
-        this.height = $height;
+        this.width = $width || 320;
+        this.height = $height || 240;
         $swf = $swf || FVideoConfiguration.DEFAULT_SWF;
         $variables = $variables || {};
 
         // "constants"
         this.DEFAULT_VIDEO_OPTIONS =        {   audio: false,
                                                 autoplay: false,
+                                                autobuffer: false,
                                                 controls: false,
                                                 width:$width,
                                                 height:$height,
                                                 loop: false,
                                                 preload: false,
                                                 src: false,
-                                                poster: false
+                                                poster: false,
+                                                volume: 1
                                                 };
         this.DEFAULT_FLASH_ATTRIBUTES =     {   bgcolor:"#000" };
         this.DEFAULT_FLASH_PARAMS =         {   scale:"noscale",

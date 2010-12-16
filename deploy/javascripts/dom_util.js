@@ -26,26 +26,29 @@ DOMUtil.removeElement = function( elem ) {
   }
 };
 
-DOMUtil.createElement = function( type, params, parent ) {
-  var type = type || params.tag, 
-    prop, 
-    el = document.createElement(type);
-
-  for (prop in params) {
-    if( typeof params[prop] !== 'function' ) {
+DOMUtil.createElement = function( $type, $params, $parent ) {
+  var type = $type || $params.tag;
+  var prop;
+  var el = document.createElement(type);
+  
+  for (prop in $params) {
+    if( typeof $params[prop] !== 'function' ) {
         switch( prop ){
           case 'text':
-            el.appendChild( document.createTextNode( params[prop] ) );
+            el.appendChild( document.createTextNode( $params[prop] ) );
             break;
           case 'className':
-            el.setAttribute( 'class', params[prop]);
+            el.className = $params[prop];
             break;
           default:
-            el.setAttribute( prop, params[prop] );
+            el.setAttribute( prop, $params[prop] );
+            
         }
     }
   }
-  if( parent ) parent.appendChild( el );
+  if( $parent ) {
+      $parent.appendChild( el );
+  }
   return el;
 };
 

@@ -48,7 +48,7 @@ var FFullscreen = Class.create({
     },
 
     exitFullscreen: function() {
-        console.log('origWidth: ' + this.origWidth + ", origHeight: " + this.origHeight);
+//        console.log('exitFulscreen: origWidth: ' + this.origWidth + ", origHeight: " + this.origHeight);
         $(window).unbind('resize');
         this.fVideo.setSize( this.origWidth, this.origHeight );
     },

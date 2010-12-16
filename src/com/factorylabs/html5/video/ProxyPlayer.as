@@ -1,15 +1,13 @@
 package com.factorylabs.html5.video
 {	
-	import flash.utils.clearInterval;
-	import flash.utils.setInterval;
-	import flash.utils.setTimeout;
-	import flash.events.Event;
 	import com.factorylabs.orange.core.collections.Map;
 	import com.factorylabs.orange.video.FVideo;
 
 	import flash.display.MovieClip;
 	import flash.display.StageAlign;
 	import flash.display.StageScaleMode;
+	import flash.events.Event;
+	import flash.events.MouseEvent;
 	import flash.external.ExternalInterface;
 
 	/**
@@ -134,10 +132,10 @@ package com.factorylabs.html5.video
 			createPlayer();
 			registerCallbacks();
 			addVideoListeners();
-//			checkForVideoElementAndStart();
-//			_videoElementInterval = setInterval( checkForVideoElementAndStart, 50 );
-//			setTimeout( startup, 1000 );
-//			log('ExternalInterface available? ' + ExternalInterface.available );
+			
+//			this.mouseEnabled = true;
+//			this.mouseChildren = false;
+//			this.addEventListener( MouseEvent.CLICK, handlePlayerClick );
 			startup();
 		}
 		
@@ -152,9 +150,16 @@ package com.factorylabs.html5.video
 			_player = new FVideo( this, { width:_width, height:_height, volume: _volume });
 		}
 		
+		private function handlePlayerClick( $e :MouseEvent ) :void
+		{
+			log('player click');
+			if( _player.playing ) _player.pause();
+			else _player.play();
+		}
+		
 		protected function registerCallbacks() :void
 		{
-			log('registering callbacks on object id: ' + ExternalInterface.objectID );
+//			log('registering callbacks on object id: ' + ExternalInterface.objectID );
 			ExternalInterface.addCallback( '_addVideoSource', jsAddVideoSource );
 			ExternalInterface.addCallback( '_play', playVideo );
 			ExternalInterface.addCallback( '_pause', _player.pause );
@@ -195,7 +200,7 @@ package com.factorylabs.html5.video
 		
 		protected function startup() :void
 		{
-//			log('as: startup!');
+			log('as: startup!');
 						
 			// notify the controller that we're ready for commands. 
 			updateController( '_videoReady' );

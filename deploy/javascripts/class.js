@@ -1,41 +1,43 @@
-/* From object.js ------------------------------ */
-Object.prototype.getType = function(o) {
-  switch(o) {
-    case null: return 'Null';
-    case (void 0): return 'Undefined';
-  }
-  var type = typeof o;
-  switch(type) {
-    case 'boolean': return 'Boolean';
-    case 'number':  return 'Number';
-    case 'string':  return 'String';
-  }
-  return 'Object';
-};
-
-Object.prototype.keys = function(object) {
-  if (this.getType(object) !== 'Object') { alert('type error'); }
-  var results = [];
-  for (var property in object) {
-    if (object.hasOwnProperty(property)) {
-      results.push(property);
+/* From object.js (reset to local variable so that the prototype methods added to Object don't collide with other libraries) ------------------------------ */
+var object = {
+  getType: function(o) {
+    switch(o) {
+      case null: return 'Null';
+      case (void 0): return 'Undefined';
     }
+    var type = typeof o;
+    switch(type) {
+      case 'boolean': return 'Boolean';
+      case 'number':  return 'Number';
+      case 'string':  return 'String';
+    }
+    return 'Object';
+  },
+
+  keys: function(object) {
+    if (this.getType(object) !== 'Object') { alert('type error'); }
+    var results = [];
+    for (var property in object) {
+      if (object.hasOwnProperty(property)) {
+        results.push(property);
+      }
+    }
+    return results;
+  },
+
+  isFunction: function(object) {
+    return Object.prototype.toString.call(object) === '[object Function]';
+  },
+
+  isUndefined: function(object) {
+    return typeof object === "undefined";
+  },
+
+  extend: function(destination, source) {
+    for (var property in source)
+      destination[property] = source[property];
+    return destination;
   }
-  return results;
-};
-
-Object.prototype.isFunction = function(object) {
-  return Object.prototype.toString.call(object) === '[object Function]';
-};
-
-Object.prototype.isUndefined = function(object) {
-  return typeof object === "undefined";
-};
-
-Object.prototype.extend = function(destination, source) {
-  for (var property in source)
-    destination[property] = source[property];
-  return destination;
 };
 
 /* From array.js ------------------------------ */
@@ -59,7 +61,7 @@ Function.prototype.argumentNames = function() {
 
 // patched with inline helpers from function.js
 Function.prototype.bind = function(context) {
-  if (arguments.length < 2 && Object.isUndefined(arguments[0])) return this;
+  if (arguments.length < 2 && object.isUndefined(arguments[0])) return this;
   var __method = this,
     args = Array.prototype.slice.call(arguments, 1);
   function update(array, args) {
@@ -106,17 +108,23 @@ var Class = (function() {
     return true;
   })();
 
-  function subclass() {};
+  function extend( destination, source ) {
+    for (var property in source)
+      destination[property] = source[property];
+    return destination;
+  }
+
+  function subclass() {}
   function create() {
     var parent = null, properties = $A(arguments);
-    if (Object.isFunction(properties[0]))
+    if (object.isFunction(properties[0]))
       parent = properties.shift();
 
     function klass() {
       this.initialize.apply(this, arguments);
     }
 
-    Object.extend(klass, Class.Methods);
+    extend(klass, Class.Methods);
     klass.superclass = parent;
     klass.subclasses = [];
 
@@ -138,7 +146,7 @@ var Class = (function() {
 
   function addMethods(source) {
     var ancestor   = this.superclass && this.superclass.prototype,
-        properties = Object.keys(source);
+        properties = object.keys(source);
 
     // IE6 doesn't enumerate `toString` and `valueOf` (among other built-in `Object.prototype`) properties,
     // Force copy if they're not Object.prototype ones.
@@ -153,7 +161,7 @@ var Class = (function() {
     for (var i = 0, length = properties.length; i < length; i++) {
       var property = properties[i],
           value = source[property];
-      if (ancestor && Object.isFunction(value) &&
+      if (ancestor && object.isFunction(value) &&
           value.argumentNames()[0] == "$super") {
         var method = value;
         value = (function(m) {
@@ -171,6 +179,7 @@ var Class = (function() {
 
   return {
     create: create,
+    extend: extend,
     Methods: {
       addMethods: addMethods
     }

@@ -57,12 +57,14 @@ var FProgressBar = Class.create({
 
     handleLoadProgress: function( $e ) {
         var dw = ( this.video.model.getBytesLoaded() / this.video.model.getBytesTotal() ) * this.container.offsetWidth;
-        this.downloadBar.setAttribute('style','width:' + dw + "px" );
+//        this.downloadBar.setAttribute('style','width:' + dw + "px" );
+        $(this.downloadBar).css({width:dw + "px" });
     },
 
     handlePlayheadUpdate: function( $e ) {
         var dw = ( this.video.model.getTime() / this.video.model.getDuration() ) * this.container.offsetWidth;
-        this.progressBar.setAttribute('style','width:' + dw + "px" );
+//        this.progressBar.setAttribute('style','width:' + dw + "px" );
+        $(this.progressBar).css({width:dw + "px" });
     }
 
 });

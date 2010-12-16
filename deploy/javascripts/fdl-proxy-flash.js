@@ -1,4 +1,3 @@
-
 /**
  * Proxy which controls a Flash video object.
  */
@@ -25,15 +24,15 @@ var FlashVideoProxy = Class.create({
     },
 
     play: function( $url ) {
-        console.log('this:' + this );
-        console.log('this.video: ' + this.video );
+//        console.log('this:' + this );
+//        console.log('this.video: ' + this.video );
         if( $url ) this.video._play( $url );
         else this.video._play();
     },
 
     pause: function() {
-        console.log('this:' + this );
-        console.log('this.video: ' + this.video );
+//        console.log('this:' + this );
+//        console.log('this.video: ' + this.video );
         this.video._pause();
     },
 

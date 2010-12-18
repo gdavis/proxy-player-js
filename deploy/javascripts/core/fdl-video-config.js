@@ -18,21 +18,21 @@ var FVideoConfiguration = Class.create({
 });
 
 // defaults
-FVideoConfiguration.DEFAULT_VIDEO_OPTIONS =        {   audio: false,
-                                                        autoplay: false,
-                                                        autobuffer: false,
-                                                        controls: false,
-                                                        loop: false,
-                                                        preload: false,
-                                                        src: false,
-                                                        poster: false,
-                                                        volume: 1
-                                                        };
-FVideoConfiguration.DEFAULT_FLASH_ATTRIBUTES =     {   bgcolor:"#000" };
-FVideoConfiguration.DEFAULT_FLASH_PARAMS =         {   scale:"noscale",
-                                                        allowScriptAccess:"always",
-                                                        quality:"best",
-                                                        wmode:"transparent",
-                                                        allowFullScreen:"true"
-                                                        };
 FVideoConfiguration.DEFAULT_SWF = 'proxy-player.swf';
+FVideoConfiguration.DEFAULT_FLASH_ATTRIBUTES = { bgcolor:"#000" };
+FVideoConfiguration.DEFAULT_VIDEO_OPTIONS = {   audio: false,
+                                                autoplay: false,
+                                                autobuffer: false,
+                                                controls: false,
+                                                loop: false,
+                                                preload: false,
+                                                src: false,
+                                                poster: false,
+                                                volume: 1
+                                                };
+FVideoConfiguration.DEFAULT_FLASH_PARAMS =     {    scale:"noscale",
+                                                    allowScriptAccess:"always",
+                                                    quality:"best",
+                                                    wmode:"transparent",
+                                                    allowFullScreen:"true"
+                                                    };

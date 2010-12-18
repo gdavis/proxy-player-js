@@ -32,11 +32,11 @@ var FProgressBar = Class.create( FControl, {
         var dw;
 
         // update download progress
-        dw = ( this.model.getBytesLoaded() / this.model.getBytesTotal() ) * this.container.offsetWidth;
+        dw = ( this.model.getBytesLoaded() / this.model.getBytesTotal() ) * this.element.offsetWidth;
         $(this.downloadBar).css({width:dw + "px" });
 
         // update playhead progress
-        dw = ( this.model.getTime() / this.model.getDuration() ) * this.container.offsetWidth;
+        dw = ( this.model.getTime() / this.model.getDuration() ) * this.element.offsetWidth;
         $(this.progressBar).css({width:dw + "px" });
     },
 
@@ -48,7 +48,7 @@ var FProgressBar = Class.create( FControl, {
     handleMouseMove: function( $e ) {
         var dx = MouseUtil.getRelativeXFromEvent( $e, this.element );
         this.handle.style.left = dx + "px";
-        var clickedTime = (dx / parseInt( this.container.offsetWidth )) * this.model.getDuration();
+        var clickedTime = (dx / parseInt( this.element.offsetWidth )) * this.model.getDuration();
         this.controller.seek( clickedTime );
     },
 

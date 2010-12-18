@@ -39,10 +39,9 @@ var FControls = Class.create({
             this.controls.push(new $controlClass(this.model, this.controller, this.container));
         }
         else if( typeof $controlClass === 'object') {
-//            console.log($controlClass);
             if( $controlClass.tagName !== undefined ) { // check for a node
                 this.container.appendChild($controlClass);
-                $($controlClass).addClass('fdl-control');
+                $($controlClass).addClass('fdl-control'); // make sure it has the proper class
                 this.controls.push($controlClass);
             }
         }
@@ -59,16 +58,7 @@ var FControls = Class.create({
             i;
         for(i=0; i<dl;i++) {
             var control = this.controls[i];
-            var el = null;
-            if( typeof control === 'object') {
-                if( control.tagName !== undefined ) { // check for a node
-                    el = control;
-                }
-                else {
-                    el = control.element;
-                }
-            }
-
+            var el = ( control.tagName !== undefined ) ? control : control.element;
             if( $(el).hasClass('fdl-control-flexible')) {
                 flexibles.push(el);
             }
@@ -78,15 +68,11 @@ var FControls = Class.create({
             }
         }
         dl = flexibles.length;
-        var wv = ( this.model.getWidth()) - sum / dl;
+        var wv = ( this.model.getWidth() - sum ) / dl;
         for(i=0; i<dl;i++) {
             var flexi = flexibles[i];
             $(flexi).width(wv);
         }
-    },
-
-    findElement: function( $mystery ) {
-
     }
 });
 

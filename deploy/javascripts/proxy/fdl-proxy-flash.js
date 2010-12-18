@@ -2,11 +2,11 @@
  * Proxy which controls a Flash video object.
  */
 var FlashVideoProxy = Class.create({
-    initialize: function( $controller, $container, $flashObject ) {
+    initialize: function( $model, $controller, $video ) {
+        this.model = $model;
         this.controller = $controller;
-        this.container = $container;
-        this.video = $flashObject;
-        this.addModelListeners();
+        this.video = $video;
+        this.setListeners();
     },
 
     setVideo:function( $el ) {
@@ -15,7 +15,6 @@ var FlashVideoProxy = Class.create({
 
     // TODO: Refactor into FVideo
     addVideoSource: function( $path ) {
-
     },
 
     load: function( $url ) {
@@ -24,15 +23,11 @@ var FlashVideoProxy = Class.create({
     },
 
     play: function( $url ) {
-//        console.log('this:' + this );
-//        console.log('this.video: ' + this.video );
         if( $url ) this.video._play( $url );
         else this.video._play();
     },
 
     pause: function() {
-//        console.log('this:' + this );
-//        console.log('this.video: ' + this.video );
         this.video._pause();
     },
 
@@ -61,22 +56,22 @@ var FlashVideoProxy = Class.create({
         this.video._setTime( $time );
     },
 
-    getTime: function() {
-
-    },
-
     isPlaying: function() {
         return this.video._isPlaying();
     },
 
-    addModelListeners: function() {
+    setListeners: function() {
         var self = this;
-        $(this.container).bind(FVideoModel.EVENT_RESIZE, function(){ self.resize(); });
-        $(this.container).bind(FVideoModel.EVENT_VOLUME_UPDATE, function(){ self.video._setVolume( self.controller.model.getVolume() ); });
+        $(this.model.dispatcher).bind(FVideoModel.EVENT_RESIZE, this.resize.context(this) );
+        $(this.model.dispatcher).bind(FVideoModel.EVENT_VOLUME_UPDATE, this.handleVolume.context(this) );
+    },
+
+    handleVolume: function() {
+        this.video._setVolume( this.model.getVolume() );
     },
 
     resize: function() {
-        this.setWidth(this.controller.model.getWidth());
-        this.setHeight(this.controller.model.getHeight());
+        this.setWidth(this.model.getWidth());
+        this.setHeight(this.model.getHeight());
     }
 });

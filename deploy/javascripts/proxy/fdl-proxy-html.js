@@ -2,17 +2,12 @@
  * Proxy which controlls an HTML video object.
  */
 var HTMLVideoProxy = Class.create({
-    initialize: function( $controller, $container, $video ) {
+    initialize: function( $model, $controller, $video ) {
+        this.model = $model;
         this.controller = $controller;
-        this.container = $container;
         this.video = $video;
         this.bufferInterval = false;
-        this.init();
-    },
-
-    init: function() {
-        this.addVideoListeners( this.video );
-        this.addModelListeners();
+        this.setListeners( this.video );
     },
 
     // TODO: Refactor into FVideo
@@ -20,7 +15,7 @@ var HTMLVideoProxy = Class.create({
         var source = document.createElement('source');
         source.src = $path;
         // don't add the 'type' attribute if we are in andriod.
-        if( !FUserEnvironment.android && $type !== undefined ){ source.type = $type; }
+        if( !FEnvironment.android && $type !== undefined ){ source.type = $type; }
         $( this.video).append(source);
     },
 
@@ -68,38 +63,34 @@ var HTMLVideoProxy = Class.create({
         return !this.video.paused;
     },
 
-    addVideoListeners: function( $video ) {
-        var self = this;
-        $video.addEventListener('metadata',function( $e ){ self.handleMetadata( $e ); },false);
-        $video.addEventListener('loadstart',function( $e ){ self.handleLoadStart( $e ); },false);
-        $video.addEventListener('loadeddata',function( $e ){ self.handleBuffering( $e ); },false);
-        $video.addEventListener('waiting',function( $e ){ self.handleBuffering( $e ); },false);
-        $video.addEventListener('error',function( $e ){ self.handleError( $e ); },false);
-        $video.addEventListener('progress',function( $e ){ self.handleProgress( $e ); },false);
-        $video.addEventListener('play',function( $e ){ self.handlePlay( $e ); },false);
-        $video.addEventListener('pause',function( $e ){ self.handlePause( $e ); },false);
-        $video.addEventListener('seeking',function( $e ){ self.handleSeek( $e ); },false);
-        $video.addEventListener('ended',function( $e ){ self.handleEnd( $e ); },false);
-        $video.addEventListener('volumechange',function( $e ){ self.handleVolume( $e ); },false);
-        $video.addEventListener('timeupdate',function( $e ){ self.handleTimeUpdate( $e ); },false);
-        $video.addEventListener('durationchange',function( $e ){ self.handleDurationChange( $e ); },false);
-    },
+    setListeners: function() {
+        this.video.addEventListener('metadata',         this.handleMetadata.context(this),      false);
+        this.video.addEventListener('loadstart',        this.handleLoadStart.context(this),     false);
+        this.video.addEventListener('loadeddata',       this.handleBuffering.context(this),     false);
+        this.video.addEventListener('waiting',          this.handleBuffering.context(this),     false);
+        this.video.addEventListener('error',            this.handleError.context(this),         false);
+        this.video.addEventListener('progress',         this.handleProgress.context(this),      false);
+        this.video.addEventListener('play',             this.handlePlay.context(this),          false);
+        this.video.addEventListener('playing',          this.handlePlay.context(this),          false);
+        this.video.addEventListener('pause',            this.handlePause.context(this),         false);
+        this.video.addEventListener('seeking',          this.handleSeek.context(this),          false);
+        this.video.addEventListener('ended',            this.handleEnd.context(this),           false);
+        this.video.addEventListener('volumechange',     this.handleVolume.context(this),        false);
+        this.video.addEventListener('timeupdate',       this.handleTimeUpdate.context(this),    false);
+        this.video.addEventListener('durationchange',   this.handleDurationChange.context(this), false);
 
-    addModelListeners: function() {
         var self = this;
-        $(this.container).bind(FVideoModel.EVENT_RESIZE, function(){ self.resize(); });
-        $(this.container).bind(FVideoModel.EVENT_VOLUME_UPDATE, function(){ self.setVolume( self.controller.model.getVolume() ); });
+        $(this.model.dispatcher).bind(FVideoModel.EVENT_RESIZE, this.resize.context(this) );
+        $(this.model.dispatcher).bind(FVideoModel.EVENT_VOLUME_UPDATE, function(){ self.setVolume( self.model.getVolume() ); });
     },
 
     resize: function() {
-        this.video.width = parseInt( this.controller.model.getWidth());
-        this.video.height = parseInt( this.controller.model.getHeight());
+        this.video.width = parseInt( this.model.getWidth() );
+        this.video.height = parseInt( this.model.getHeight() );
     },
 
-
     startBufferInterval: function() {
-        var self = this;
-        this.bufferInterval = setInterval(function() { self.handleProgress(); },10);
+        this.bufferInterval = setInterval( this.handleProgress.context(this),10);
     },
 
     handleDurationChange: function( $e ) {
@@ -157,6 +148,7 @@ var HTMLVideoProxy = Class.create({
     },
 
     handleSeek: function( $e ) {
+        this.controller._updateIsPlaying( false );
         this.controller._updatePlayerState('seeking');
     },
 

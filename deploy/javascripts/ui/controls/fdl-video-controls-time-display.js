@@ -1,29 +1,27 @@
-var FTimeDisplay = Class.create({
-    initialize: function( $container, $video ) {
-        this.container = $container;
-        this.video = $video;
+var FTimeDisplay = Class.create( FControl, {
+
+    initialize: function($super, $model, $controller, $container) {
         this.currentTime = false;
         this.totalTime = false;
-        this.build();
-        this.addModelListeners();
-        this.updateTime();
+        $super( $model, $controller, $container );
     },
 
-    build: function() {
+    build: function( $super ) {
+        $super();
+        $(this.element).addClass('fdl-time-display');
+        this.currentTime = DOMUtil.createElement('span', { className:"fdl-current-time"}, this.element );
+        this.separator = DOMUtil.createElement('span', { className:"fdl-time-separator"}, this.element );
+        this.totalTime = DOMUtil.createElement('span', { className:"fdl-total-time"}, this.element );
+    },
+
+    setListeners: function() {
         var self = this;
-        this.currentTime = DOMUtil.createElement('span', { className:"fdl-current-time"}, this.container );
-        this.separator = DOMUtil.createElement('span', { className:"fdl-time-separator"}, this.container );
-        this.totalTime = DOMUtil.createElement('span', { className:"fdl-total-time"}, this.container );
+        $( this.model.dispatcher ).bind(FVideoModel.EVENT_TIME_UPDATE, this.update.context(this) );
     },
 
-    addModelListeners: function() {
-        var self = this;
-        $( this.video.container ).bind(FVideoModel.EVENT_TIME_UPDATE, function( $e ){ self.handlePlayheadUpdate( $e ); });
-    },
-
-    updateTime: function() {
-        this.currentTime.innerHTML = this.formatTime( this.video.model.getTime() );
-        this.totalTime.innerHTML = this.formatTime( this.video.model.getDuration() );
+    update: function() {
+        this.currentTime.innerHTML = this.formatTime( this.model.getTime() );
+        this.totalTime.innerHTML = this.formatTime( this.model.getDuration() );
     },
 
     formatTime: function( $time ) {
@@ -35,9 +33,5 @@ var FTimeDisplay = Class.create({
 
     formattedDigit: function( $value ) {
         return ( $value < 10 ) ? '0' + $value : $value;
-    },
-
-    handlePlayheadUpdate: function( $e ) {
-        this.updateTime();
     }
 });

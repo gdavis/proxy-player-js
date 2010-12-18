@@ -36,7 +36,7 @@
         $(document).ready(function() {
 
 //             var FVideoConfiguration = function ( $width, $height, $videoOptions, $swf, $variables, $parameters, $attributes ){
-            var options = new FVideoConfiguration( 636, 264, { poster:"/media/poster.png", autoplay:true, volume:0 }, "proxy-player.swf" );
+            var options = new FVideoConfiguration( 636, 264, { poster:"media/poster.png", autoplay:true, volume:0 }, "proxy-player.swf" );
 
             // create the video object
             var sources = new FVideoSources();
@@ -45,7 +45,7 @@
 
             var playbutton = DOMUtil.createElement('div', { className:'fdl-control fdl-play-pause' });
 
-            video = new FVideo( '#video1', options, sources, [playbutton,'FProgressBar',FProgressBar], function() {
+            video = new FVideo( '#video1', options, sources, [playbutton,'FProgressBar',FTimeDisplay], function() {
                 // ready handler
             });
         });

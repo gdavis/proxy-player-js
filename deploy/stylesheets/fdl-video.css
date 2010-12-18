@@ -64,69 +64,65 @@
     bottom: 0;
 }
 
-.fdl-video .fdl-controls .fdl-controls-bar div {
-    float: left;
-}
-
-.fdl-video .fdl-controls .fdl-play-pause {
+.fdl-controls .fdl-play-pause {
     width: 20px;
     height: 20px;
-}
-
-.fdl-video .fdl-controls .fdl-play-pause.playing {
     background-color: #ff0;
 }
 
-.fdl-video .fdl-controls .fdl-play-pause.paused {
+
+.buffering .fdl-controls .fdl-play-pause,
+.stopped .fdl-controls .fdl-play-pause,
+.paused .fdl-controls .fdl-play-pause {
     background-color: #0f0;
 }
 
-.fdl-video .fdl-controls .fdl-stop {
+.fdl-controls .fdl-stop {
     width: 20px;
     height: 20px;
     background-color: #f00;
 }
 
-.fdl-video .fdl-controls .fdl-volume {
+.fdl-controls .fdl-volume {
     width: 20px;
     height: 20px;
 }
 
-.fdl-video .fdl-controls .fdl-progress-bar {
+.fdl-controls .fdl-progress-bar {
     position: relative;
     height: 20px;
     background-color: #0ff;
     overflow: hidden; 
 }
 
-.fdl-video .fdl-controls .fdl-progress-bar .fdl-load-progress,
-.fdl-video .fdl-controls .fdl-progress-bar .fdl-play-progress {
+.fdl-controls .fdl-progress-bar .fdl-load-progress,
+.fdl-controls .fdl-progress-bar .fdl-play-progress {
     position: absolute;
     height: 100%;
 }
 
-.fdl-video .fdl-controls .fdl-progress-bar .fdl-play-progress {
+.fdl-controls .fdl-progress-bar .fdl-play-progress {
     background-color: #999;
 }
 
-.fdl-video .fdl-controls .fdl-progress-bar .fdl-load-progress {
+.fdl-controls .fdl-progress-bar .fdl-load-progress {
     background-color: #666;
 }
 
-.fdl-video .fdl-controls .fdl-progress-bar .fdl-handle {
+.fdl-controls .fdl-progress-bar .fdl-handle {
     width: 1px;
     height: 100%;
     background-color: #f00;
     position: absolute;
 }
 
-.fdl-video .fdl-controls .fdl-fullscreen {
+.fdl-controls .fdl-fullscreen {
     width: 20px;
     height: 20px;
     background-color: #f0f;
 }
 
-.fdl-video .fdl-controls .fdl-time-separator {
+.fdl-controls .fdl-time-separator {
     display: inline-block;
     width: 1px;
     height: 10px;
@@ -134,19 +130,19 @@
     background-color: #f00;
 }
 
-.fdl-video .fdl-controls .fdl-volume-display {
+.fdl-controls .fdl-volume-display {
     position: relative;
     width: 40px;
     background-color: #000;
 }
 
-.fdl-video .fdl-controls .fdl-volume-wrapper div {
+.fdl-controls .fdl-volume-wrapper div {
     float: left;
     margin-right: 2px;
     background-color: #f0f;
 }
 
-.fdl-video .fdl-controls .fdl-volume-wrapper div.on {
+.fdl-controls .fdl-volume-wrapper div.on {
     background-color: #0f0;
 }
 
@@ -154,3 +150,32 @@
 .fdl-video .player {
     height: 100%;
 }
+
+
+
+
+
+
+
+
+
+
+.fdl-control,
+.fdl-control-fixed,
+.fdl-control-flexible,
+.fdl-control-absolute {
+    float:left;
+}
+
+.fdl-control .top {
+    
+}
+
+.fdl-control .bottom {
+
+}
+
+.fdl-control-absolute {
+    position: absolute;
+}
+

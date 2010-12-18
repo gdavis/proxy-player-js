@@ -272,12 +272,22 @@ package com.factorylabs.html5.video
 		{
 			switch($state){
 				case FVideo.STATE_LOADING:
+					updateController('_updatePlayerState', [ 'loading' ]);
+					break;
 				case FVideo.STATE_BUFFERING:
+					updateController('_updatePlayerState', [ 'buffering' ]);
+					break;
 				case FVideo.STATE_PLAYING:
+					updateController('_updatePlayerState', [ 'playing' ]);
+					break;
 				case FVideo.STATE_PAUSED:
+					updateController('_updatePlayerState', [ 'paused' ]);
+					break;
 				case FVideo.STATE_SEEKING:
+					updateController('_updatePlayerState', [ 'seeking' ]);
+					break;
 				case FVideo.STATE_STOPPED:
-					updateController('_updatePlayerState', [ $state ]);
+					updateController('_updatePlayerState', [ 'stopped' ]);
 					break;
 				default:
 					// do nothing.

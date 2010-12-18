@@ -19,29 +19,31 @@
 
 var FVideo = Class.create({
 
-    initialize: function( $element, $options, $sources, $controlsClass, $readyCallback ) {
-        // lookup the main video container
+    initialize: function( $element, $options, $sources, $controlsClasses, $readyCallback ) {
+        
         if (typeof $element === 'string' ) {
             this.container = $( $element ).get(0);
         } else {
             this.container = $element;
         }
 
-        this.parent = this.container.parentNode;
-        this._options = $options || new FVideoConfiguration();
-        this._sources = $sources || new FVideoSources();
-        this._controlsClass = $controlsClass;
+        this.options = $options || new FVideoConfiguration();
+        this.sources = $sources || new FVideoSources();
+        this.controlsClasses = $controlsClasses;
         this.readyCallback = $readyCallback;
 
-        this._videoElement = false;
         this.model = false;
+        this.proxy = false;
         this.controls = false;
-        this._proxy = false;
+
+        this._isVideoReady = false;
+        this._isVideoEmbedded = false;
+        this._videoElement = false;
         this._useHTMLVideo = true;
         this._initialized = false;
-        this._isVideoEmbedded = false;
         this._isReady = false;
-
+        this._lastState = '';
+        
         this._init();
     },
     
@@ -49,60 +51,42 @@ var FVideo = Class.create({
     // Public API
     //////////////////////////////////////////////////////////////////////////////////
 
-    /**
-     * Adds a child <source> element to the video tag to specify multiple file types for the player.
-     *
-     * NOTE: For iPads, be sure you add the mp4 first since the player will break if it is not the first item in the <source> list.
-     *
-     * @param $path Path to the video file.
-     * @param $type The type (MIME type) of the video located at the source path. e.g. 'video/mp4', 'video/ogg'.
-     */
-    // TODO: Refactor to not be routed through the proxy
-    addVideoSource: function( $path, $type ) {
-        this._proxy.addVideoSource( $path, $type );
-    },
+    // actions
 
-    /**
-     * Begins loading media.
-     */
     load: function() {
-        this._proxy.load();
+        this.proxy.load();
     },
 
-    /**
-     * Begins playback.
-     * Takes multiple parameters. Can either specify a single URL by string, or an index value if a list of source elements were supplied.
-     */
     play: function( $url ) {
         if( $url ) {
-            this._proxy.play( $url );
+            this.proxy.play( $url );
         }
         else {
             if( this.model.getPlaying() ) {
-                this._proxy.pause();
+                this.proxy.pause();
             }
             else {
-                this._proxy.play();
+                this.proxy.play();
             }
         }
     },
 
     pause: function() {
-        this._proxy.pause();
+        this.proxy.pause();
     },
 
     stop: function() {
-        this._proxy.stop();
+        this.proxy.stop();
     },
 
     seek: function( $time ) {
-//        console.log('seek to: ' + $time );
-        this._proxy.seek( parseFloat( $time ));
+        this.proxy.seek( parseFloat( $time ));
     },
 
 
+    // adjustments
+
     setSize: function( $width, $height ) {
-//        console.log('setSize: '+ $width + ", " + $height );
         this.model.setSize( $width, $height );
     },
     
@@ -116,11 +100,18 @@ var FVideo = Class.create({
         this.model.setHeight( $height );
     },
 
-    getTime: function() { return this._proxy.getTime(); },
+    getTime: function() { return this.proxy.getTime(); },
 
     getVolume: function() { return this.model.getVolume(); },
     setVolume: function( $vol ) {
         this.model.setVolume( $vol );
+    },
+
+
+    // utility
+
+    addVideoSource: function( $path, $type ) {
+        this.proxy.addVideoSource( $path, $type );
     },
 
     /**
@@ -133,14 +124,6 @@ var FVideo = Class.create({
         this._createSourceAnchors( this.player );
     },
 
-    /**
-     * Dispatches DOM events
-     * @param $type
-     */
-    sendEvent: function($type, $params ) {
-        $(this.container).trigger($type);
-    },
-
     destroy: function() {
         if( this.player ) {
             if( this.player.parentNode ) {
@@ -150,53 +133,48 @@ var FVideo = Class.create({
     },
 
     setVideo: function( $video ) {
-//        console.log('setting video to:' + $video.outerHTML );
         this._videoElement = $( "#"+ $video.id ).get(0);
         if( this._videoElement ){ this._isVideoEmbedded = true; }
     },
+
 
     //////////////////////////////////////////////////////////////////////////////////
     // Methods called from the video player to update state
     //////////////////////////////////////////////////////////////////////////////////
 
     _videoReady: function() {
-//        console.log('video is ready');
         this._isVideoReady = true;
         this._checkReady();
     },
 
-    _checkReady: function() {
-        if( this._isVideoReady && this._isVideoEmbedded ) {
-            this._startupVideo();
-        }
-    },
-
+    // called immediately when under html5, by flash when it has initialized if not
     _startupVideo: function() {
 
         if( this._isReady ) return;
         this._isReady = true;
 
-        // create the proxy object once our video is ready to receive commands
-        this._proxy = this._createVideoProxy();
+        // create proxy object
+        this.proxy = this._createVideoProxy();
 
         // create source tags
-        var dl = this._sources.videos.length;
+        var dl = this.sources.videos.length;
         for( var i = 0; i<dl; i++ ) {
-            var source = this._sources.videos[ i ];
+            var source = this.sources.videos[ i ];
             this.addVideoSource( source.file, source.type );
         }
 
         // sync relevant values from the player onto the model.
         // by setting these on the model we also dispatch events which update the UI to its default state.
-        this.setVolume( this._options.videoOptions.volume );
-        this.setSize( this._options.width, this._options.height );
+        // it also allows us to update the starting volume on the flash when it is ready.
+        this.setVolume( this.options.videoOptions.volume );
+        this.setSize( this.options.width, this.options.height );
 
-        // construct the controls, if specified
-        if( this._controlsClass ) {
-            if( typeof this._controlsClass === 'function' ) {
-                this.controls = new this._controlsClass(this);
-            } else if ( this._controlsClass === 'string' ) {
-                this.controls = new window[this._controlsClass]( this );
+        if( this.controlsClasses ) {
+            if( this.controlsClasses.length > 0 ) {
+                this.controlsContainer = DOMUtil.createElement( 'div', { className:'fdl-controls' }, this.container );
+                this.controlsContainer.onmousedown = function(){return false;};
+                this.controlsContainer.onselectstart = function(){return false;};
+                this.controls = new FControls(this.model, this, this.controlsContainer, this.controlsClasses);
             }
         }
 
@@ -204,7 +182,7 @@ var FVideo = Class.create({
         this.readyCallback( this );
 
         // fire DOM event
-        this.sendEvent(FVideo.EVENT_PLAYER_READY);
+        $(this.container).trigger(FVideo.EVENT_PLAYER_READY);
     },
 
     _updatePlayheadTime: function( $time ){
@@ -227,9 +205,6 @@ var FVideo = Class.create({
         this.model.setVolume( $volume );
     },
 
-    _complete: function() {
-    },
-
     _updateLoadProgress: function( $bytesLoaded, $bytesTotal ) {
         this.model.setBytesTotal( $bytesTotal );
         this.model.setBytesLoaded( $bytesLoaded );
@@ -249,19 +224,26 @@ var FVideo = Class.create({
         this.playerId = parseInt( Math.random() * 100000, 10 );
         FVideo.instances[this.playerId] = this;
 
+        // create page elements
         this._useHTMLVideo = this._canBrowserPlayVideo();
         this._videoElement = this._createVideo();
-        this.model = new FVideoModel( this );
+
+        // brainzzzzz
+        this.model = new FVideoModel( this.container );
+
+        // listen for model events
         this._addModelListeners();
-        this.setSize( this._options.width, this._options.height );
+
+        // if we're using html5 video, we're ready to move on.
         if( this._useHTMLVideo ) { this._videoReady(); }
+        // otherwise, we wait for flash to call _videoReady and we adjust our size while we wait.
+        else { this.setSize( this.options.width, this.options.height ); }
     },
 
-    _addModelListeners: function() {
-        var self = this;
-        $(this.container).bind(FVideoModel.EVENT_PLAY_STATE_CHANGE, function(){ self._handlePlayState(); });
-        $(this.container).bind(FVideoModel.EVENT_RESIZE, function() { self._handleResize(); });
-        $(this.container).bind(FVideoModel.EVENT_TOGGLE_FULLSCREEN, function() { self._handleFullscreen(); });
+    _checkReady: function() {
+        if( this._isVideoReady && this._isVideoEmbedded ) {
+            this._startupVideo();
+        }
     },
 
     _canBrowserPlayVideo: function() {
@@ -276,12 +258,9 @@ var FVideo = Class.create({
         else { return this._createFlashVideoObject(); }
     },
 
-    /**
-     * returns a <video> object tag
-     */
     _createHTMLVideoObject: function() {
         var video = document.createElement('video');
-        FVideo.applyAttributes( video, this._options.videoOptions );
+        FVideo.applyAttributes( video, this.options.videoOptions );
         this._createSourceAnchors( video );
         this.player.appendChild( video );
         this._isVideoEmbedded = true;
@@ -290,9 +269,9 @@ var FVideo = Class.create({
 
     _createSourceAnchors: function( $el ) {
         // write anchor fallback tags
-        var dl = this._sources.videos.length;
+        var dl = this.sources.videos.length;
         for( var i = 0; i < dl; i++ ) {
-            var source = this._sources.videos[ i ];
+            var source = this.sources.videos[ i ];
             var anchor = document.createElement('a');
             anchor.href = source.file;
             anchor.setAttribute('data-type', source.type);
@@ -301,9 +280,6 @@ var FVideo = Class.create({
         }
     },
 
-    /**
-     * returns a flash <object> tag
-     */
     _createFlashVideoObject: function() {
 
         var replaceID = 'player-wrapper-' + this.playerId;
@@ -312,30 +288,28 @@ var FVideo = Class.create({
         // create empty div for swfobject to replace
         DOMUtil.createElement( 'div', { id:replaceID }, this.player );
 
-//        var div = document.createElement('div');
-//        div.id = replaceID;
-//        $( this.player ).append( div );
-
         // map the default video file as the source for flash.
-        this._options.flashOptions.attributes.id = flashID;
-        this._options.flashOptions.variables.playerId = this.playerId;
-        this._options.flashOptions.variables.src = this._sources.flashVideo;
-        this._options.flashOptions.variables.autoplay = this._options.videoOptions.autoplay;
+        this.options.flashOptions.attributes.id = flashID;
+        this.options.flashOptions.variables.playerId = this.playerId;
+        this.options.flashOptions.variables.src = this.sources.flashVideo;
+        this.options.flashOptions.variables.autoplay = this.options.videoOptions.autoplay;
 
         // embed the SWF
         var self = this;
-        swfobject.embedSWF( this._options.flashOptions.swf,
+        swfobject.embedSWF( this.options.flashOptions.swf,
                             replaceID,
-                            this._options.width,
-                            this._options.height,
-                            this._options.flashOptions.version,
-                            this._options.flashOptions.expressInstall,
-                            this._options.flashOptions.variables,
-                            this._options.flashOptions.params,
-                            this._options.flashOptions.attributes
+                            this.options.width,
+                            this.options.height,
+                            this.options.flashOptions.version,
+                            this.options.flashOptions.expressInstall,
+                            this.options.flashOptions.variables,
+                            this.options.flashOptions.params,
+                            this.options.flashOptions.attributes
                             );
 
+        // using the swfobject callback in IE causes issues, so we use a interval to lookup our flash element.
         this._findFlashPlayer(flashID);
+
         // we don't yet have access to the object tag, so it is directly set in the callback method from embedding the SWF
         return null;
     },
@@ -353,8 +327,8 @@ var FVideo = Class.create({
     },
 
     _createVideoProxy: function() {
-        if( this._useHTMLVideo ) { return new HTMLVideoProxy( this, this.container, this._videoElement ); }
-        else { return new FlashVideoProxy( this, this.container, this._videoElement ); }
+        if( this._useHTMLVideo ) { return new HTMLVideoProxy( this.model, this, this._videoElement ); }
+        else { return new FlashVideoProxy( this.model, this, this._videoElement ); }
     },
 
     _enterFullscreen: function() {
@@ -365,13 +339,17 @@ var FVideo = Class.create({
         $(this.container).removeClass('fdl-fullscreen');
     },
 
-    _handlePlayState: function() {
-        if( this.model.getPlaying() ) {
-            $(this.container).addClass('playing');
-        }
-        else {
-            $(this.container).removeClass('playing');
-        }
+    _addModelListeners: function() {
+        $(this.model.dispatcher).bind(FVideoModel.EVENT_RESIZE, this._handleResize.context(this) );
+        $(this.model.dispatcher).bind(FVideoModel.EVENT_PLAYER_STATE_CHANGE, this._handleStateChange.context(this) );
+        $(this.model.dispatcher).bind(FVideoModel.EVENT_TOGGLE_FULLSCREEN, this._handleFullscreen.context(this) );
+    },
+
+    // applies the current state as a css class to the video container
+    _handleStateChange: function() {
+        $(this.container).removeClass(this._lastState);
+        this._lastState = this.model.getPlayerState();
+        $(this.container).addClass(this._lastState);
     },
 
     _handleResize: function() {
@@ -396,6 +374,8 @@ var FVideo = Class.create({
 // constants
 FVideo.EVENT_PLAYER_READY = "FVideo:PlayerReady";
 
+//FVideo.DEFAULT_CONTROLS = [PlayPauseButton,StopButton,ProgressBar,VolumeControl,FullscreenButton];
+
 // class variable for storing all created FVideo instances on the page.
 FVideo.instances = {};
 
@@ -407,7 +387,7 @@ FVideo.activateAll = function( $callback ) {
         var sources = $('source', video ).each(function() {
             sourceList.addVideo( this.src, this.type, this.getAttribute('data-label'), this.getAttribute('data-flash-default') || false );
         });
-        
+
         var videoOptions = {};
         var flashSwf;
         var callback;
@@ -421,6 +401,16 @@ FVideo.activateAll = function( $callback ) {
         if( video.getAttribute('data-loop')){ videoOptions.loop = video.getAttribute('data-loop'); }
         if( video.getAttribute('data-poster')){ videoOptions.poster = video.getAttribute('data-poster'); }
         if( video.getAttribute('data-src')){ videoOptions.src = video.getAttribute('data-src'); }
+
+
+        /*
+        TODO: add attribute for comma-separated class list for the controls.
+        var controls = video.getAttribute('data-control-list');
+        if( controls !== undefined ) {
+            controls = controls.replace(' ','');
+            var classList = controls.split(',');
+        }
+        */
 
         // store controls class
         var controlsClass = video.getAttribute('data-controls-class');

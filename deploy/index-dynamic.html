@@ -24,6 +24,7 @@
     <!-- controls -->
     <script type="text/javascript" src="javascripts/ui/fdl-control.js"></script>
     <script type="text/javascript" src="javascripts/ui/fdl-video-controls.js"></script>
+    <script type="text/javascript" src="javascripts/ui/controls/fdl-video-controls-stop.js"></script>
     <script type="text/javascript" src="javascripts/ui/controls/fdl-video-controls-fullscreen.js"></script>
     <script type="text/javascript" src="javascripts/ui/controls/fdl-video-controls-time-display.js"></script>
     <script type="text/javascript" src="javascripts/ui/controls/fdl-video-controls-progressbar.js"></script>
@@ -46,7 +47,7 @@
 
 //            var playbutton = DOMUtil.createElement('div', { className:'fdl-control fdl-play-pause' });
 
-            video = new FVideo( '#video1', options, sources, [PlayPauseButton,'FProgressBar',FTimeDisplay,FFullscreen], function() {
+            video = new FVideo( '#video1', options, sources, [PlayPauseButton,StopButton,'FProgressBar',FTimeDisplay,FFullscreen], function() {
                 // ready handler
             });
         });

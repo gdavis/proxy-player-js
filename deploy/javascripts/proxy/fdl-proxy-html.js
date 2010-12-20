@@ -144,7 +144,12 @@ var HTMLVideoProxy = Class.create({
 
     handlePause: function( $e ) {
         this.controller._updateIsPlaying( false );
-        this.controller._updatePlayerState('paused');
+        if( this.video.currentTime == 0 && this.video.paused ) {
+            this.controller._updatePlayerState('stopped');
+        }
+        else {
+            this.controller._updatePlayerState('paused');
+        }
     },
 
     handleSeek: function( $e ) {

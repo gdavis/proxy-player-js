@@ -28,6 +28,7 @@
     <script type="text/javascript" src="javascripts/ui/controls/fdl-video-controls-time-display.js"></script>
     <script type="text/javascript" src="javascripts/ui/controls/fdl-video-controls-progressbar.js"></script>
     <script type="text/javascript" src="javascripts/ui/controls/fdl-video-controls-volume.js"></script>
+    <script type="text/javascript" src="javascripts/ui/controls/fdl-video-controls-playpause.js"></script>
 
     <script type="text/javascript">
 
@@ -43,9 +44,9 @@
             sources.addVideo( 'http://video-js.zencoder.com/oceans-clip.mp4', 'video/mp4', 'Link Label', true );
             sources.addVideo( 'http://video-js.zencoder.com/oceans-clip.ogv', 'video/ogg', 'Link Label' );
 
-            var playbutton = DOMUtil.createElement('div', { className:'fdl-control fdl-play-pause' });
+//            var playbutton = DOMUtil.createElement('div', { className:'fdl-control fdl-play-pause' });
 
-            video = new FVideo( '#video1', options, sources, [playbutton,'FProgressBar',FTimeDisplay,FFullscreen], function() {
+            video = new FVideo( '#video1', options, sources, [PlayPauseButton,'FProgressBar',FTimeDisplay,FFullscreen], function() {
                 // ready handler
             });
         });

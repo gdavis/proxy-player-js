@@ -74,6 +74,7 @@ var HTMLVideoProxy = Class.create({
         this.video.addEventListener('playing',          this.handlePlay.context(this),          false);
         this.video.addEventListener('pause',            this.handlePause.context(this),         false);
         this.video.addEventListener('seeking',          this.handleSeek.context(this),          false);
+        this.video.addEventListener('seeked',           this.handleSeeked.context(this),          false);
         this.video.addEventListener('ended',            this.handleEnd.context(this),           false);
         this.video.addEventListener('volumechange',     this.handleVolume.context(this),        false);
         this.video.addEventListener('timeupdate',       this.handleTimeUpdate.context(this),    false);
@@ -150,6 +151,16 @@ var HTMLVideoProxy = Class.create({
     handleSeek: function( $e ) {
         this.controller._updateIsPlaying( false );
         this.controller._updatePlayerState('seeking');
+    },
+
+    handleSeeked: function( $e ) {
+        // return to previous state after seeking, either playing or paused.
+        if( this.video.paused ) {
+            this.handlePause();
+        }
+        else {
+            this.handlePlay();
+        }
     },
 
     handleEnd: function( $e ) {

@@ -107,6 +107,11 @@ var FVideo = Class.create({
         this.model.setVolume( $vol );
     },
 
+    getFullscreen: function() { return this.model.getFullscreen(); },
+    setFullscreen: function( $value ) {
+        this.model.setFullscreen( $value );
+    },
+
 
     // utility
 

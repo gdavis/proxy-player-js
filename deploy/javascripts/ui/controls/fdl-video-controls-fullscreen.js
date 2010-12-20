@@ -1,56 +1,52 @@
-var FFullscreen = Class.create({
-    initialize: function( $container, $fVideoInstance ) {
-        this.container = $container;
-        this.fVideo = $fVideoInstance;
+var FFullscreen = Class.create( FControl, {
+//    initialize: function( $container, $fVideoInstance ) {
+    initialize: function($super, $model, $controller, $container ) {
+        $super( $model, $controller, $container );
         this.viewportWidth = 0;
         this.viewportHeight = 0;
-        this.origWidth = this.fVideo.model.getWidth();
-        this.origHeight = this.fVideo.model.getHeight();
+        this.origWidth = this.model.getWidth();
+        this.origHeight = this.model.getHeight();
         this.origPosition = false;
         this.getViewportSize();
-        this.setupInteractionHandlers();
-        this.addModelListeners();
     },
 
-    setupInteractionHandlers: function() {
-        var self = this;
-        $(this.container).click(function( $e ){
-            self.toggleFullscreen();
-        });
+
+    build: function( $super ) {
+        $super();
+        $(this.element).addClass('fdl-fullscreen');
     },
 
-    addModelListeners: function() {
-        var self = this;
-        $( this.fVideo.container ).bind( FVideoModel.EVENT_TOGGLE_FULLSCREEN, function(){
-            if( self.fVideo.model.getFullscreen())
-                self.enterFullscreen();
-            else
-                self.exitFullscreen();
-        });
+    setListeners: function() {
+        $(this.element).click( this.toggleFullscreen.context( this ));
+        $( this.model.dispatcher ).bind( FVideoModel.EVENT_TOGGLE_FULLSCREEN, this.handleFullscreen.context(this) );
+    },
+
+    handleFullscreen: function() {
+        if( this.model.getFullscreen() ) {
+            this.enterFullscreen();
+        }
+        else {
+            this.exitFullscreen();
+        }
     },
 
     toggleFullscreen: function() {
-        this.fVideo.model.setFullscreen( !this.fVideo.model.getFullscreen() );
+        this.controller.setFullscreen( !this.model.getFullscreen() );
     },
 
     size: function() {
         this.getViewportSize();
-        this.fVideo.setSize( this.viewportWidth, this.viewportHeight );
+        this.controller.setSize( this.viewportWidth, this.viewportHeight );
     },
 
     enterFullscreen: function() {
         this.size();
-        // listen for browser resize
-        var self = this;
-        $(window).resize(function() {
-            self.size();
-        });
+        $(window).resize( this.size.context(this) );
     },
 
     exitFullscreen: function() {
-//        console.log('exitFulscreen: origWidth: ' + this.origWidth + ", origHeight: " + this.origHeight);
         $(window).unbind('resize');
-        this.fVideo.setSize( this.origWidth, this.origHeight );
+        this.controller.setSize( this.origWidth, this.origHeight );
     },
 
     getViewportSize: function() {

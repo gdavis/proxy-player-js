@@ -7,7 +7,6 @@ package com.factorylabs.html5.video
 	import flash.display.StageAlign;
 	import flash.display.StageScaleMode;
 	import flash.events.Event;
-	import flash.events.MouseEvent;
 	import flash.external.ExternalInterface;
 
 	/**
@@ -37,7 +36,7 @@ package com.factorylabs.html5.video
 		private var _player	:FVideo;
 		private var _prevBytesLoaded	:int;
 		private var _prevBytesTotal	:int;
-		private var _videoElementInterval	:int;
+//		private var _videoElementInterval	:int;
 		
 		
 		/**
@@ -132,10 +131,6 @@ package com.factorylabs.html5.video
 			createPlayer();
 			registerCallbacks();
 			addVideoListeners();
-			
-//			this.mouseEnabled = true;
-//			this.mouseChildren = false;
-//			this.addEventListener( MouseEvent.CLICK, handlePlayerClick );
 			startup();
 		}
 		
@@ -150,17 +145,17 @@ package com.factorylabs.html5.video
 			_player = new FVideo( this, { width:_width, height:_height, volume: _volume });
 		}
 		
-		private function handlePlayerClick( $e :MouseEvent ) :void
-		{
-			log('player click');
-			if( _player.playing ) _player.pause();
-			else _player.play();
-		}
+//		private function handlePlayerClick( $e :MouseEvent ) :void
+//		{
+//			log('player click');
+//			if( _player.playing ) _player.pause();
+//			else _player.play();
+//		}
 		
 		protected function registerCallbacks() :void
 		{
 //			log('registering callbacks on object id: ' + ExternalInterface.objectID );
-			ExternalInterface.addCallback( '_addVideoSource', jsAddVideoSource );
+//			ExternalInterface.addCallback( '_addVideoSource', jsAddVideoSource );
 			ExternalInterface.addCallback( '_play', playVideo );
 			ExternalInterface.addCallback( '_pause', _player.pause );
 			ExternalInterface.addCallback( '_seek', _player.seek );
@@ -180,23 +175,8 @@ package com.factorylabs.html5.video
 			_player.stateSignal.add( handleState );
 			_player.playheadUpdateSignal.add( handlePlayheadUpdate );
 			_player.completeSignal.add( handleComplete );
-			_player.loadProgressSignal.add( handleLoadProgress );
+			_player.loadProgressSignal.add( handleLoadProgress );			_player.errorSignal.add( handleError );
 		}
-		
-		/*
-		protected function checkForVideoElementAndStart() :void
-		{
-			var js :XML =	<![CDATA[function( $instanceId ){
-								var el = FVideo.instances[$instanceId]; //._videoElement;
-								console.log("element from flash: " + el._videoElement);
-								return el != null;
-							}]]>;
-			var isElement :* = ExternalInterface.call( js, _playerId );
-			if( isElement ) {
-				clearInterval( _videoElementInterval );
-				startup();
-			}
-		}*/
 		
 		protected function startup() :void
 		{
@@ -292,6 +272,12 @@ package com.factorylabs.html5.video
 				default:
 					// do nothing.
 			}
+		}
+		
+		
+		private function handleError( $error :Object ) :void
+		{
+			updateController('_updatePlayerState', [ 'error' ]);	
 		}
 		
 		

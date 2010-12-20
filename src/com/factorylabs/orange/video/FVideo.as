@@ -249,6 +249,10 @@ package com.factorylabs.orange.video
 		 * @private
 		 */
 		protected var _loadProgressSignal		:Signal;
+		/**
+		 * @private
+		 */
+		protected var _errorSignal		:Signal;
 	
 		//-----------------------------------------------------------------
 		// States
@@ -261,7 +265,7 @@ package com.factorylabs.orange.video
 		public static const STATE_PLAYING		:String = "playing";
 		public static const STATE_STOPPED		:String = "stopped";
 		public static const STATE_PAUSED		:String = "paused";
-		public static const STATE_SEEKING		:String = "seeking";
+		public static const STATE_SEEKING		:String = "seeking";		public static const STATE_ERROR			:String = "error";
 		
 		//-----------------------------------------------------------------
 		// Scale Modes
@@ -459,7 +463,11 @@ package com.factorylabs.orange.video
 		 * 
 		 */
 		public function get loadProgressSignal() :Signal { return _loadProgressSignal; }
-	
+		/**
+		 * 
+		 */
+		public function get errorSignal() :Signal { return _errorSignal; }
+
 		//-----------------------------------------------------------------
 		// Constructor
 		//-----------------------------------------------------------------
@@ -667,7 +675,7 @@ package com.factorylabs.orange.video
 			_stopSignal.removeAll();
 			_bandwidthSignal.removeAll();
 			_autoRewindSignal.removeAll();
-			_loadProgressSignal.removeAll();
+			_loadProgressSignal.removeAll();			_errorSignal.removeAll();
 			
 			close();
 			
@@ -685,7 +693,7 @@ package com.factorylabs.orange.video
 			_stopSignal = null;
 			_bandwidthSignal = null;
 			_autoRewindSignal = null;
-			_loadProgressSignal = null;
+			_loadProgressSignal = null;			_errorSignal = null;
 			
 			trace( '[FVideo].dispose()' );
 		}
@@ -722,7 +730,7 @@ package com.factorylabs.orange.video
 			_stopSignal 				= new Signal();
 			_bandwidthSignal			= new Signal( uint );
 			_autoRewindSignal			= new Signal();
-			_loadProgressSignal			= new Signal( uint, uint );
+			_loadProgressSignal			= new Signal( uint, uint );			_errorSignal				= new Signal( Object );
 		}
 
 		
@@ -790,17 +798,20 @@ package com.factorylabs.orange.video
 		protected function handleSecurityError( $e :SecurityErrorEvent ) :void
 		{
 			trace( '[FVideo].handleSecurityError() ' + $e.text );
+			_errorSignal.dispatch( $e.text );
 		}
 		
 		protected function handleIOError( $e :IOErrorEvent ) :void
 		{
 			trace( '[FVideo].handleIOError() ' + $e.text );
+			_errorSignal.dispatch( $e.text );
 		}
 		
 		protected function handleError( $e :OvpEvent ) :void
 		{
 			trace( '[FVideo].handleError() ' );
 			inspectObject( $e.data );
+			_errorSignal.dispatch( $e.data );
 		}
 		
 		protected function handleAsyncError( $e :AsyncErrorEvent ) :void

@@ -101,7 +101,7 @@ var HTMLVideoProxy = Class.create({
     },
 
     handleError: function( $e ) {
-        this.controller._updatePlayerState('error');
+        this.controller._updatePlayerState(FVideoModel.STATE_ERROR);
         // TODO: Add this back with certain error states
 //        this.controller.fallback();
     },
@@ -129,32 +129,33 @@ var HTMLVideoProxy = Class.create({
     },
 
     handleLoadStart: function( $e ) {
-        this.controller._updatePlayerState('loading');
+        this.controller._updatePlayerState(FVideoModel.STATE_LOADING);
     },
 
+
     handleBuffering: function( $e ) {
-        this.controller._updatePlayerState('buffering');
+        this.controller._updatePlayerState(FVideoModel.STATE_BUFFERING);
     },
 
     handlePlay: function( $e ) {
         this.startBufferInterval();
         this.controller._updateIsPlaying( true );
-        this.controller._updatePlayerState('playing');
+        this.controller._updatePlayerState(FVideoModel.STATE_PLAYING);
     },
 
     handlePause: function( $e ) {
         this.controller._updateIsPlaying( false );
         if( this.video.currentTime == 0 && this.video.paused ) {
-            this.controller._updatePlayerState('stopped');
+            this.controller._updatePlayerState(FVideoModel.STATE_STOPPED);
         }
         else {
-            this.controller._updatePlayerState('paused');
+            this.controller._updatePlayerState(FVideoModel.STATE_PAUSED);
         }
     },
 
     handleSeek: function( $e ) {
         this.controller._updateIsPlaying( false );
-        this.controller._updatePlayerState('seeking');
+        this.controller._updatePlayerState(FVideoModel.STATE_SEEKING);
     },
 
     handleSeeked: function( $e ) {
@@ -169,7 +170,7 @@ var HTMLVideoProxy = Class.create({
 
     handleEnd: function( $e ) {
         this.controller._updateIsPlaying( false );
-        this.controller._updatePlayerState('stopped');
+        this.controller._updatePlayerState(FVideoModel.STATE_STOPPED);
     },
 
     handleVolume: function( $e ) {

@@ -83,11 +83,6 @@
     background-color: #f00;
 }
 
-.fdl-controls .fdl-volume {
-    width: 20px;
-    height: 20px;
-}
-
 .fdl-controls .fdl-progress-bar {
     position: relative;
     height: 20px;
@@ -130,7 +125,7 @@
     background-color: #f00;
 }
 
-.fdl-controls .fdl-volume-display {
+.fdl-controls .fdl-volume {
     position: relative;
     width: 40px;
     background-color: #000;

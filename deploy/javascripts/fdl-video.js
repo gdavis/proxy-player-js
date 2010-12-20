@@ -376,8 +376,9 @@ var FVideo = Class.create({
     }
 });
 
-// constants
+// events
 FVideo.EVENT_PLAYER_READY = "FVideo:PlayerReady";
+
 
 //FVideo.DEFAULT_CONTROLS = [PlayPauseButton,StopButton,ProgressBar,VolumeControl,FullscreenButton];
 

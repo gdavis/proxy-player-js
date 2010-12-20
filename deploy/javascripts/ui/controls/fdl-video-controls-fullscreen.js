@@ -1,5 +1,4 @@
 var FFullscreen = Class.create( FControl, {
-//    initialize: function( $container, $fVideoInstance ) {
     initialize: function($super, $model, $controller, $container ) {
         $super( $model, $controller, $container );
         this.viewportWidth = 0;

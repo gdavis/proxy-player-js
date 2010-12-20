@@ -106,9 +106,20 @@ FVideoModel.EVENT_PLAYER_STATE_CHANGE   = "FVideoModelEvent.PlayerStateChange";
 FVideoModel.EVENT_TOGGLE_FULLSCREEN     = "FVideoModelEvent.ToggleFullscreen";
 
 // states
+FVideoModel.STATE_LOADING               = "loading";
+FVideoModel.STATE_BUFFERING             = "buffering";
+FVideoModel.STATE_PLAYING               = "playing";
+FVideoModel.STATE_PAUSED                = "paused";
+FVideoModel.STATE_STOPPED               = "stopped";
+FVideoModel.STATE_SEEKING               = "seeking";
+FVideoModel.STATE_ERROR                 = "error";
+
+/*
+// states
 FVideoModel.STATE_CONNECTING            = "FVideoModelEvent.Connecting";
 FVideoModel.STATE_BUFFERING             = "FVideoModelEvent.Buffering";
 FVideoModel.STATE_PLAYING               = "FVideoModelEvent.Playing";
 FVideoModel.STATE_STOPPED               = "FVideoModelEvent.Stopped";
 FVideoModel.STATE_PAUSED                = "FVideoModelEvent.Paused";
 FVideoModel.STATE_SEEKING               = "FVideoModelEvent.Seeking";
+        */

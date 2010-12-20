@@ -80,9 +80,8 @@ var HTMLVideoProxy = Class.create({
         this.video.addEventListener('timeupdate',       this.handleTimeUpdate.context(this),    false);
         this.video.addEventListener('durationchange',   this.handleDurationChange.context(this), false);
 
-        var self = this;
         $(this.model.dispatcher).bind(FVideoModel.EVENT_RESIZE, this.resize.context(this) );
-        $(this.model.dispatcher).bind(FVideoModel.EVENT_VOLUME_UPDATE, function(){ self.setVolume( self.model.getVolume() ); });
+        $(this.model.dispatcher).bind(FVideoModel.EVENT_VOLUME_UPDATE, function(){ this.setVolume( this.model.getVolume()); }.context(this) );
     },
 
     resize: function() {

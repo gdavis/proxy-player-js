@@ -14,3 +14,4 @@ FEnvironment.ie = ( navigator.userAgent.match(/MSIE/i) !== null );
 FEnvironment.ie6 = ( navigator.userAgent.match(/MSIE 6/i) !== null );
 FEnvironment.ie7 = ( navigator.userAgent.match(/MSIE 8/i) !== null );
 FEnvironment.firefox = ( navigator.userAgent.match(/Firefox/i) !== null );
+FEnvironment.firefox_3 = ( navigator.userAgent.match(/Firefox\/3/i) !== null );

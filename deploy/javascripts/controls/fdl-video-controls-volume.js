@@ -1,18 +1,12 @@
-var FVolume = Class.create( FControl, {
+var VolumeControl = Class.create( FControl, {
     
-//    initialize: function( $container, $video, $numBars, $barWidth, $maxBarHeight ) {
     initialize: function($super, $model, $controller, $container/*, $numBars, $barWidth, $maxBarHeight*/ ) {
-//        this.container = $container;
-//        this.video = $video;
         this.wrapper = false;
         this.progressBar = false;
         this.numBars = 7;
         this.barWidth = 3;
         this.maxBarHeight = 15;
         this.lastMouseX = 0;
-//        this.build();
-//        this.addModelListeners();
-//        this.handleVolumeUpdate();
         $super( $model, $controller, $container );
     },
 

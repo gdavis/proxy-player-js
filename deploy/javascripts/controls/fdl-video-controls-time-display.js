@@ -1,4 +1,4 @@
-var FTimeDisplay = Class.create( FControl, {
+var TimeDisplay = Class.create( FControl, {
 
     initialize: function($super, $model, $controller, $container) {
         this.currentTime = false;

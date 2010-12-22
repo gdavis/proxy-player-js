@@ -388,7 +388,15 @@ FVideo.instances = {};
 FVideo.activateAll = function( $callback ) {
     
     $('.fdl-video').each( function() {
+
         var video = $('video', this).get(0);
+        video.pause();
+        video.src = '';
+        if( FEnvironment.firefox_3 ) {
+                this.load();        // initiate new load, required in FF 3.x as noted at http://blog.pearce.org.nz/2010/11/how-to-stop-video-or-audio-element.html
+        }
+
+
         var sourceList = new FVideoSources();
         var sources = $('source', video ).each(function() {
             sourceList.addVideo( this.src, this.type, this.getAttribute('data-label'), this.getAttribute('data-flash-default') || false );
@@ -409,39 +417,39 @@ FVideo.activateAll = function( $callback ) {
         if( video.getAttribute('data-src')){ videoOptions.src = video.getAttribute('data-src'); }
 
 
-        /*
-        TODO: add attribute for comma-separated class list for the controls.
-        var controls = video.getAttribute('data-control-list');
-        if( controls !== undefined ) {
+        // TODO: add attribute for comma-separated class list for the controls.
+        var controls = video.getAttribute('data-controls-list');
+        if( controls !== undefined && controls !== null ) {
             controls = controls.replace(' ','');
             var classList = controls.split(',');
         }
-        */
-
-        // store controls class
-        var controlsClass = video.getAttribute('data-controls-class');
 
         // create options for video
         var options = new FVideoConfiguration( video.width, video.height, videoOptions, flashSwf );
 
+        /*
         // stop loading of all video elements
         $('video', this ).each(function(){
             this.pause();
             this.src = '';      // stop video download
             // TODO: include a check to only do this under FF3
-            this.load();        // initiate new load, required in FF 3.x as noted at http://blog.pearce.org.nz/2010/11/how-to-stop-video-or-audio-element.html
+            if( FEnvironment.firefox_3 )
+                this.load();        // initiate new load, required in FF 3.x as noted at http://blog.pearce.org.nz/2010/11/how-to-stop-video-or-audio-element.html
         });
+        */
 
         // clear out container contents
         this.innerHTML = '';
 
-        // create new FVideo obj
-        var fVideo = new FVideo( this, options, sourceList, $callback );
-
+        /*
         // build controls for video, if specified
         if(controlsClass) {
-            new window[controlsClass]( fVideo );
+            new window[controlsClass]( fVideo.model );
         }
+        */
+
+        // create new FVideo obj
+        var fVideo = new FVideo( this, options, sourceList, classList, $callback );
     });
 };
 

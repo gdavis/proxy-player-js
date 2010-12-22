@@ -1,4 +1,4 @@
-var FFullscreen = Class.create( FControl, {
+var FullscreenButton = Class.create( FControl, {
     initialize: function($super, $model, $controller, $container ) {
         $super( $model, $controller, $container );
         this.viewportWidth = 0;

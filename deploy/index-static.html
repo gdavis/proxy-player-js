@@ -5,21 +5,31 @@
     <link type="text/css" href="stylesheets/fdl-video.css" rel="stylesheet">
     <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.4.4/jquery.min.js"></script>
     <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/swfobject/2.2/swfobject.js"></script>
+
+    <!-- utils -->
     <script type="text/javascript" src="javascripts/utils/class.js"></script>
+    <script type="text/javascript" src="javascripts/utils/context.js"></script>
     <script type="text/javascript" src="javascripts/utils/mouse_util.js"></script>
     <script type="text/javascript" src="javascripts/utils/dom_util.js"></script>
     <script type="text/javascript" src="javascripts/utils/fdl-environment.js"></script>
+
+    <!-- video -->
     <script type="text/javascript" src="javascripts/fdl-video.js"></script>
-    <script type="text/javascript" src="javascripts/controls/fdl-video-controls-fullscreen.js"></script>
-    <script type="text/javascript" src="javascripts/controls/fdl-video-controls-time-display.js"></script>
-    <script type="text/javascript" src="javascripts/controls/fdl-video-controls-progressbar.js"></script>
-    <script type="text/javascript" src="javascripts/controls/fdl-video-controls-volume.js"></script>
-    <script type="text/javascript" src="javascripts/video/core/fdl-video-controls.js"></script>
     <script type="text/javascript" src="javascripts/video/proxy/fdl-proxy-html.js"></script>
     <script type="text/javascript" src="javascripts/video/proxy/fdl-proxy-flash.js"></script>
     <script type="text/javascript" src="javascripts/video/core/fdl-video-model.js"></script>
     <script type="text/javascript" src="javascripts/video/core/fdl-video-config.js"></script>
     <script type="text/javascript" src="javascripts/video/core/fdl-video-source.js"></script>
+
+    <!-- controls -->
+    <script type="text/javascript" src="javascripts/controls/fdl-control.js"></script>
+    <script type="text/javascript" src="javascripts/video/core/fdl-video-controls.js"></script>
+    <script type="text/javascript" src="javascripts/controls/fdl-video-controls-stop.js"></script>
+    <script type="text/javascript" src="javascripts/controls/fdl-video-controls-fullscreen.js"></script>
+    <script type="text/javascript" src="javascripts/controls/fdl-video-controls-time-display.js"></script>
+    <script type="text/javascript" src="javascripts/controls/fdl-video-controls-progressbar.js"></script>
+    <script type="text/javascript" src="javascripts/controls/fdl-video-controls-volume.js"></script>
+    <script type="text/javascript" src="javascripts/controls/fdl-video-controls-playpause.js"></script>
     <script type="text/javascript">
         $(document).ready(function() {
             FVideo.activateAll( function( $fvideo ) {
@@ -30,20 +40,20 @@
 </head>
 <body>
     <div id="video1" class="fdl-video">
-        <video width="320" height="240" data-volume=".5" data-controls="true" data-flash-swf="proxy-player.swf" poster="poster.png">
+        <video width="320" height="240" data-volume=".5" data-controls="true" data-flash-swf="proxy-player.swf" poster="media/poster.png">
             <source src="Source-Code.flv" type="video/flv" data-label="Sweet Video (m4v)" data-flash-default="true" />
             <source src="http://video-js.zencoder.com/oceans-clip.mp4" type="video/mp4" data-label="Sweet Video (m4v)"/>
             <source src="http://video-js.zencoder.com/oceans-clip.ogv" type="video/ogg" data-label="Sweet Video (OGG)"/>
         </video>
     </div>
     <div id="video2" class="fdl-video">
-        <video width="640" height="480" data-volume="0" data-autoplay="true" data-controls-class="FVideoControls">
+        <video width="640" height="480" data-volume="0" data-autoplay="true" data-controls-list="PlayPauseButton,StopButton">
             <source src="http://video-js.zencoder.com/oceans-clip.mp4" type="video/mp4" data-label="Sweet Video (m4v)" data-flash-default='true' />
             <source src="http://video-js.zencoder.com/oceans-clip.ogv" type="video/ogg" data-label="Sweet Video (OGG)"/>
         </video>
     </div>
     <div id="vid3" class="fdl-video">
-        <video width="720" height="588" data-autoplay="false" data-flash-swf="proxy-player.swf" data-controls-class="FVideoControls" poster="poster.png">
+        <video width="720" height="588" data-autoplay="false" data-volume=".5" data-flash-swf="proxy-player.swf" data-controls-list="ProgressBar,VolumeControl,FullscreenButton" poster="media/poster.png">
             <source src="http://video-js.zencoder.com/oceans-clip.mp4" type="video/mp4" data-label="Sweet Video (m4v)" data-flash-default='true' />
             <source src="http://video-js.zencoder.com/oceans-clip.ogv" type="video/ogg" data-label="Sweet Video (OGG)"/>
         </video>

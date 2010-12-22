@@ -1,4 +1,4 @@
-var FProgressBar = Class.create( FControl, {
+var ProgressBar = Class.create( FControl, {
 
     //initialize: function( $container, $video ) {
     initialize: function($super, $model, $controller, $container) {

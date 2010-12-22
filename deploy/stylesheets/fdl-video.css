@@ -32,7 +32,8 @@
     position: absolute;
     z-index:666;
     width: 100%;
-    height: 100%;
+    height: 20px;
+    bottom: 0;
 }
 
 .fdl-video .fdl-controls .fdl-hit-area {

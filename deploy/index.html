@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Factory Video (Dynamic)</title>
+    <link type="text/css" href="stylesheets/fdl-video.css" rel="stylesheet">
+    <script type="text/javascript" src="javascripts/fvideo.js"></script>
+    <script type="text/javascript">
+
+        var video;
+
+        $(document).ready(function() {
+
+//             var FVideoConfiguration = function ( $width, $height, $videoOptions, $swf, $variables, $parameters, $attributes ){
+            var options = new FVideoConfiguration( 636, 264, { poster:"media/poster.png", autoplay:true, volume:0 }, "proxy-player.swf" );
+
+            // create the video object
+            var sources = new FVideoSources();
+            sources.addVideo( 'http://video-js.zencoder.com/oceans-clip.mp4', 'video/mp4', 'Link Label', true );
+            sources.addVideo( 'http://video-js.zencoder.com/oceans-clip.ogv', 'video/ogg', 'Link Label' );
+
+//            var playbutton = DOMUtil.createElement('div', { className:'fdl-control fdl-play-pause' });
+
+            // test setting default controls for all FVideo instances.
+            FVideo.defaultControls = [PlayPauseButton,StopButton,'ProgressBar',TimeDisplay,VolumeControl,FullscreenButton];
+
+            //video = new FVideo( '#video1', options, sources, [PlayPauseButton,StopButton,'ProgressBar',TimeDisplay,VolumeControl,FullscreenButton], function() {
+            video = new FVideo( '#video1', options, sources, null, function() {
+                // ready handler
+            });
+        });
+    </script>
+    <style type="text/css">
+        .container {
+            /*margin-top: 100px;*/
+            /*margin-left: 100px;*/
+        }
+    </style>
+</head>
+<body>
+    <div>
+        <div class="container">
+            <div id="video1" class="fdl-video"></div>
+        </div>
+    </div>
+</body>
+</html>

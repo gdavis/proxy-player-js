@@ -1,6 +1,11 @@
+//= require <controls/FControl>
+//= require <utils/dom_util>
+//= require <utils/function_util>
+//= require <video/core/FVideoModel>
+
 var VolumeControl = Class.create( FControl, {
     
-    initialize: function($super, $model, $controller, $container/*, $numBars, $barWidth, $maxBarHeight*/ ) {
+    initialize: function($super, $model, $controller, $container ) {
         this.wrapper = false;
         this.progressBar = false;
         this.numBars = 7;

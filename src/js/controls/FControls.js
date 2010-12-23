@@ -1,18 +1,22 @@
-/*
-// method 1:
-var controls = new FControls( modelInstance, controllerInstance, HTMLContainer, [ PlayPauseButton, StopButton, ProgressBar, VolumeControl, FullscreenButton ]);
+//  method 1:
+//  var controls = new FControls( modelInstance, controllerInstance, HTMLContainer, [ PlayPauseButton, StopButton, ProgressBar, VolumeControl, FullscreenButton ]);
+//
+//  method 2:
+//  var controls = new FControls( fVideoInstance );
+//  controls.addControl( PlayPauseButton );
+//  controls.addControl( StopButton );
+//  ...
+//  controls.position();
+//
+//
+//  method 3:
+//  <video data-controls="PlayPauseButton,StopButton,ProgressBar,VolumeControl,FullscreenButton"></video>
 
-// method 2:
-var controls = new FControls( fVideoInstance );
-controls.addControl( PlayPauseButton );
-controls.addControl( StopButton );
-...
-controls.position();
 
-
-// method 3:
-<video data-controls="PlayPauseButton,StopButton,ProgressBar,VolumeControl,FullscreenButton"></video>
-*/
+//= require <utils/Class>
+//= require <utils/function_util>
+//= require <controls/FControl>
+//= require <video/core/FVideoModel>
 
 var FControls = Class.create({
     initialize: function( $model, $controller, $container ) {

@@ -1,3 +1,6 @@
+//= require <utils/Class>
+//= require <video/core/FVideoModel>
+
 /**
  * Proxy which controlls an HTML video object.
  */
@@ -15,7 +18,7 @@ var HTMLVideoProxy = Class.create({
         var source = document.createElement('source');
         source.src = $path;
         // don't add the 'type' attribute if we are in andriod.
-        if( !FEnvironment.android && $type !== undefined ){ source.type = $type; }
+        if( !EnvironmentUtil.android && $type !== undefined ){ source.type = $type; }
         $( this.video).append(source);
     },
 

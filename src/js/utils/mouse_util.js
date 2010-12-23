@@ -6,4 +6,4 @@ MouseUtil.getRelativeXFromEvent = function( $event, $relativeElement ){
       curleft += $relativeElement.offsetLeft;
     }
     return $event.clientX - curleft;
-}
+};

@@ -1,3 +1,5 @@
+//= require <utils/Class>
+
 var FVideoModel = Class.create({
 
     initialize: function( $dispatcher ) {
@@ -113,13 +115,3 @@ FVideoModel.STATE_PAUSED                = "paused";
 FVideoModel.STATE_STOPPED               = "stopped";
 FVideoModel.STATE_SEEKING               = "seeking";
 FVideoModel.STATE_ERROR                 = "error";
-
-/*
-// states
-FVideoModel.STATE_CONNECTING            = "FVideoModelEvent.Connecting";
-FVideoModel.STATE_BUFFERING             = "FVideoModelEvent.Buffering";
-FVideoModel.STATE_PLAYING               = "FVideoModelEvent.Playing";
-FVideoModel.STATE_STOPPED               = "FVideoModelEvent.Stopped";
-FVideoModel.STATE_PAUSED                = "FVideoModelEvent.Paused";
-FVideoModel.STATE_SEEKING               = "FVideoModelEvent.Seeking";
-        */

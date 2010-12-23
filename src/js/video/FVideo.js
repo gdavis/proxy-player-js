@@ -1,23 +1,26 @@
-/**
- * FVideo
- *
- * Requirements:
- *  jQuery library (1.4.4):
- *      https://ajax.googleapis.com/ajax/libs/jquery/1.4.4/jquery.min.js
- *  SWFObject (2.2)
- *      https://ajax.googleapis.com/ajax/libs/swfobject/2.2/swfobject.js
- *
- */
+//= require <utils/Class>
+//= require <utils/function_util>
+//= require <utils/dom_util>
+//= require <utils/function_util>
+//= require <utils/environment_util>
+//= require <controls/FControls>
+//= require <video/core/FVideoConfiguration>
+//= require <video/core/FVideoModel>
+//= require <video/core/FVideoSources>
+//= require <video/proxy/HTMLProxy>
+//= require <video/proxy/FlashProxy>
 
-/**
- * Creates an FVideo instance.
- * @param $element
- * @param $swfPlayerPath
- * @param $videoOptions
- * @param $flashOptions
- */
+//  CONTROLS: Be sure to omit any controls you don't plan on using.
+//= require <controls/PlayPauseButton>
+//= require <controls/StopButton>
+//= require <controls/ProgressBar>
+//= require <controls/TimeDisplay>
+//= require <controls/VolumeControl>
+//= require <controls/FullscreenButton>
 
 var FVideo = Class.create({
+
+    VERSION: '<%= FVIDEO_VERSION %>',
 
     initialize: function( $element, $options, $sources, $controlsClasses, $readyCallback ) {
         
@@ -29,7 +32,7 @@ var FVideo = Class.create({
 
         this.options = $options || new FVideoConfiguration();
         this.sources = $sources || new FVideoSources();
-        this.controlsClasses = $controlsClasses;
+        this.controlsClasses = $controlsClasses ? $controlsClasses : FVideo.defaultControls;
         this.readyCallback = $readyCallback;
 
         this.model = false;
@@ -379,12 +382,18 @@ var FVideo = Class.create({
 // events
 FVideo.EVENT_PLAYER_READY = "FVideo:PlayerReady";
 
-
-//FVideo.DEFAULT_CONTROLS = [PlayPauseButton,StopButton,ProgressBar,VolumeControl,FullscreenButton];
+// this value allows default controls to be specified for all video instances created.
+// when constructing a new instance and no controls are passed into the constructor, the player will check
+// for this variable and use these if defined.
+FVideo.defaultControls = null;
 
 // class variable for storing all created FVideo instances on the page.
 FVideo.instances = {};
 
+/**
+ * Searches the DOM and creates and activates all video players on the page.
+ * @param $callback
+ */
 FVideo.activateAll = function( $callback ) {
     
     $('.fdl-video').each( function() {
@@ -392,7 +401,7 @@ FVideo.activateAll = function( $callback ) {
         var video = $('video', this).get(0);
         video.pause();
         video.src = '';
-        if( FEnvironment.firefox_3 ) {
+        if( EnvironmentUtil.firefox_3 ) {
                 this.load();        // initiate new load, required in FF 3.x as noted at http://blog.pearce.org.nz/2010/11/how-to-stop-video-or-audio-element.html
         }
 
@@ -427,26 +436,8 @@ FVideo.activateAll = function( $callback ) {
         // create options for video
         var options = new FVideoConfiguration( video.width, video.height, videoOptions, flashSwf );
 
-        /*
-        // stop loading of all video elements
-        $('video', this ).each(function(){
-            this.pause();
-            this.src = '';      // stop video download
-            // TODO: include a check to only do this under FF3
-            if( FEnvironment.firefox_3 )
-                this.load();        // initiate new load, required in FF 3.x as noted at http://blog.pearce.org.nz/2010/11/how-to-stop-video-or-audio-element.html
-        });
-        */
-
         // clear out container contents
         this.innerHTML = '';
-
-        /*
-        // build controls for video, if specified
-        if(controlsClass) {
-            new window[controlsClass]( fVideo.model );
-        }
-        */
 
         // create new FVideo obj
         var fVideo = new FVideo( this, options, sourceList, classList, $callback );
@@ -482,77 +473,47 @@ FVideo.applyAttributes = function( $elem, $attr ) {
 };
 
 
-/**
- * Creates and returns a new object from two sets of objects by combining and overwriting values from the modified object.
- * @param $original
- * @param $modified
- */
-FVideo.mergeOptions = function( $original, $modified ) {
-    if( $modified === undefined ) { return $original; }
-    var obj = {};
-    var it;
-    // map original values.
-    for( it in $original ) {
-        obj[it] = $original[it];
-    }
-    // loop through all the modified options and overwrite the original value.
-    for( it in $modified ) {
-        // recurse through child objects
-        if(typeof $modified[it] === 'object' ) {
-            obj[it] = FVideo.mergeOptions($original[it], $modified[it]);
-        } else {
-            obj[it] = $modified[it];
-        }
-    }
-    return obj;
-};
-
-/*
-At time of writing (May 20, 2010), the iPad has a bug that prevents it from noticing anything but the first video source
-listed. Sadly, this means you will need to list your MP4 file first, followed by the free video formats. Sigh.
-
-http://diveintohtml5.org/video.html
-*/
-
-
-/*
-From: http://camendesign.com/code/video_for_everybody
-
-1. Ensure your server is using the correct mime-types. Firefox will not play the Ogg video if the mime-type is wrong. Place these lines in your .htaccess file to send the correct mime-types to browsers
-
-AddType video/ogg  .ogv
-AddType video/mp4  .mp4
-AddType video/webm .webm
-
-2. Replace "__VIDEO__.MP4" with the path to your video encoded to MP4 (a warning on using H.264) and
-replace "__VIDEO__.OGV" with the path to your video encoded to Ogg.
-Optionally you could also include a WebM video.
-
-3. Replace "__POSTER__.JPG" with the path to an image you want to act as a title screen to the video, it will be shown before the video plays, and as a representative image when the video is unable to play (Also replace “__TITLE__” for the poster image’s alt text). Not all browsers support the poster attribute, it’s advisable to encode the poster image into the first frame of your video.
-
-DO NOT INCLUDE THE poster ATTRIBUTE (<video poster="…">) FOR iPad / iPhone 3.x SUPPORT. There is a major bug with iPhone OS 3 that means that playback will not work on any HTML5 video tag that uses both the poster attribute and <source> elements. This was fixed in iPhone OS 4.0, but of course for now there will still be a large number of OS 3 users. This bug does not affect use of the poster image in the flashvars parameter, which you should retain
-
-4. Replace "__FLASH__.SWF" with the path to the Flash video player you are using. I use JW Player (download and place ‘player.swf’ in the right place), but this could be any Flash resource including YouTube. Sample code for using YouTube can be seen on the Video for Everybody YouTube Test Page
-
-5. Safari buffers the video automatically even if autobuffer is absent. This has been fixed in WebKit nightlies with a change to the HTML5 spec; the “preload="none"” attribute on the video element prevents autobuffering. A current bug in WebKit causes Safari to perpetually display “loading” until the play button is clicked
-
-6. The iPhone will not autoplay. This is done to save bandwidth which may cost some users.
-It is not a bug, it’s a feature
-
-7. HTML5 video on Android, even the latest version, is badly broken. Resolution support varies from one handset to the next, usually the fallback image doesn’t show and the code requires special adjustments. The Android emulator is completely useless. THERE IS NO WAY TO TEST ON ANDROID WITHOUT A PHYSICAL PHONE. BLAME GOOGLE. I would love to update the code to work better with Android, but until Google fixes their code or sends me a phone, I can’t do that. They’ve had only three years to do it so far
-
-8. Some web hosts, in trying to save bandwidth, gzip everything by default—including video files! In Firefox and Opera, seeking will not be possible or the video may not play at all if a video file is gzipped. If this is occurring to you please check your server / hosts and disable the gzipping of Ogg and other media files. You can switch off gzipping for video files in your .htaccess file by adding this line:
-
-SetEnvIfNoCase Request_URI \.(og[gv]|mp4|m4v|webm)$ no-gzip dont-vary
-
-With thanks to Bas van Bergen for this tip
-
-9. There are some instances where people will simply not be able to view the video inside the web-page (e.g. Opera Mobile / Mini). It is absolutely essential that you provide download links outside of the video to ensure your message gets through
-
-10. A current bug in Firefox means that when JavaScript is disabled (NoScript for example) the video controls do not display. For now, right-click on the video for the controls, use autoplay on your videos or rely on users allowing your site in NoScript
-
-11. The Eolas ‘Click to Activate’ issue affects Flash / QuickTime in Internet Explorer 6 / 7 as the ActiveX controls are not inserted using JavaScript—however Microsoft removed ‘Click to Activate’ in a later update patch. This issue will not affect users who have run Windows Update
-
-12. A parsing bug in Camino 2.0 / Firefox 3.0 means that the image element inside the video element will ‘leak’ outside of the video element. This is not visible however unless some kind of background image or colour is applied to that image element. You can stop this by either wrapping the video element in another element or modifying the code from “<source … />” to “<source …></source>”. This works, but will not validate as HTML5
-
-*/
+//    At time of writing (May 20, 2010), the iPad has a bug that prevents it from noticing anything but the first video source
+//    listed. Sadly, this means you will need to list your MP4 file first, followed by the free video formats. Sigh.
+//
+//    http://diveintohtml5.org/video.html
+//
+//
+//    From: http://camendesign.com/code/video_for_everybody
+//
+//    1. Ensure your server is using the correct mime-types. Firefox will not play the Ogg video if the mime-type is wrong. Place these lines in your .htaccess file to send the correct mime-types to browsers
+//
+//    AddType video/ogg  .ogv
+//    AddType video/mp4  .mp4
+//    AddType video/webm .webm
+//
+//    2. Replace "__VIDEO__.MP4" with the path to your video encoded to MP4 (a warning on using H.264) and
+//    replace "__VIDEO__.OGV" with the path to your video encoded to Ogg.
+//    Optionally you could also include a WebM video.
+//
+//    3. Replace "__POSTER__.JPG" with the path to an image you want to act as a title screen to the video, it will be shown before the video plays, and as a representative image when the video is unable to play (Also replace “__TITLE__” for the poster image’s alt text). Not all browsers support the poster attribute, it’s advisable to encode the poster image into the first frame of your video.
+//
+//    DO NOT INCLUDE THE poster ATTRIBUTE (<video poster="…">) FOR iPad / iPhone 3.x SUPPORT. There is a major bug with iPhone OS 3 that means that playback will not work on any HTML5 video tag that uses both the poster attribute and <source> elements. This was fixed in iPhone OS 4.0, but of course for now there will still be a large number of OS 3 users. This bug does not affect use of the poster image in the flashvars parameter, which you should retain
+//
+//    4. Replace "__FLASH__.SWF" with the path to the Flash video player you are using. I use JW Player (download and place ‘player.swf’ in the right place), but this could be any Flash resource including YouTube. Sample code for using YouTube can be seen on the Video for Everybody YouTube Test Page
+//    
+//    5. Safari buffers the video automatically even if autobuffer is absent. This has been fixed in WebKit nightlies with a change to the HTML5 spec; the “preload="none"” attribute on the video element prevents autobuffering. A current bug in WebKit causes Safari to perpetually display “loading” until the play button is clicked
+//
+//    6. The iPhone will not autoplay. This is done to save bandwidth which may cost some users.
+//    It is not a bug, it’s a feature
+//
+//    7. HTML5 video on Android, even the latest version, is badly broken. Resolution support varies from one handset to the next, usually the fallback image doesn’t show and the code requires special adjustments. The Android emulator is completely useless. THERE IS NO WAY TO TEST ON ANDROID WITHOUT A PHYSICAL PHONE. BLAME GOOGLE. I would love to update the code to work better with Android, but until Google fixes their code or sends me a phone, I can’t do that. They’ve had only three years to do it so far
+//
+//    8. Some web hosts, in trying to save bandwidth, gzip everything by default—including video files! In Firefox and Opera, seeking will not be possible or the video may not play at all if a video file is gzipped. If this is occurring to you please check your server / hosts and disable the gzipping of Ogg and other media files. You can switch off gzipping for video files in your .htaccess file by adding this line:
+//
+//    SetEnvIfNoCase Request_URI \.(og[gv]|mp4|m4v|webm)$ no-gzip dont-vary
+//
+//    With thanks to Bas van Bergen for this tip
+//
+//    9. There are some instances where people will simply not be able to view the video inside the web-page (e.g. Opera Mobile / Mini). It is absolutely essential that you provide download links outside of the video to ensure your message gets through
+//
+//    10. A current bug in Firefox means that when JavaScript is disabled (NoScript for example) the video controls do not display. For now, right-click on the video for the controls, use autoplay on your videos or rely on users allowing your site in NoScript
+//
+//    11. The Eolas ‘Click to Activate’ issue affects Flash / QuickTime in Internet Explorer 6 / 7 as the ActiveX controls are not inserted using JavaScript—however Microsoft removed ‘Click to Activate’ in a later update patch. This issue will not affect users who have run Windows Update
+//
+//    12. A parsing bug in Camino 2.0 / Firefox 3.0 means that the image element inside the video element will ‘leak’ outside of the video element. This is not visible however unless some kind of background image or colour is applied to that image element. You can stop this by either wrapping the video element in another element or modifying the code from “<source … />” to “<source …></source>”. This works, but will not validate as HTML5

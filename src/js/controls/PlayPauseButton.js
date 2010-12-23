@@ -1,3 +1,8 @@
+//= require <controls/FControl>
+//= require <utils/dom_util>
+//= require <utils/function_util>
+//= require <video/core/FVideoModel>
+
 var PlayPauseButton = Class.create( FControl, {
     initialize: function($super, $model, $controller, $container ) {
         $super( $model, $controller, $container );
@@ -20,6 +25,4 @@ var PlayPauseButton = Class.create( FControl, {
             this.controller.play();
         }
     }
-
-
 });

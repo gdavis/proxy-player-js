@@ -1,5 +1,9 @@
+//= require <utils/Class>
+//= require <utils/dom_util>
 
-// base control class
+/**
+ * Base class for creating all media element controls.
+ */
 var FControl = Class.create({
 
     initialize: function($model, $controller, $container ) {

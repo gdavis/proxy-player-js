@@ -1,3 +1,6 @@
+//= require <utils/Class>
+//= require <video/core/FVideoModel>
+
 /**
  * Proxy which controls a Flash video object.
  */

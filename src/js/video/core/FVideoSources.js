@@ -1,3 +1,5 @@
+//= require <utils/Class>
+
 var FVideoSources = Class.create({
     initialize: function() {
         this.videos = [];

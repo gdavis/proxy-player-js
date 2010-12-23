@@ -1,6 +1,11 @@
+//= require <controls/FControl>
+//= require <utils/function_util>
+//= require <utils/dom_util>
+//= require <utils/mouse_util>
+//= require <video/core/FVideoModel>
+
 var ProgressBar = Class.create( FControl, {
 
-    //initialize: function( $container, $video ) {
     initialize: function($super, $model, $controller, $container) {
         $super( $model, $controller, $container );
     },

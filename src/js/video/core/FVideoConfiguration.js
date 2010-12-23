@@ -1,3 +1,5 @@
+// require <utils/class>
+
 var FVideoConfiguration = Class.create({
     initialize: function ( $width, $height, $videoOptions, $swf, $variables, $parameters, $attributes ) {
         $swf                            = $swf || FVideoConfiguration.DEFAULT_SWF;
@@ -8,10 +10,10 @@ var FVideoConfiguration = Class.create({
                                             version:"10",
                                             swf: $swf,
                                             variables: $variables,
-                                            params: FVideo.mergeOptions( FVideoConfiguration.DEFAULT_FLASH_PARAMS, $parameters ),
-                                            attributes: FVideo.mergeOptions( FVideoConfiguration.DEFAULT_FLASH_ATTRIBUTES, $attributes )
+                                            params: FVideoConfiguration.mergeOptions( FVideoConfiguration.DEFAULT_FLASH_PARAMS, $parameters ),
+                                            attributes: FVideoConfiguration.mergeOptions( FVideoConfiguration.DEFAULT_FLASH_ATTRIBUTES, $attributes )
                                           };
-        this.videoOptions               = FVideo.mergeOptions( FVideoConfiguration.DEFAULT_VIDEO_OPTIONS, $videoOptions );
+        this.videoOptions               = FVideoConfiguration.mergeOptions( FVideoConfiguration.DEFAULT_VIDEO_OPTIONS, $videoOptions );
         this.videoOptions.width         = this.width;
         this.videoOptions.height        = this.height;
     }
@@ -36,3 +38,28 @@ FVideoConfiguration.DEFAULT_FLASH_PARAMS =     {    scale:"noscale",
                                                     wmode:"transparent",
                                                     allowFullScreen:"true"
                                                     };
+
+/**
+ * Creates and returns a new object from two sets of objects by combining and overwriting values from the modified object.
+ * @param $original
+ * @param $modified
+ */
+FVideoConfiguration.mergeOptions = function( $original, $modified ) {
+    if( $modified === undefined ) { return $original; }
+    var obj = {};
+    var it;
+    // map original values.
+    for( it in $original ) {
+        obj[it] = $original[it];
+    }
+    // loop through all the modified options and overwrite the original value.
+    for( it in $modified ) {
+        // recurse through child objects
+        if(typeof $modified[it] === 'object' ) {
+            obj[it] = FVideoConfiguration.mergeOptions($original[it], $modified[it]);
+        } else {
+            obj[it] = $modified[it];
+        }
+    }
+    return obj;
+};

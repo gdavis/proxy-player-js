@@ -71,8 +71,13 @@ module FVideoHelper
       :source_files   => [options[:bundle]],
       :strip_comments => options[:strip_comments]
     )
-    libs_secretary.concatenation.save_to(options[:destination])
+
     puts "\nConcatenating 3rd party libararies with FVideo to: \n" + options[:destination]
+    libs_secretary.concatenation.save_to(options[:destination])
+
+    # remove the temporary minified file
+    File.delete(options[:source_temp_dest])
+
     puts "\nWinner, winner, chicken dinner"
   end
 

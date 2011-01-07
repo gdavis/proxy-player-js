@@ -177,14 +177,7 @@ var FVideo = Class.create({
         this.setVolume( this.options.videoOptions.volume );
         this.setSize( this.options.width, this.options.height );
 
-        if( this.controlsClasses ) {
-            if( this.controlsClasses.length > 0 ) {
-                this.controlsContainer = DOMUtil.createElement( 'div', { className:'fdl-controls' }, this.container );
-                this.controlsContainer.onmousedown = function(){return false;};
-                this.controlsContainer.onselectstart = function(){return false;};
-                this.controls = new FControls(this.model, this, this.controlsContainer, this.controlsClasses);
-            }
-        }
+        this._createControls();
 
         // fire ready callback.
         this.readyCallback( this );
@@ -320,6 +313,17 @@ var FVideo = Class.create({
 
         // we don't yet have access to the object tag, so it is directly set in the callback method from embedding the SWF
         return null;
+    },
+
+    _createControls: function() {
+        if( this.controlsClasses ) {
+            if( this.controlsClasses.length > 0 ) {
+                this.controlsContainer = DOMUtil.createElement( 'div', { className:'fdl-controls' }, this.container );
+                this.controlsContainer.onmousedown = function(){return false;};
+                this.controlsContainer.onselectstart = function(){return false;};
+                this.controls = new FControls(this.model, this, this.controlsContainer, this.controlsClasses);
+            }
+        }
     },
 
     _findFlashPlayer: function(flashID) {
@@ -491,20 +495,20 @@ FVideo.applyAttributes = function( $elem, $attr ) {
 //    replace "__VIDEO__.OGV" with the path to your video encoded to Ogg.
 //    Optionally you could also include a WebM video.
 //
-//    3. Replace "__POSTER__.JPG" with the path to an image you want to act as a title screen to the video, it will be shown before the video plays, and as a representative image when the video is unable to play (Also replace Ò__TITLE__Ó for the poster imageÕs alt text). Not all browsers support the poster attribute, itÕs advisable to encode the poster image into the first frame of your video.
+//    3. Replace "__POSTER__.JPG" with the path to an image you want to act as a title screen to the video, it will be shown before the video plays, and as a representative image when the video is unable to play (Also replace ï¿½__TITLE__ï¿½ for the poster imageï¿½s alt text). Not all browsers support the poster attribute, itï¿½s advisable to encode the poster image into the first frame of your video.
 //
-//    DO NOT INCLUDE THE poster ATTRIBUTE (<video poster="É">) FOR iPad / iPhone 3.x SUPPORT. There is a major bug with iPhone OS 3 that means that playback will not work on any HTML5 video tag that uses both the poster attribute and <source> elements. This was fixed in iPhone OS 4.0, but of course for now there will still be a large number of OS 3 users. This bug does not affect use of the poster image in the flashvars parameter, which you should retain
+//    DO NOT INCLUDE THE poster ATTRIBUTE (<video poster="ï¿½">) FOR iPad / iPhone 3.x SUPPORT. There is a major bug with iPhone OS 3 that means that playback will not work on any HTML5 video tag that uses both the poster attribute and <source> elements. This was fixed in iPhone OS 4.0, but of course for now there will still be a large number of OS 3 users. This bug does not affect use of the poster image in the flashvars parameter, which you should retain
 //
-//    4. Replace "__FLASH__.SWF" with the path to the Flash video player you are using. I use JW Player (download and place Ôplayer.swfÕ in the right place), but this could be any Flash resource including YouTube. Sample code for using YouTube can be seen on the Video for Everybody YouTube Test Page
+//    4. Replace "__FLASH__.SWF" with the path to the Flash video player you are using. I use JW Player (download and place ï¿½player.swfï¿½ in the right place), but this could be any Flash resource including YouTube. Sample code for using YouTube can be seen on the Video for Everybody YouTube Test Page
 //    
-//    5. Safari buffers the video automatically even if autobuffer is absent. This has been fixed in WebKit nightlies with a change to the HTML5 spec; the Òpreload="none"Ó attribute on the video element prevents autobuffering. A current bug in WebKit causes Safari to perpetually display ÒloadingÓ until the play button is clicked
+//    5. Safari buffers the video automatically even if autobuffer is absent. This has been fixed in WebKit nightlies with a change to the HTML5 spec; the ï¿½preload="none"ï¿½ attribute on the video element prevents autobuffering. A current bug in WebKit causes Safari to perpetually display ï¿½loadingï¿½ until the play button is clicked
 //
 //    6. The iPhone will not autoplay. This is done to save bandwidth which may cost some users.
-//    It is not a bug, itÕs a feature
+//    It is not a bug, itï¿½s a feature
 //
-//    7. HTML5 video on Android, even the latest version, is badly broken. Resolution support varies from one handset to the next, usually the fallback image doesnÕt show and the code requires special adjustments. The Android emulator is completely useless. THERE IS NO WAY TO TEST ON ANDROID WITHOUT A PHYSICAL PHONE. BLAME GOOGLE. I would love to update the code to work better with Android, but until Google fixes their code or sends me a phone, I canÕt do that. TheyÕve had only three years to do it so far
+//    7. HTML5 video on Android, even the latest version, is badly broken. Resolution support varies from one handset to the next, usually the fallback image doesnï¿½t show and the code requires special adjustments. The Android emulator is completely useless. THERE IS NO WAY TO TEST ON ANDROID WITHOUT A PHYSICAL PHONE. BLAME GOOGLE. I would love to update the code to work better with Android, but until Google fixes their code or sends me a phone, I canï¿½t do that. Theyï¿½ve had only three years to do it so far
 //
-//    8. Some web hosts, in trying to save bandwidth, gzip everything by defaultÑincluding video files! In Firefox and Opera, seeking will not be possible or the video may not play at all if a video file is gzipped. If this is occurring to you please check your server / hosts and disable the gzipping of Ogg and other media files. You can switch off gzipping for video files in your .htaccess file by adding this line:
+//    8. Some web hosts, in trying to save bandwidth, gzip everything by defaultï¿½including video files! In Firefox and Opera, seeking will not be possible or the video may not play at all if a video file is gzipped. If this is occurring to you please check your server / hosts and disable the gzipping of Ogg and other media files. You can switch off gzipping for video files in your .htaccess file by adding this line:
 //
 //    SetEnvIfNoCase Request_URI \.(og[gv]|mp4|m4v|webm)$ no-gzip dont-vary
 //
@@ -514,6 +518,6 @@ FVideo.applyAttributes = function( $elem, $attr ) {
 //
 //    10. A current bug in Firefox means that when JavaScript is disabled (NoScript for example) the video controls do not display. For now, right-click on the video for the controls, use autoplay on your videos or rely on users allowing your site in NoScript
 //
-//    11. The Eolas ÔClick to ActivateÕ issue affects Flash / QuickTime in Internet Explorer 6 / 7 as the ActiveX controls are not inserted using JavaScriptÑhowever Microsoft removed ÔClick to ActivateÕ in a later update patch. This issue will not affect users who have run Windows Update
+//    11. The Eolas ï¿½Click to Activateï¿½ issue affects Flash / QuickTime in Internet Explorer 6 / 7 as the ActiveX controls are not inserted using JavaScriptï¿½however Microsoft removed ï¿½Click to Activateï¿½ in a later update patch. This issue will not affect users who have run Windows Update
 //
-//    12. A parsing bug in Camino 2.0 / Firefox 3.0 means that the image element inside the video element will ÔleakÕ outside of the video element. This is not visible however unless some kind of background image or colour is applied to that image element. You can stop this by either wrapping the video element in another element or modifying the code from Ò<source É />Ó to Ò<source É></source>Ó. This works, but will not validate as HTML5
+//    12. A parsing bug in Camino 2.0 / Firefox 3.0 means that the image element inside the video element will ï¿½leakï¿½ outside of the video element. This is not visible however unless some kind of background image or colour is applied to that image element. You can stop this by either wrapping the video element in another element or modifying the code from ï¿½<source ï¿½ />ï¿½ to ï¿½<source ï¿½></source>ï¿½. This works, but will not validate as HTML5

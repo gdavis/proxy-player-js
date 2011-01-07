@@ -31,7 +31,7 @@ function fire() {
 
 
 
-
+// original code adapted from Dean Edwards. http://dean.edwards.name/weblog/2005/10/add-event2/
 function addEvent(element, type, handler) {
 	if (element.addEventListener) {
 		element.addEventListener(type, handler, false);

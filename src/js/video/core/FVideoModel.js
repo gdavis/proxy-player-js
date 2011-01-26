@@ -108,6 +108,7 @@ FVideoModel.EVENT_PLAYER_STATE_CHANGE   = "FVideoModelEvent.PlayerStateChange";
 FVideoModel.EVENT_TOGGLE_FULLSCREEN     = "FVideoModelEvent.ToggleFullscreen";
 
 // states
+FVideoModel.STATE_READY                 = "ready";
 FVideoModel.STATE_LOADING               = "loading";
 FVideoModel.STATE_BUFFERING             = "buffering";
 FVideoModel.STATE_PLAYING               = "playing";

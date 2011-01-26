@@ -179,6 +179,9 @@ var FVideo = Class.create({
 
         this._createControls();
 
+        // init player to the ready state.
+        this._updatePlayerState(FVideoModel.STATE_READY);
+
         // fire ready callback.
         this.readyCallback( this );
 

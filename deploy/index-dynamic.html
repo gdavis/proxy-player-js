@@ -16,6 +16,7 @@
 
     <!-- video -->
     <script type="text/javascript" src="../src/js/video/FVideo.js"></script>
+    <script type="text/javascript" src="../src/js/video/proxy/Proxy.js"></script>
     <script type="text/javascript" src="../src/js/video/proxy/HTMLProxy.js"></script>
     <script type="text/javascript" src="../src/js/video/proxy/FlashProxy.js"></script>
     <script type="text/javascript" src="../src/js/video/core/FVideoModel.js"></script>
@@ -38,7 +39,7 @@
 
         $(document).ready(function() {
 
-            var options = new FVideoConfiguration( 636, 264, { poster:"media/poster.png", autoplay:true, volume:0 }, "proxy-player.swf" );
+            var options = new FVideoConfiguration( 636, 264, { poster:"media/poster.png", autoplay:false, volume:0 }, "proxy-player.swf" );
 
             // create the video object
             var sources = new FVideoSources();

@@ -1,16 +1,14 @@
 //= require <utils/Class>
+//= require <video/proxy/Proxy>
 //= require <video/core/FVideoModel>
 
 /**
  * Proxy which controlls an HTML video object.
  */
-var HTMLVideoProxy = Class.create({
-    initialize: function( $model, $controller, $video ) {
-        this.model = $model;
-        this.controller = $controller;
-        this.video = $video;
-        this.bufferInterval = false;
-        this.setListeners( this.video );
+var HTMLVideoProxy = Class.create( Proxy, {
+    initialize: function( $super, $model, $controller, $video ) {
+      this.bufferInterval = false;
+      $super( $model, $controller, $video );
     },
 
     // TODO: Refactor into FVideo

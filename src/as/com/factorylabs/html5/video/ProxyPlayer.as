@@ -78,10 +78,18 @@ package com.factorylabs.html5.video
 				_player.play( _url );
 			}
 			else {
-				log('as: calling basic play');
-				_player.play();
-			}
 				
+				// check if the url is present, if not, its out first time calling play.
+				if( !_player.url ) {
+					log('as: calling play for the first time');
+					_player.play( _url );
+				}
+				// otherwise, the url is loaded and we're likely resuming from pause.
+				else {
+					log('as: resuming player with basic play command.');
+					_player.play();
+				}
+			}
 		}
 		
 		public function seek( $time :Number ) :void
@@ -145,13 +153,6 @@ package com.factorylabs.html5.video
 			_player = new FVideo( this, { width:_width, height:_height, volume: _volume });
 		}
 		
-//		private function handlePlayerClick( $e :MouseEvent ) :void
-//		{
-//			log('player click');
-//			if( _player.playing ) _player.pause();
-//			else _player.play();
-//		}
-		
 		protected function registerCallbacks() :void
 		{
 //			log('registering callbacks on object id: ' + ExternalInterface.objectID );
@@ -161,8 +162,7 @@ package com.factorylabs.html5.video
 			ExternalInterface.addCallback( '_seek', _player.seek );
 			ExternalInterface.addCallback( '_stop', _player.stop );
 			ExternalInterface.addCallback( '_setVolume', setVolume );			ExternalInterface.addCallback( '_isPlaying', getIsPlaying );
-			ExternalInterface.addCallback( '_getVolume', getVolume );
-		}
+			ExternalInterface.addCallback( '_getVolume', getVolume );		}
 		
 		protected function addVideoListeners() :void
 		{
@@ -187,6 +187,7 @@ package com.factorylabs.html5.video
 			
 			var autoPlay :String = _vars.get('autoplay');
 			if( autoPlay && autoPlay.match(/true/i))  {
+				log('found autoplay... playing!');
 				_player.play( _url );
 			}
 		}

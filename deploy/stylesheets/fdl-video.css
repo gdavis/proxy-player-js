@@ -72,6 +72,7 @@
 }
 
 
+.ready .fdl-controls .fdl-play-pause,
 .buffering .fdl-controls .fdl-play-pause,
 .stopped .fdl-controls .fdl-play-pause,
 .paused .fdl-controls .fdl-play-pause {

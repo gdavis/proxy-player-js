@@ -35,6 +35,17 @@ var FControls = Class.create({
         this.position();
     },
 
+    destroy: function() {
+      $(this.model.dispatcher).unbind(FVideoModel.EVENT_RESIZE, this.position.context(this) );
+      var i, dl = this.controls.length;
+      for( i=0; i<dl; i++ ) {
+        var control = this.controls[i];
+        if( typeof control == 'function' ) {
+          control.destroy();
+        }
+      }
+    },
+
     addControl: function( $controlClass ) {
         if(typeof $controlClass === 'string') {
             this.controls.push(new window[$controlClass](this.model, this.controller, this.container));

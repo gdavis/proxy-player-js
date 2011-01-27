@@ -27,5 +27,9 @@ var FControl = Class.create({
 
     update: function() {
         // called when updates occur in order to refresh the controls visual state.
+    },
+
+    destroy: function() {
+      // called to clean up the control for garbage collection
     }
 });

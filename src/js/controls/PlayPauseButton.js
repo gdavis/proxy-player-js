@@ -17,6 +17,10 @@ var PlayPauseButton = Class.create( FControl, {
         $(this.element).click( this.handleClick.context(this) );
     },
 
+    destroy: function() {
+      $(this.element).unbind( 'click', this.handleClick.context(this));
+    },
+
     handleClick: function() {
         if( this.model.getPlaying() ) {
             this.controller.pause();

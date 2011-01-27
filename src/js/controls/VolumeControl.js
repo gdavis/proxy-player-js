@@ -33,7 +33,6 @@ var VolumeControl = Class.create( FControl, {
     },
 
     setListeners: function() {
-        var self = this;
         $( this.model.dispatcher ).bind(FVideoModel.EVENT_VOLUME_UPDATE, this.update.context(this) );
     },
 
@@ -47,6 +46,13 @@ var VolumeControl = Class.create( FControl, {
             }
             else{ $(child).removeClass('on');}
         }
+    },
+
+    destroy: function() {
+      $(this.element).unbind( 'mousedown', this.handleMouseDown.context(this));
+      $( this.model.dispatcher ).unbind(FVideoModel.EVENT_VOLUME_UPDATE, this.update.context(this));
+      $( this.element ).unbind('mousemove');
+      $( document ).unbind('mouseup');
     },
 
     handleMouseDown: function( $e ) {

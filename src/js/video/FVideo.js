@@ -20,370 +20,441 @@
 
 var FVideo = Class.create({
 
-    VERSION: '<%= FVIDEO_VERSION %>',
+  VERSION: '<%= FVIDEO_VERSION %>',
 
-    initialize: function( $element, $options, $sources, $controlsClasses, $readyCallback ) {
-        
-        if (typeof $element === 'string' ) {
-            this.container = $( $element ).get(0);
-        } else {
-            this.container = $element;
-        }
+  initialize: function($element, $options, $sources, $controlsClasses, $readyCallback) {
 
-        this.options = $options || new FVideoConfiguration();
-        this.sources = $sources || new FVideoSources();
-        this.controlsClasses = $controlsClasses ? $controlsClasses : FVideo.defaultControls;
-        this.readyCallback = $readyCallback;
-
-        this.model = false;
-        this.proxy = false;
-        this.controls = false;
-
-        this._isVideoReady = false;
-        this._isVideoEmbedded = false;
-        this._videoElement = false;
-        this._useHTMLVideo = true;
-        this._initialized = false;
-        this._isReady = false;
-        this._lastState = '';
-        
-        this._init();
-    },
-    
-    //////////////////////////////////////////////////////////////////////////////////
-    // Public API
-    //////////////////////////////////////////////////////////////////////////////////
-
-    // actions
-
-    load: function() {
-        this.proxy.load();
-    },
-
-    play: function( $url ) {
-        if( $url ) {
-            this.proxy.play( $url );
-        }
-        else {
-            if( this.model.getPlaying() ) {
-                this.proxy.pause();
-            }
-            else {
-                this.proxy.play();
-            }
-        }
-    },
-
-    pause: function() {
-        this.proxy.pause();
-    },
-
-    stop: function() {
-        this.proxy.stop();
-    },
-
-    seek: function( $time ) {
-        this.proxy.seek( parseFloat( $time ));
-    },
-
-
-    // adjustments
-
-    setSize: function( $width, $height ) {
-        this.model.setSize( $width, $height );
-    },
-    
-    getWidth: function() { return this.model.getWidth(); },
-    setWidth: function( $width ) {
-        this.model.setWidth( $width );
-    },
-
-    getHeight: function() { return this.model.getHeight(); },
-    setHeight: function( $height ) {
-        this.model.setHeight( $height );
-    },
-
-    getTime: function() { return this.proxy.getTime(); },
-
-    getVolume: function() { return this.model.getVolume(); },
-    setVolume: function( $vol ) {
-        this.model.setVolume( $vol );
-    },
-
-    getFullscreen: function() { return this.model.getFullscreen(); },
-    setFullscreen: function( $value ) {
-        this.model.setFullscreen( $value );
-    },
-
-
-    // utility
-
-    addVideoSource: function( $path, $type ) {
-        this.proxy.addVideoSource( $path, $type );
-    },
-
-    /**
-     * Forces the FVideo instance to remove any HTML5 <video> tags, and replace
-     * with the Flash fallback SWF. This method is typically internally called
-     * when the <video> tag encounters an error.
-     */
-    fallback: function() {
-        this.player.innerHTML = '';
-        this._createSourceAnchors( this.player );
-    },
-
-    destroy: function() {
-        if( this.player ) {
-            if( this.player.parentNode ) {
-                this.player.parentNode.removeChild( this.player );
-            }
-        }
-    },
-
-    setVideo: function( $video ) {
-        this._videoElement = $( "#"+ $video.id ).get(0);
-        if( this._videoElement ){ this._isVideoEmbedded = true; }
-    },
-
-
-    //////////////////////////////////////////////////////////////////////////////////
-    // Methods called from the video player to update state
-    //////////////////////////////////////////////////////////////////////////////////
-
-    _videoReady: function() {
-        this._isVideoReady = true;
-        this._checkReady();
-    },
-
-    // called immediately when under html5, by flash when it has initialized if not
-    _startupVideo: function() {
-
-        if( this._isReady ) return;
-        this._isReady = true;
-
-        // create proxy object
-        this.proxy = this._createVideoProxy();
-
-        // create source tags
-        var dl = this.sources.videos.length;
-        for( var i = 0; i<dl; i++ ) {
-            var source = this.sources.videos[ i ];
-            this.addVideoSource( source.file, source.type );
-        }
-
-        // sync relevant values from the player onto the model.
-        // by setting these on the model we also dispatch events which update the UI to its default state.
-        // it also allows us to update the starting volume on the flash when it is ready.
-        this.setVolume( this.options.videoOptions.volume );
-        this.setSize( this.options.width, this.options.height );
-
-        this._createControls();
-
-        // init player to the ready state.
-        this._updatePlayerState(FVideoModel.STATE_READY);
-
-        // fire ready callback.
-        this.readyCallback( this );
-
-        // fire DOM event
-        $(this.container).trigger(FVideo.EVENT_PLAYER_READY);
-    },
-
-    _updatePlayheadTime: function( $time ){
-        this.model.setTime( $time );
-    },
-
-    _updateDuration: function( $duration ) {
-        this.model.setDuration( $duration );
-    },
-
-    _updateIsPlaying: function( $value ) {
-        this.model.setPlaying( $value );
-    },
-
-    _updatePlayerState: function( $state ) {
-        this.model.setPlayerState( $state );
-    },
-
-    _updateVolume: function( $volume ) {
-        this.model.setVolume( $volume );
-    },
-
-    _updateLoadProgress: function( $bytesLoaded, $bytesTotal ) {
-        this.model.setBytesTotal( $bytesTotal );
-        this.model.setBytesLoaded( $bytesLoaded );
-    },
-
-
-    //////////////////////////////////////////////////////////////////////////////////
-    // Private API
-    //////////////////////////////////////////////////////////////////////////////////
-
-    _init: function() {
-
-        // create container for the player
-        this.player = DOMUtil.createElement( 'div', {className:'player'}, this.container );
-
-        // create a uniquely named player container for the video. used for flash fallback
-        this.playerId = parseInt( Math.random() * 100000, 10 );
-        FVideo.instances[this.playerId] = this;
-
-        // create page elements
-        this._useHTMLVideo = this._canBrowserPlayVideo();
-        this._videoElement = this._createVideo();
-
-        // brainzzzzz
-        this.model = new FVideoModel( this.container );
-
-        // listen for model events
-        this._addModelListeners();
-
-        // if we're using html5 video, we're ready to move on.
-        if( this._useHTMLVideo ) { this._videoReady(); }
-        // otherwise, we wait for flash to call _videoReady and we adjust our size while we wait.
-        else { this.setSize( this.options.width, this.options.height ); }
-    },
-
-    _checkReady: function() {
-        if( this._isVideoReady && this._isVideoEmbedded ) {
-            this._startupVideo();
-        }
-    },
-
-    _canBrowserPlayVideo: function() {
-        var vid = document.createElement('video');
-        var canPlay = vid.play;
-        return canPlay !== undefined;
-//        return false;
-    },
-
-    _createVideo: function() {
-        if( this._useHTMLVideo ) { return this._createHTMLVideoObject(); }
-        else { return this._createFlashVideoObject(); }
-    },
-
-    _createHTMLVideoObject: function() {
-        var video = document.createElement('video');
-        FVideo.applyAttributes( video, this.options.videoOptions );
-        this._createSourceAnchors( video );
-        this.player.appendChild( video );
-        this._isVideoEmbedded = true;
-        return video;
-    },
-
-    _createSourceAnchors: function( $el ) {
-        // write anchor fallback tags
-        var dl = this.sources.videos.length;
-        for( var i = 0; i < dl; i++ ) {
-            var source = this.sources.videos[ i ];
-            var anchor = document.createElement('a');
-            anchor.href = source.file;
-            anchor.setAttribute('data-type', source.type);
-            anchor.innerHTML = source.label;
-            $el.appendChild( anchor );
-        }
-    },
-
-    _createFlashVideoObject: function() {
-
-        var replaceID = 'player-wrapper-' + this.playerId;
-        var flashID = "fdl-player-" + this.playerId;
-
-        // create empty div for swfobject to replace
-        DOMUtil.createElement( 'div', { id:replaceID }, this.player );
-
-        // map the default video file as the source for flash.
-        this.options.flashOptions.attributes.id = flashID;
-        this.options.flashOptions.variables.playerId = this.playerId;
-        this.options.flashOptions.variables.src = this.sources.flashVideo;
-        this.options.flashOptions.variables.autoplay = this.options.videoOptions.autoplay;
-
-        // embed the SWF
-        var self = this;
-        swfobject.embedSWF( this.options.flashOptions.swf,
-                            replaceID,
-                            this.options.width,
-                            this.options.height,
-                            this.options.flashOptions.version,
-                            this.options.flashOptions.expressInstall,
-                            this.options.flashOptions.variables,
-                            this.options.flashOptions.params,
-                            this.options.flashOptions.attributes
-                            );
-
-        // using the swfobject callback in IE causes issues, so we use a interval to lookup our flash element.
-        this._findFlashPlayer(flashID);
-
-        // we don't yet have access to the object tag, so it is directly set in the callback method from embedding the SWF
-        return null;
-    },
-
-    _createControls: function() {
-        if( this.controlsClasses ) {
-            if( this.controlsClasses.length > 0 ) {
-                this.controlsContainer = DOMUtil.createElement( 'div', { className:'fdl-controls' }, this.container );
-                this.controlsContainer.onmousedown = function(){return false;};
-                this.controlsContainer.onselectstart = function(){return false;};
-                this.controls = new FControls(this.model, this, this.controlsContainer, this.controlsClasses);
-            }
-        }
-    },
-
-    _findFlashPlayer: function(flashID) {
-        var self = this;
-        self.flashFinderInterval = setInterval(function() {
-            var flash_element = $('#' + flashID);
-            if(flash_element.length > 0) {
-                self.setVideo( flash_element.get(0) );
-                self._checkReady();
-                clearInterval(self.flashFinderInterval);
-            }
-        }, 10);
-    },
-
-    _createVideoProxy: function() {
-        if( this._useHTMLVideo ) { return new HTMLVideoProxy( this.model, this, this._videoElement ); }
-        else { return new FlashVideoProxy( this.model, this, this._videoElement ); }
-    },
-
-    _enterFullscreen: function() {
-        $(this.container).addClass('fdl-fullscreen');
-    },
-    
-    _exitFullscreen: function() {
-        $(this.container).removeClass('fdl-fullscreen');
-    },
-
-    _addModelListeners: function() {
-        $(this.model.dispatcher).bind(FVideoModel.EVENT_RESIZE, this._handleResize.context(this) );
-        $(this.model.dispatcher).bind(FVideoModel.EVENT_PLAYER_STATE_CHANGE, this._handleStateChange.context(this) );
-        $(this.model.dispatcher).bind(FVideoModel.EVENT_TOGGLE_FULLSCREEN, this._handleFullscreen.context(this) );
-    },
-
-    // applies the current state as a css class to the video container
-    _handleStateChange: function() {
-        $(this.container).removeClass(this._lastState);
-        this._lastState = this.model.getPlayerState();
-        $(this.container).addClass(this._lastState);
-    },
-
-    _handleResize: function() {
-        var wv = this.model.getWidth();
-        var hv = this.model.getHeight();
-        var wStr = typeof wv == 'string' ? wv : wv + "px";
-        var hStr = typeof hv == 'string' ? hv : hv + "px";
-        this.container.style.width = wStr;
-        this.container.style.height = hStr;
-    },
-
-    _handleFullscreen: function() {
-        if( this.model.getFullscreen() ) {
-            this._enterFullscreen();
-        }
-        else {
-            this._exitFullscreen();
-        }
+    if (typeof $element === 'string') {
+      this.container = $($element).get(0);
+    } else {
+      this.container = $element;
     }
+
+    this.options = $options || new FVideoConfiguration();
+    this.sources = $sources || new FVideoSources();
+    this.controlsClasses = $controlsClasses ? $controlsClasses : FVideo.defaultControls;
+    this.readyCallback = $readyCallback;
+
+    this.model = false;
+    this.proxy = false;
+    this.controls = false;
+
+    this._isVideoReady = false;
+    this._isVideoEmbedded = false;
+    this._videoElement = false;
+    this._useHTMLVideo = true;
+    this._initialized = false;
+    this._isReady = false;
+    this._lastState = '';
+
+    this._init();
+  },
+
+  //////////////////////////////////////////////////////////////////////////////////
+  // Public API
+  //////////////////////////////////////////////////////////////////////////////////
+
+  // actions
+
+  destroy: function() {
+    $(this.container).removeClass(this.model.getPlayerState());
+    this._removeModelListeners();
+    this.proxy.destroy();
+    this.controls.destroy();
+    this.container.innerHTML = '';
+    delete this.container;
+    delete this._videoElement;
+    delete this.sources;
+    delete this.options;
+    delete this.controlsClasses;
+    delete this.readyCallback;
+    delete this.model;
+    delete this.proxy;
+    delete this.controls;
+  },
+
+  load: function() {
+    this.proxy.load();
+  },
+
+  play: function($url) {
+    if ($url) {
+      this.proxy.play($url);
+    }
+    else {
+      if (this.model.getPlaying()) {
+        this.proxy.pause();
+      }
+      else {
+        this.proxy.play();
+      }
+    }
+  },
+
+  pause: function() {
+    this.proxy.pause();
+  },
+
+  stop: function() {
+    this.proxy.stop();
+  },
+
+  seek: function($time) {
+    this.proxy.seek(parseFloat($time));
+  },
+
+
+  // adjustments
+
+  setSize: function($width, $height) {
+    this.model.setSize($width, $height);
+  },
+
+  getWidth: function() {
+    return this.model.getWidth();
+  },
+  setWidth: function($width) {
+    this.model.setWidth($width);
+  },
+
+  getHeight: function() {
+    return this.model.getHeight();
+  },
+  setHeight: function($height) {
+    this.model.setHeight($height);
+  },
+
+  getTime: function() {
+    return this.proxy.getTime();
+  },
+
+  getVolume: function() {
+    return this.model.getVolume();
+  },
+  setVolume: function($vol) {
+    this.model.setVolume($vol);
+  },
+
+  getFullscreen: function() {
+    return this.model.getFullscreen();
+  },
+  setFullscreen: function($value) {
+    this.model.setFullscreen($value);
+  },
+
+
+  // utility
+
+  addVideoSource: function($path, $type, $flashDefault) {
+
+    /*
+     if( this._canBrowserPlayVideo() ) {
+     var source = document.createElement('source');
+     source.src = $path;
+     // don't add the 'type' attribute if we are in andriod.
+     if( !EnvironmentUtil.android && $type !== undefined ){ source.type = $type; }
+     $( this._videoElement ).append(source);
+     }
+     */
+     this.proxy.addVideoSource( $path, $type );
+  },
+
+  /**
+   * Resets any currently playing video and sources and returns the player to a "ready" state.
+   */
+  reset: function() {
+    if( this._useHTMLVideo ) {
+      // remove <source> tags from DOM
+      $('source',this.player).remove();
+      // remove from sources
+    }
+    else {
+      // reset currently playing video.
+      this.proxy.stop();
+      this.proxy.load('');
+    }
+  },
+
+  /**
+   * Forces the FVideo instance to remove any HTML5 <video> tags, and replace
+   * with the Flash fallback SWF. This method is typically internally called
+   * when the <video> tag encounters an error.
+   */
+  fallback: function() {
+    this.player.innerHTML = '';
+    this._createSourceAnchors(this.player);
+  },
+
+  setVideo: function($video) {
+    this._videoElement = $("#" + $video.id).get(0);
+    if (this._videoElement) {
+      this._isVideoEmbedded = true;
+    }
+  },
+
+
+  //////////////////////////////////////////////////////////////////////////////////
+  // Methods called from the video player to update state
+  //////////////////////////////////////////////////////////////////////////////////
+
+  _videoReady: function() {
+    this._isVideoReady = true;
+    this._checkReady();
+  },
+
+  // called immediately when under html5, by flash when it has initialized if not
+  _startupVideo: function() {
+
+    if (this._isReady) return;
+    this._isReady = true;
+
+    // create proxy object
+    this.proxy = this._createVideoProxy();
+
+    // create source tags
+    var dl = this.sources.videos.length;
+    for (var i = 0; i < dl; i++) {
+      var source = this.sources.videos[ i ];
+      this.addVideoSource(source.file, source.type);
+    }
+
+    // sync relevant values from the player onto the model.
+    // by setting these on the model we also dispatch events which update the UI to its default state.
+    // it also allows us to update the starting volume on the flash when it is ready.
+    this.setVolume(this.options.videoOptions.volume);
+    this.setSize(this.options.width, this.options.height);
+
+    this._createControls();
+
+    // init player to the ready state.
+    this._updatePlayerState(FVideoModel.STATE_READY);
+
+    // fire ready callback.
+    this.readyCallback(this);
+
+    // fire DOM event
+    $(this.container).trigger(FVideo.EVENT_PLAYER_READY);
+  },
+
+  _updatePlayheadTime: function($time) {
+    this.model.setTime($time);
+  },
+
+  _updateDuration: function($duration) {
+    this.model.setDuration($duration);
+  },
+
+  _updateIsPlaying: function($value) {
+    this.model.setPlaying($value);
+  },
+
+  _updatePlayerState: function($state) {
+    this.model.setPlayerState($state);
+  },
+
+  _updateVolume: function($volume) {
+    this.model.setVolume($volume);
+  },
+
+  _updateLoadProgress: function($bytesLoaded, $bytesTotal) {
+    this.model.setBytesTotal($bytesTotal);
+    this.model.setBytesLoaded($bytesLoaded);
+  },
+
+
+  //////////////////////////////////////////////////////////////////////////////////
+  // Private API
+  //////////////////////////////////////////////////////////////////////////////////
+
+  _init: function() {
+
+    // create container for the player
+    this.player = DOMUtil.createElement('div', {className:'player'}, this.container);
+
+    // create a uniquely named player container for the video. used for flash fallback
+    this.playerId = parseInt(Math.random() * 100000, 10);
+    FVideo.instances[this.playerId] = this;
+
+    // check browser capabilities 
+    this._useHTMLVideo = this._canBrowserPlayVideo();
+
+    // create the video element
+    this._videoElement = this._createVideo();
+
+    // brainzzzzz
+    this.model = new FVideoModel(this.container);
+
+    // listen for model events
+    this._addModelListeners();
+
+    // if we're using html5 video, we're ready to move on.
+    if (this._useHTMLVideo) {
+      this._videoReady();
+    }
+    // otherwise, we wait for flash to call _videoReady and we adjust our size while we wait.
+    else {
+      this.setSize(this.options.width, this.options.height);
+    }
+  },
+
+  _checkReady: function() {
+    if (this._isVideoReady && this._isVideoEmbedded) {
+      this._startupVideo();
+    }
+  },
+
+  _canBrowserPlayVideo: function() {
+    var vid = document.createElement('video');
+    var canPlay = vid.play;
+    return canPlay !== undefined;
+//        return false;
+  },
+
+  _createVideo: function() {
+    if (this._useHTMLVideo) {
+      return this._createHTMLVideoObject();
+    }
+    else {
+      return this._createFlashVideoObject();
+    }
+  },
+
+  _createHTMLVideoObject: function() {
+    var video = document.createElement('video');
+    FVideo.applyAttributes(video, this.options.videoOptions);
+    this._createSourceAnchors(video);
+    this.player.appendChild(video);
+    this._isVideoEmbedded = true;
+    return video;
+  },
+
+  _createSourceAnchors: function($el) {
+    // write anchor fallback tags
+    var dl = this.sources.videos.length;
+    for (var i = 0; i < dl; i++) {
+      var source = this.sources.videos[ i ];
+      var anchor = document.createElement('a');
+      anchor.href = source.file;
+      anchor.setAttribute('data-type', source.type);
+      anchor.innerHTML = source.label;
+      $el.appendChild(anchor);
+    }
+  },
+
+  _createFlashVideoObject: function() {
+
+    var replaceID = 'player-wrapper-' + this.playerId;
+    var flashID = "fdl-player-" + this.playerId;
+
+    // create empty div for swfobject to replace
+    DOMUtil.createElement('div', { id:replaceID }, this.player);
+
+    // map the default video file as the source for flash.
+    this.options.flashOptions.attributes.id = flashID;
+    this.options.flashOptions.variables.playerId = this.playerId;
+    this.options.flashOptions.variables.src = this.sources.flashVideo;
+    this.options.flashOptions.variables.autoplay = this.options.videoOptions.autoplay;
+
+    // embed the SWF
+    var self = this;
+    swfobject.embedSWF(this.options.flashOptions.swf,
+      replaceID,
+      this.options.width,
+      this.options.height,
+      this.options.flashOptions.version,
+      this.options.flashOptions.expressInstall,
+      this.options.flashOptions.variables,
+      this.options.flashOptions.params,
+      this.options.flashOptions.attributes
+      );
+
+    // using the swfobject callback in IE causes issues, so we use a interval to lookup our flash element.
+    this._findFlashPlayer(flashID);
+
+    // we don't yet have access to the object tag, so it is directly set in the callback method from embedding the SWF
+    return null;
+  },
+
+  _createControls: function() {
+    if (this.controlsClasses) {
+      if (this.controlsClasses.length > 0) {
+        this.controlsContainer = DOMUtil.createElement('div', { className:'fdl-controls' }, this.container);
+        this.controlsContainer.onmousedown = function() {
+          return false;
+        };
+        this.controlsContainer.onselectstart = function() {
+          return false;
+        };
+        this.controls = new FControls(this.model, this, this.controlsContainer, this.controlsClasses);
+      }
+    }
+  },
+
+  _findFlashPlayer: function(flashID) {
+    var self = this;
+    self.flashFinderInterval = setInterval(function() {
+      var flash_element = $('#' + flashID);
+      if (flash_element.length > 0) {
+        self.setVideo(flash_element.get(0));
+        self._checkReady();
+        clearInterval(self.flashFinderInterval);
+      }
+    }, 10);
+  },
+
+  _createVideoProxy: function() {
+    if (this._useHTMLVideo) {
+      return new HTMLVideoProxy(this.model, this, this._videoElement);
+    }
+    else {
+      return new FlashVideoProxy(this.model, this, this._videoElement);
+    }
+  },
+
+  _enterFullscreen: function() {
+    $(this.container).addClass('fdl-fullscreen');
+  },
+
+  _exitFullscreen: function() {
+    $(this.container).removeClass('fdl-fullscreen');
+  },
+
+  _addModelListeners: function() {
+    $(this.model.dispatcher).bind(FVideoModel.EVENT_RESIZE, this._handleResize.context(this));
+    $(this.model.dispatcher).bind(FVideoModel.EVENT_PLAYER_STATE_CHANGE, this._handleStateChange.context(this));
+    $(this.model.dispatcher).bind(FVideoModel.EVENT_TOGGLE_FULLSCREEN, this._handleFullscreen.context(this));
+  },
+
+  _removeModelListeners: function() {
+    $(this.model.dispatcher).unbind(FVideoModel.EVENT_RESIZE, this._handleResize.context(this));
+    $(this.model.dispatcher).unbind(FVideoModel.EVENT_PLAYER_STATE_CHANGE, this._handleStateChange.context(this));
+    $(this.model.dispatcher).unbind(FVideoModel.EVENT_TOGGLE_FULLSCREEN, this._handleFullscreen.context(this));
+  },
+
+  // applies the current state as a css class to the video container
+  _handleStateChange: function() {
+    $(this.container).removeClass(this._lastState);
+    this._lastState = this.model.getPlayerState();
+    $(this.container).addClass(this._lastState);
+  },
+
+  _handleResize: function() {
+    var wv = this.model.getWidth();
+    var hv = this.model.getHeight();
+    var wStr = typeof wv == 'string' ? wv : wv + "px";
+    var hStr = typeof hv == 'string' ? hv : hv + "px";
+    this.container.style.width = wStr;
+    this.container.style.height = hStr;
+  },
+
+  _handleFullscreen: function() {
+    if (this.model.getFullscreen()) {
+      this._enterFullscreen();
+    }
+    else {
+      this._exitFullscreen();
+    }
+  }
 });
 
 // events
@@ -401,54 +472,73 @@ FVideo.instances = {};
  * Searches the DOM and creates and activates all video players on the page.
  * @param $callback
  */
-FVideo.activateAll = function( $callback ) {
-    
-    $('.fdl-video').each( function() {
+FVideo.activateAll = function($callback) {
 
-        var video = $('video', this).get(0);
-        video.pause();
-        video.src = '';
-        if( EnvironmentUtil.firefox_3 ) {
-                this.load();        // initiate new load, required in FF 3.x as noted at http://blog.pearce.org.nz/2010/11/how-to-stop-video-or-audio-element.html
-        }
+  $('.fdl-video').each(function() {
 
-
-        var sourceList = new FVideoSources();
-        var sources = $('source', video ).each(function() {
-            sourceList.addVideo( this.src, this.type, this.getAttribute('data-label'), this.getAttribute('data-flash-default') || false );
-        });
-
-        var videoOptions = {};
-        var flashSwf;
-        var callback;
-        if( video.width ){ videoOptions.width = video.width; }
-        if( video.height ){ videoOptions.height = video.height; }
-        if( video.getAttribute('data-flash-swf')){ flashSwf = video.getAttribute('data-flash-swf'); }
-        if( video.getAttribute('data-controls')){ videoOptions.controls = video.getAttribute('data-controls'); }
-        if( video.getAttribute('data-volume')){ videoOptions.volume = video.getAttribute('data-volume'); }
-        if( video.getAttribute('data-autoplay')){ videoOptions.autoplay = video.getAttribute('data-autoplay'); }
-        if( video.getAttribute('data-preload')){ videoOptions.preload = video.getAttribute('data-preload'); }
-        if( video.getAttribute('data-loop')){ videoOptions.loop = video.getAttribute('data-loop'); }
-        if( video.getAttribute('data-poster')){ videoOptions.poster = video.getAttribute('data-poster'); }
-        if( video.getAttribute('data-src')){ videoOptions.src = video.getAttribute('data-src'); }
+    var video = $('video', this).get(0);
+    video.pause();
+    video.src = '';
+    if (EnvironmentUtil.firefox_3) {
+      video.load();        // initiate new load, required in FF 3.x as noted at http://blog.pearce.org.nz/2010/11/how-to-stop-video-or-audio-element.html
+    }
 
 
-        // TODO: add attribute for comma-separated class list for the controls.
-        var controls = video.getAttribute('data-controls-list');
-        if( controls !== undefined && controls !== null ) {
-            controls = controls.replace(' ','');
-            var classList = controls.split(',');
-        }
-
-        // create options for video
-        var options = new FVideoConfiguration( video.width, video.height, videoOptions, flashSwf );
-
-        // clear out container contents
-        this.innerHTML = '';
-
-        // create new FVideo obj
-        var fVideo = new FVideo( this, options, sourceList, classList, $callback );
+    var sourceList = new FVideoSources();
+    var sources = $('source', video).each(function() {
+      sourceList.addVideo(this.src, this.type, this.getAttribute('data-label'), this.getAttribute('data-flash-default') || false);
     });
+
+    var videoOptions = {};
+    var flashSwf;
+    var callback;
+    if (video.width) {
+      videoOptions.width = video.width;
+    }
+    if (video.height) {
+      videoOptions.height = video.height;
+    }
+    if (video.getAttribute('data-flash-swf')) {
+      flashSwf = video.getAttribute('data-flash-swf');
+    }
+    if (video.getAttribute('data-controls')) {
+      videoOptions.controls = video.getAttribute('data-controls');
+    }
+    if (video.getAttribute('data-volume')) {
+      videoOptions.volume = video.getAttribute('data-volume');
+    }
+    if (video.getAttribute('data-autoplay')) {
+      videoOptions.autoplay = video.getAttribute('data-autoplay');
+    }
+    if (video.getAttribute('data-preload')) {
+      videoOptions.preload = video.getAttribute('data-preload');
+    }
+    if (video.getAttribute('data-loop')) {
+      videoOptions.loop = video.getAttribute('data-loop');
+    }
+    if (video.getAttribute('data-poster')) {
+      videoOptions.poster = video.getAttribute('data-poster');
+    }
+    if (video.getAttribute('data-src')) {
+      videoOptions.src = video.getAttribute('data-src');
+    }
+
+    // create a list of controls classes from the data-controls-list attribute separated by commas.
+    var controls = video.getAttribute('data-controls-list');
+    if (controls !== undefined && controls !== null) {
+      controls = controls.replace(' ', '');
+      var classList = controls.split(',');
+    }
+
+    // create options for video
+    var options = new FVideoConfiguration(video.width, video.height, videoOptions, flashSwf);
+
+    // clear out container contents
+    this.innerHTML = '';
+
+    // create new FVideo obj
+    var fVideo = new FVideo(this, options, sourceList, classList, $callback);
+  });
 };
 
 
@@ -457,26 +547,26 @@ FVideo.activateAll = function( $callback ) {
  * @param $elem The HTMLElement to apply attributes to
  * @param $attr An object populated with name/value pairs to map as attributes onto the HTMLElement
  */
-FVideo.applyAttributes = function( $elem, $attr ) {
-    for( var it in $attr ) {
-        it = it.toLowerCase();
-        if( it == 'width' || it == 'height' ){
-            $elem[it] = parseInt( $attr[it], 10 ); 
-        }
+FVideo.applyAttributes = function($elem, $attr) {
+  for (var it in $attr) {
+    it = it.toLowerCase();
+    if (it == 'width' || it == 'height') {
+      $elem[it] = parseInt($attr[it], 10);
+    }
 //        else if( it.match(/poster/i) != null && FUserEnvironment.iOS && FUserEnvironment.iOS_3 ) {
-            // ignore the 'poster' attribute on iOS
+    // ignore the 'poster' attribute on iOS
 //            alert('ignoring poster!');
 //        }
-        // make sure we only map values that aren't false
-        else if( $attr[it] && typeof $attr[it] === 'string' ) {
-            if( $attr[it].toLowerCase() !== 'false' ) {
-                $elem[it] = $attr[it];
-            }
-        }
-        else if( $attr[it]) {
-            $elem[it] = $attr[it];
-        } 
+    // make sure we only map values that aren't false
+    else if ($attr[it] && typeof $attr[it] === 'string') {
+      if ($attr[it].toLowerCase() !== 'false') {
+        $elem[it] = $attr[it];
+      }
     }
+    else if ($attr[it]) {
+      $elem[it] = $attr[it];
+    }
+  }
 };
 
 

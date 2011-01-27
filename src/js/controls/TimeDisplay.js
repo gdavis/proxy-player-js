@@ -20,13 +20,16 @@ var TimeDisplay = Class.create( FControl, {
     },
 
     setListeners: function() {
-        var self = this;
-        $( this.model.dispatcher ).bind(FVideoModel.EVENT_TIME_UPDATE, this.update.context(this) );
+        $( this.model.dispatcher ).bind(FVideoModel.EVENT_TIME_UPDATE, this.update.context(this));
     },
 
     update: function() {
         this.currentTime.innerHTML = this.formatTime( this.model.getTime() );
         this.totalTime.innerHTML = this.formatTime( this.model.getDuration() );
+    },
+
+    destroy: function() {
+      $( this.model.dispatcher ).unbind(FVideoModel.EVENT_TIME_UPDATE, this.update.context(this));
     },
 
     formatTime: function( $time ) {

@@ -10,6 +10,11 @@ var Proxy = Class.create({
     this.video = $video;
     this.setListeners();
   },
+  destroy: function() {
+    delete this.model;
+    delete this.controller;
+    delete this.video;
+  },
   load: function( $url ) {},
   play: function( $url ) {},
   pause: function() {},

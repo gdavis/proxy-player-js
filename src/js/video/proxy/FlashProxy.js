@@ -37,6 +37,12 @@ var FlashVideoProxy = Class.create( Proxy, {
       this.video._seek( $time );
   },
 
+  destroy: function( $super ) {
+    $(this.model.dispatcher).unbind(FVideoModel.EVENT_RESIZE, this.resize.context(this) );
+    $(this.model.dispatcher).unbind(FVideoModel.EVENT_VOLUME_UPDATE, this.handleVolume.context(this) );
+    $super.destroy();
+  },
+
   setWidth: function( $value ) {
       this.video.width = typeof $value == 'string' ? $value : $value + "px";
   },
@@ -59,7 +65,6 @@ var FlashVideoProxy = Class.create( Proxy, {
   },
 
   setListeners: function() {
-      var self = this;
       $(this.model.dispatcher).bind(FVideoModel.EVENT_RESIZE, this.resize.context(this) );
       $(this.model.dispatcher).bind(FVideoModel.EVENT_VOLUME_UPDATE, this.handleVolume.context(this) );
   },

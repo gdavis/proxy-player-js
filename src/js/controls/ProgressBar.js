@@ -45,6 +45,15 @@ var ProgressBar = Class.create( FControl, {
         $(this.progressBar).css({width:dw + "px" });
     },
 
+    destroy: function() {
+      $( this.element ).unbind( 'mousedown', this.handleMouseDown.context( this ) );
+      $( this.controller.container ).unbind('resize', this.update.context( this ) );
+      $( this.model.dispatcher ).unbind(FVideoModel.EVENT_LOAD_PROGRESS, this.update.context(this) );
+      $( this.model.dispatcher ).unbind(FVideoModel.EVENT_TIME_UPDATE, this.update.context(this) );
+      $( this.container ).unbind('mousemove');
+      $( document ).unbind('mouseup');
+    },
+
     handleMouseDown: function( $e ) {
         $( this.container ).mousemove( this.handleMouseMove.context(this) );
         $( document ).mouseup( this.handleMouseUp.context(this) );

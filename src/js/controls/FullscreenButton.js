@@ -15,7 +15,6 @@ var FullscreenButton = Class.create( FControl, {
         this.getViewportSize();
     },
 
-
     build: function( $super ) {
         $super();
         $(this.element).addClass('fdl-fullscreen');
@@ -24,6 +23,11 @@ var FullscreenButton = Class.create( FControl, {
     setListeners: function() {
         $(this.element).click( this.toggleFullscreen.context( this ));
         $( this.model.dispatcher ).bind( FVideoModel.EVENT_TOGGLE_FULLSCREEN, this.handleFullscreen.context(this) );
+    },
+
+    destroy: function() {
+      $(this.element).unbind( 'click', this.toggleFullscreen.context( this ));
+      $( this.model.dispatcher ).unbind( FVideoModel.EVENT_TOGGLE_FULLSCREEN, this.handleFullscreen.context(this) );
     },
 
     handleFullscreen: function() {

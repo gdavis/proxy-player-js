@@ -14,6 +14,10 @@ var StopButton = Class.create( FControl, {
     },
 
     setListeners: function() {
-        $(this.element).click( this.controller.stop.context(this.controller) );
+        $(this.element).click( this.controller.stop.context(this.controller));
+    },
+
+    destroy: function() {
+      $(this.element).unbind( 'click', this.controller.stop.context(this.controller));
     }
 });

@@ -82,12 +82,7 @@ var FVideo = Class.create({
       this.proxy.play($url);
     }
     else {
-      if (this.model.getPlaying()) {
-        this.proxy.pause();
-      }
-      else {
-        this.proxy.play();
-      }
+      this.proxy.play();
     }
   },
 

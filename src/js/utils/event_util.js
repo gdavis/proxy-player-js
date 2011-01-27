@@ -1,91 +1,93 @@
 /**
  * Fires an HTML Event.
  */
-function fire() {
-    var $el, $type;
-    // only one value passed, assume we are given the type and dispatch from the body.
-    if( arguments.length == 1 ) {
-        $el = document.body;
-        $type = arguments[0];
-    }
-    // if two value are passed, assume we are given the element and type.
-    if( arguments.length > 1 ) {
-        $el = arguments[0];
-        $type = arguments[1];
-    }
-    // dispatch for IE
-    if( $el.fireEvent ) {
-        $el.fireEvent($type);
-    }
-    // dispatch for Gecko
-    if( document.createEvent ) {
-        var evt = document.createEvent('HTMLEvents');
-        if( evt.initEvent ) {
-            evt.initEvent($type,true,true);
+function dispatch() {
+  var $el, $type, evt;
+  // only one value passed, assume we are given the type and dispatch from the document.
+  if (arguments.length == 1) {
+    $el = document;
+    $type = arguments[0];
+  }
+  // if two value are passed, assume we are given the element and type.
+  if (arguments.length > 1) {
+    $el = arguments[0];
+    $type = arguments[1];
+  }
+  // dispatch for IE
+  if ($el.fireEvent) {
+    // try to do a normal fire
+    try { $el.fireEvent($type); }
+
+    // if it fails, we likely have a 'custom' event IE doesn't support. to get it working, employ hackery.
+    catch(err){
+      evt = document.createEventObject();
+      evt.type = $type;
+      
+      var fireEvent = function( element ) {
+        if(element.events && element.events[$type]){
+          for( var callback in element.events[$type]) {
+            element.events[$type][callback].call( element, evt );
+          }
         }
-        if( $el.dispatchEvent ) {
-            $el.dispatchEvent(evt);
-        }
+      };
+      fireEvent( $el );
+
+      // mimic bubbling.
+      $el = $el.parentNode;
+      while( $el ) {
+        fireEvent( $el );
+        $el = $el.parentNode;
+      }
     }
+    return;
+  }
+  // dispatch for Gecko
+  if (document.createEvent) {
+    evt = document.createEvent('HTMLEvents');
+    if (evt.initEvent && $el.dispatchEvent) {
+      evt.initEvent($type, true, true);
+    }
+    if ($el.dispatchEvent) {
+      $el.dispatchEvent(evt);
+    }
+  }
 }
 
 
+var bind = (function(window, document) {
+  if (document.addEventListener) {
+    return function(elem, type, cb) {
+      if ( elem && type && cb ) {
+        elem.addEventListener(type, cb, false);
+      }
+    };
+  }
+  else if (document.attachEvent) {
+    return function (elem, type, cb) {
+      if ( elem && type && cb ) {
+        if (!elem.events) elem.events = {};
+        if (!elem.events[type]) elem.events[type] = {};
+        var handler = function() {
+          return cb.call(elem, window.event)
+        };
+        elem.events[type][cb] = handler;
+        elem.attachEvent('on' + type, handler);
+      }
+    };
+  }
+})(this, document);
 
-// original code adapted from Dean Edwards. http://dean.edwards.name/weblog/2005/10/add-event2/
-function addEvent(element, type, handler) {
-	if (element.addEventListener) {
-		element.addEventListener(type, handler, false);
-	} else {
-		if (!handler.$$guid) handler.$$guid = addEvent.guid++;
-		if (!element.events) element.events = {};
-		var handlers = element.events[type];
-		if (!handlers) {
-			handlers = element.events[type] = {};
-			if (element['on' + type]) handlers[0] = element['on' + type];
-			element['on' + type] = handleEvent;
-		}
 
-		handlers[handler.$$guid] = handler;
-	}
-}
-
-addEvent.guid = 1;
-
-function removeEvent(element, type, handler) {
-	if (element.removeEventListener) {
-		element.removeEventListener(type, handler, false);
-	} else if (element.events && element.events[type] && handler.$$guid) {
-		delete element.events[type][handler.$$guid];
-	}
-}
-
-function handleEvent(event) {
-	event = event || fixEvent(window.event);
-	var returnValue = true;
-	var handlers = this.events[event.type];
-
-	for (var i in handlers) {
-		if (!Object.prototype[i]) {
-			this.$$handler = handlers[i];
-			if (this.$$handler(event) === false) returnValue = false;
-		}
-	}
-
-	if (this.$$handler) this.$$handler = null;
-
-	return returnValue;
-}
-
-function fixEvent(event) {
-	event.preventDefault = fixEvent.preventDefault;
-	event.stopPropagation = fixEvent.stopPropagation;
-	return event;
-}
-
-fixEvent.preventDefault = function() {
-	this.returnValue = false;
-}
-
-fixEvent.stopPropagation = function() {
-	this.cancelBubble = true;
-}
+var unbind = (function(window, document) {
+  if (document.removeEventListener) {
+    return function(elem, type, cb) {
+      elem.removeEventListener(type, cb, false);
+    }
+  } else if (document.detachEvent) {
+    return function(elem, type, cb) {
+      var handler = elem.events[type][cb];
+      elem.detachEvent( 'on' + type, handler );
+      delete elem.events[type][cb];
+    }
+  }
+})(this, document);

@@ -1,80 +1,83 @@
 //= require <controls/FControl>
 //= require <utils/dom_util>
+//= require <utils/event_util>
 //= require <utils/function_util>
 //= require <video/core/FVideoModel>
 
-var VolumeControl = Class.create( FControl, {
-    
-    initialize: function($super, $model, $controller, $container ) {
-        this.wrapper = false;
-        this.progressBar = false;
-        this.numBars = 7;
-        this.barWidth = 3;
-        this.maxBarHeight = 15;
-        this.lastMouseX = 0;
-        $super( $model, $controller, $container );
-    },
+var VolumeControl = Class.create(FControl, {
 
-    build: function( $super ) {
-        $super();
-        $(this.element).addClass('fdl-volume');
-        this.wrapper = DOMUtil.createElement('div', { className:'fdl-volume-wrapper' }, this.element );
-        $(this.element).mousedown( this.handleMouseDown.context(this) );
+  initialize: function($super, $model, $controller, $container) {
+    this.wrapper = false;
+    this.progressBar = false;
+    this.numBars = 7;
+    this.barWidth = 3;
+    this.maxBarHeight = 15;
+    this.lastMouseX = 0;
+    $super($model, $controller, $container);
+  },
 
-        // create volume bars
-        for(var i = 0; i < this.numBars; i++ ) {
-            var hv = Math.ceil( i / this.numBars * this.maxBarHeight );
-            var yp = this.maxBarHeight - hv;
-            var el = DOMUtil.createElement('div', {}, this.wrapper );
-            el.style.marginTop = yp + 'px';
-            el.style.width = this.barWidth + 'px';
-            el.style.height = hv + 'px';
-        }
-    },
+  build: function($super) {
+    $super();
+    $(this.element).addClass('fdl-volume');
+    this.wrapper = DOMUtil.createElement('div', { className:'fdl-volume-wrapper' }, this.element);
+    bind(this.element, 'mousedown', this.handleMouseDown.context(this));
 
-    setListeners: function() {
-        $( this.model.dispatcher ).bind(FVideoModel.EVENT_VOLUME_UPDATE, this.update.context(this) );
-    },
-
-    update: function() {
-        var dl = this.wrapper.children.length;
-        var maxOnIndex = Math.round( this.model.getVolume() * dl);
-        for( var i=0; i<dl; i++ ) {
-            var child = this.wrapper.children[ i ];
-            if( i <= maxOnIndex ) {
-                $(child).addClass('on');
-            }
-            else{ $(child).removeClass('on');}
-        }
-    },
-
-    destroy: function() {
-      $(this.element).unbind( 'mousedown', this.handleMouseDown.context(this));
-      $( this.model.dispatcher ).unbind(FVideoModel.EVENT_VOLUME_UPDATE, this.update.context(this));
-      $( this.element ).unbind('mousemove');
-      $( document ).unbind('mouseup');
-    },
-
-    handleMouseDown: function( $e ) {
-        $( this.element ).mousemove( this.handleMouseMove.context(this) );
-        $( document ).mouseup( this.handleMouseUp.context(this) );
-        this.handleMouseMove($e);
-    },
-
-    handleMouseMove: function( $e ) {
-        var dx = MouseUtil.getRelativeXFromEvent( $e, this.element );
-        this.lastMouseX = dx;
-        var vol = dx / this.wrapper.offsetWidth;
-        this.controller._updateVolume( vol );
-    },
-
-    handleMouseUp: function( $e ) {
-        // do the update
-        var vol = this.lastMouseX / this.wrapper.offsetWidth;
-        this.controller._updateVolume( vol );
-
-        // remove listener
-        $( this.element ).unbind('mousemove');
-        $( document ).unbind('mouseup');
+    // create volume bars
+    for (var i = 0; i < this.numBars; i++) {
+      var hv = Math.ceil(i / this.numBars * this.maxBarHeight);
+      var yp = this.maxBarHeight - hv;
+      var el = DOMUtil.createElement('div', {}, this.wrapper);
+      el.style.marginTop = yp + 'px';
+      el.style.width = this.barWidth + 'px';
+      el.style.height = hv + 'px';
     }
+  },
+
+  setListeners: function() {
+    bind(this.model.dispatcher, FVideoModel.EVENT_VOLUME_UPDATE, this.update.context(this));
+  },
+
+  update: function() {
+    var dl = this.wrapper.children.length;
+    var maxOnIndex = Math.round(this.model.getVolume() * dl);
+    for (var i = 0; i < dl; i++) {
+      var child = this.wrapper.children[ i ];
+      if (i <= maxOnIndex) {
+        $(child).addClass('on');
+      }
+      else {
+        $(child).removeClass('on');
+      }
+    }
+  },
+
+  destroy: function() {
+    unbind(this.element, 'mousedown', this.handleMouseDown.context(this));
+    unbind(this.model.dispatcher, FVideoModel.EVENT_VOLUME_UPDATE, this.update.context(this));
+    unbind(this.element, 'mousemove', this.handleMouseMove.context(this));
+    unbind(document, 'mouseup', this.handleMouseUp.context(this));
+  },
+
+  handleMouseDown: function($e) {
+    bind(this.element, 'mousemove', this.handleMouseMove.context(this));
+    bind(document, 'mouseup', this.handleMouseUp.context(this));
+    this.handleMouseMove($e);
+  },
+
+  handleMouseMove: function($e) {
+    var dx = MouseUtil.getRelativeXFromEvent($e, this.element);
+    this.lastMouseX = dx;
+    var vol = dx / this.wrapper.offsetWidth;
+    this.controller._updateVolume(vol);
+  },
+
+  handleMouseUp: function($e) {
+    // do the update
+    var vol = this.lastMouseX / this.wrapper.offsetWidth;
+    this.controller._updateVolume(vol);
+
+    // remove listener
+    unbind(this.element, 'mousemove', this.handleMouseMove.context(this));
+    unbind(document, 'mouseup', this.handleMouseUp.context(this));
+  }
 });

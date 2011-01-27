@@ -1,4 +1,5 @@
-function DOMUtil(){}
+function DOMUtil() {
+}
 
 //DOMUtil.getWidth = function( elem ) {
 //  if( elem ) return elem.offsetWidth;
@@ -26,27 +27,27 @@ function DOMUtil(){}
 //  }
 //};
 
-DOMUtil.createElement = function( $type, $params, $parent ) {
+DOMUtil.createElement = function($type, $params, $parent) {
   var type = $type || $params.tag,
-        prop,
-        el = document.createElement(type);
+    prop,
+    el = document.createElement(type);
   for (prop in $params) {
-    if( typeof $params[prop] !== 'function' ) {
-        switch( prop ){
-          case 'text':
-            el.appendChild( document.createTextNode( $params[prop] ) );
-            break;
-          case 'className':
-            el.className = $params[prop];
-            break;
-          default:
-            el.setAttribute( prop, $params[prop] );
-            
-        }
+    if (typeof $params[prop] !== 'function') {
+      switch (prop) {
+        case 'text':
+          el.appendChild(document.createTextNode($params[prop]));
+          break;
+        case 'className':
+          el.className = $params[prop];
+          break;
+        default:
+          el.setAttribute(prop, $params[prop]);
+
+      }
     }
   }
-  if( $parent ) {
-      $parent.appendChild( el );
+  if ($parent) {
+    $parent.appendChild(el);
   }
   return el;
 };

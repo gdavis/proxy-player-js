@@ -1,4 +1,5 @@
-function EnvironmentUtil() {}
+function EnvironmentUtil() {
+}
 EnvironmentUtil.iPhone = ( navigator.userAgent.match(/iPhone/i) !== null );
 EnvironmentUtil.iPod = ( navigator.userAgent.match(/iPod/i) !== null );
 EnvironmentUtil.iPad = ( navigator.userAgent.match(/iPad/i) !== null );

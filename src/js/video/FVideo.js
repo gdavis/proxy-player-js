@@ -151,16 +151,16 @@ var FVideo = Class.create({
      $( this._videoElement ).append(source);
      }
      */
-     this.proxy.addVideoSource( $path, $type );
+    this.proxy.addVideoSource($path, $type);
   },
 
   /**
    * Resets any currently playing video and sources and returns the player to a "ready" state.
    */
   reset: function() {
-    if( this._useHTMLVideo ) {
+    if (this._useHTMLVideo) {
       // remove <source> tags from DOM
-      $('source',this.player).remove();
+      $('source', this.player).remove();
       // remove from sources
     }
     else {
@@ -415,15 +415,15 @@ var FVideo = Class.create({
   },
 
   _addModelListeners: function() {
-    $(this.model.dispatcher).bind(FVideoModel.EVENT_RESIZE, this._handleResize.context(this));
-    $(this.model.dispatcher).bind(FVideoModel.EVENT_PLAYER_STATE_CHANGE, this._handleStateChange.context(this));
-    $(this.model.dispatcher).bind(FVideoModel.EVENT_TOGGLE_FULLSCREEN, this._handleFullscreen.context(this));
+    bind(this.model.dispatcher, FVideoModel.EVENT_RESIZE, this._handleResize.context(this));
+    bind(this.model.dispatcher, FVideoModel.EVENT_PLAYER_STATE_CHANGE, this._handleStateChange.context(this));
+    bind(this.model.dispatcher, FVideoModel.EVENT_TOGGLE_FULLSCREEN, this._handleFullscreen.context(this));
   },
 
   _removeModelListeners: function() {
-    $(this.model.dispatcher).unbind(FVideoModel.EVENT_RESIZE, this._handleResize.context(this));
-    $(this.model.dispatcher).unbind(FVideoModel.EVENT_PLAYER_STATE_CHANGE, this._handleStateChange.context(this));
-    $(this.model.dispatcher).unbind(FVideoModel.EVENT_TOGGLE_FULLSCREEN, this._handleFullscreen.context(this));
+    unbind(this.model.dispatcher, FVideoModel.EVENT_RESIZE, this._handleResize.context(this));
+    unbind(this.model.dispatcher, FVideoModel.EVENT_PLAYER_STATE_CHANGE, this._handleStateChange.context(this));
+    unbind(this.model.dispatcher, FVideoModel.EVENT_TOGGLE_FULLSCREEN, this._handleFullscreen.context(this));
   },
 
   // applies the current state as a css class to the video container
@@ -433,7 +433,7 @@ var FVideo = Class.create({
     $(this.container).addClass(this._lastState);
   },
 
-  _handleResize: function() {
+  _handleResize: function($e) {
     var wv = this.model.getWidth();
     var hv = this.model.getHeight();
     var wStr = typeof wv == 'string' ? wv : wv + "px";
@@ -477,7 +477,6 @@ FVideo.activateAll = function($callback) {
     if (EnvironmentUtil.firefox_3) {
       video.load();        // initiate new load, required in FF 3.x as noted at http://blog.pearce.org.nz/2010/11/how-to-stop-video-or-audio-element.html
     }
-
 
     var sourceList = new FVideoSources();
     var sources = $('source', video).each(function() {

@@ -5,76 +5,78 @@
 /**
  * Proxy which controls a Flash video object.
  */
-var FlashVideoProxy = Class.create( Proxy, {
+var FlashVideoProxy = Class.create(Proxy, {
 
-  setVideo:function( $el ) {
-      this.video = $el;
+  setVideo:function($el) {
+    this.video = $el;
   },
 
   // TODO: Refactor into FVideo
-  addVideoSource: function( $path ) {
+  addVideoSource: function($path) {
   },
 
-  load: function( $url ) {
-      if( $url ) this.video._load( $url );
-      else this.video._load();
+  load: function($url) {
+    if ($url) this.video._load($url);
+    else this.video._load();
   },
 
-  play: function( $url ) {
-      if( $url ) this.video._play( $url );
-      else this.video._play();
+  play: function($url) {
+    if ($url) this.video._play($url);
+    else this.video._play();
   },
 
   pause: function() {
-      this.video._pause();
+    this.video._pause();
   },
 
   stop: function() {
-      this.video._stop();
+    this.video._stop();
   },
 
-  seek: function( $time ) {
-      this.video._seek( $time );
+  seek: function($time) {
+    this.video._seek($time);
   },
 
-  destroy: function( $super ) {
-    $(this.model.dispatcher).unbind(FVideoModel.EVENT_RESIZE, this.resize.context(this) );
-    $(this.model.dispatcher).unbind(FVideoModel.EVENT_VOLUME_UPDATE, this.handleVolume.context(this) );
+  destroy: function($super) {
+    unbind(this.model.dispatcher, FVideoModel.EVENT_RESIZE, this.resize.context(this));
+    unbind(this.model.dispatcher, FVideoModel.EVENT_VOLUME_UPDATE, this.handleVolume.context(this));
     $super.destroy();
   },
 
-  setWidth: function( $value ) {
-      this.video.width = typeof $value == 'string' ? $value : $value + "px";
+  setWidth: function($value) {
+    this.video.width = typeof $value == 'string' ? $value : $value + "px";
   },
 
-  setHeight: function( $value ) {
-      this.video.height = typeof $value == 'string' ? $value : $value + "px";
+  setHeight: function($value) {
+    this.video.height = typeof $value == 'string' ? $value : $value + "px";
   },
 
-  getVolume: function() { return this.video._getVolume(); },
-  setVolume: function( $volume ) {
-      this.video._setVolume( $volume );
+  getVolume: function() {
+    return this.video._getVolume();
+  },
+  setVolume: function($volume) {
+    this.video._setVolume($volume);
   },
 
-  setTime: function( $time ) {
-      this.video._setTime( $time );
+  setTime: function($time) {
+    this.video._setTime($time);
   },
 
   isPlaying: function() {
-      return this.video._isPlaying();
+    return this.video._isPlaying();
   },
 
   setListeners: function() {
-      $(this.model.dispatcher).bind(FVideoModel.EVENT_RESIZE, this.resize.context(this) );
-      $(this.model.dispatcher).bind(FVideoModel.EVENT_VOLUME_UPDATE, this.handleVolume.context(this) );
+    bind(this.model.dispatcher, FVideoModel.EVENT_RESIZE, this.resize.context(this));
+    bind(this.model.dispatcher, FVideoModel.EVENT_VOLUME_UPDATE, this.handleVolume.context(this));
   },
 
   handleVolume: function() {
-      this.video._setVolume( this.model.getVolume() );
+    this.video._setVolume(this.model.getVolume());
   },
 
   resize: function() {
-      this.setWidth(this.model.getWidth());
-      this.setHeight(this.model.getHeight());
+    this.setWidth(this.model.getWidth());
+    this.setHeight(this.model.getHeight());
   }
 });

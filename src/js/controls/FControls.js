@@ -15,78 +15,79 @@
 
 //= require <utils/Class>
 //= require <utils/function_util>
+//= require <utils/event_util>
 //= require <controls/FControl>
 //= require <video/core/FVideoModel>
 
 var FControls = Class.create({
-    initialize: function( $model, $controller, $container ) {
-        this.model = $model;
-        this.controller = $controller;
-        this.container = $container;
-        this.controls = [];
-        if( arguments[3] !== undefined ) {
-            var controls = arguments[3];
-            var dl = controls.length;
-            for(var i=0; i<dl;i++) {
-                this.addControl(controls[i]);
-            }
-        }
-        this.setListeners();
-        this.position();
-    },
-
-    destroy: function() {
-      $(this.model.dispatcher).unbind(FVideoModel.EVENT_RESIZE, this.position.context(this) );
-      var i, dl = this.controls.length;
-      for( i=0; i<dl; i++ ) {
-        var control = this.controls[i];
-        if( typeof control == 'function' ) {
-          control.destroy();
-        }
+  initialize: function($model, $controller, $container) {
+    this.model = $model;
+    this.controller = $controller;
+    this.container = $container;
+    this.controls = [];
+    if (arguments[3] !== undefined) {
+      var controls = arguments[3];
+      var dl = controls.length;
+      for (var i = 0; i < dl; i++) {
+        this.addControl(controls[i]);
       }
-    },
-
-    addControl: function( $controlClass ) {
-        if(typeof $controlClass === 'string') {
-            this.controls.push(new window[$controlClass](this.model, this.controller, this.container));
-        }
-        else if( typeof $controlClass === 'function' ) {
-            this.controls.push(new $controlClass(this.model, this.controller, this.container));
-        }
-        else if( typeof $controlClass === 'object') {
-            if( $controlClass.tagName !== undefined ) { // check for a node
-                this.container.appendChild($controlClass);
-                $($controlClass).addClass('fdl-control'); // make sure it has the proper class
-                this.controls.push($controlClass);
-            }
-        }
-    },
-
-    setListeners: function() {
-        $(this.model.dispatcher).bind(FVideoModel.EVENT_RESIZE, this.position.context(this) );
-    },
-
-    position: function() {
-        var dl = this.controls.length,
-            flexibles = [],
-            sum = 0,
-            i;
-        for(i=0; i<dl;i++) {
-            var control = this.controls[i];
-            var el = ( control.tagName !== undefined ) ? control : control.element;
-            if( $(el).hasClass('fdl-control-flexible')) {
-                flexibles.push(el);
-            }
-            // ignore absolutely positioned elements
-            else if( !$(el).hasClass('fdl-control-absolute')) {
-                sum += el.offsetWidth;
-            }
-        }
-        dl = flexibles.length;
-        var wv = ( this.model.getWidth() - sum ) / dl;
-        for(i=0; i<dl;i++) {
-            var flexi = flexibles[i];
-            $(flexi).width(wv);
-        }
     }
+    this.setListeners();
+    this.position();
+  },
+
+  destroy: function() {
+    unbind(this.model.dispatcher, FVideoModel.EVENT_RESIZE, this.position.context(this));
+    var i, dl = this.controls.length;
+    for (i = 0; i < dl; i++) {
+      var control = this.controls[i];
+      if (typeof control == 'function') {
+        control.destroy();
+      }
+    }
+  },
+
+  addControl: function($controlClass) {
+    if (typeof $controlClass === 'string') {
+      this.controls.push(new window[$controlClass](this.model, this.controller, this.container));
+    }
+    else if (typeof $controlClass === 'function') {
+      this.controls.push(new $controlClass(this.model, this.controller, this.container));
+    }
+    else if (typeof $controlClass === 'object') {
+      if ($controlClass.tagName !== undefined) { // check for a node
+        this.container.appendChild($controlClass);
+        $($controlClass).addClass('fdl-control'); // make sure it has the proper class
+        this.controls.push($controlClass);
+      }
+    }
+  },
+
+  setListeners: function() {
+    bind(this.model.dispatcher, FVideoModel.EVENT_RESIZE, this.position.context(this));
+  },
+
+  position: function() {
+    var dl = this.controls.length,
+      flexibles = [],
+      sum = 0,
+      i;
+    for (i = 0; i < dl; i++) {
+      var control = this.controls[i];
+      var el = ( control.tagName !== undefined ) ? control : control.element;
+      if ($(el).hasClass('fdl-control-flexible')) {
+        flexibles.push(el);
+      }
+      // ignore absolutely positioned elements
+      else if (!$(el).hasClass('fdl-control-absolute')) {
+        sum += el.offsetWidth;
+      }
+    }
+    dl = flexibles.length;
+    var wv = ( this.model.getWidth() - sum ) / dl;
+    for (i = 0; i < dl; i++) {
+      var flexi = flexibles[i];
+      $(flexi).width(wv);
+    }
+  }
 });

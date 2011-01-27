@@ -1,12 +1,12 @@
 /* From object.js (reset to local variable so that the prototype methods added to Object don't collide with other libraries) ------------------------------ */
 var object = {
   getType: function(o) {
-    switch(o) {
+    switch (o) {
       case null: return 'Null';
       case (void 0): return 'Undefined';
     }
     var type = typeof o;
-    switch(type) {
+    switch (type) {
       case 'boolean': return 'Boolean';
       case 'number':  return 'Number';
       case 'string':  return 'String';
@@ -15,7 +15,9 @@ var object = {
   },
 
   keys: function(object) {
-    if (this.getType(object) !== 'Object') { alert('type error'); }
+    if (this.getType(object) !== 'Object') {
+      alert('type error');
+    }
     var results = [];
     for (var property in object) {
       if (object.hasOwnProperty(property)) {
@@ -49,7 +51,8 @@ function $A(iterable) {
   var length = iterable.length || 0, results = new Array(length);
   while (length--) results[length] = iterable[length];
   return results;
-};
+}
+;
 
 /* From function.js ------------------------------ */
 Function.prototype.argumentNames = function() {
@@ -64,15 +67,18 @@ Function.prototype.bind = function(context) {
   if (arguments.length < 2 && object.isUndefined(arguments[0])) return this;
   var __method = this,
     args = Array.prototype.slice.call(arguments, 1);
+
   function update(array, args) {
     var arrayLength = array.length, length = args.length;
     while (length--) array[arrayLength + length] = args[length];
     return array;
   }
+
   function merge(array, args) {
     array = Array.prototype.slice.call(array, 0);
     return update(array, args);
   }
+
   return function() {
     var a = merge(args, arguments);
     return __method.apply(context, a);
@@ -86,6 +92,7 @@ Function.prototype.wrap = function(wrapper) {
     while (length--) array[arrayLength + length] = args[length];
     return array;
   }
+
   var __method = this;
   return function() {
     var a = update([__method.bind(this)], arguments);
@@ -100,7 +107,7 @@ var Class = (function() {
 
   // Some versions of JScript fail to enumerate over properties, names of which
   // correspond to non-enumerable properties in the prototype chain
-  var IS_DONTENUM_BUGGY = (function(){
+  var IS_DONTENUM_BUGGY = (function() {
     for (var p in { toString: 1 }) {
       // check actual property name, so that it works with augmented Object.prototype
       if (p === 'toString') return false;
@@ -108,13 +115,15 @@ var Class = (function() {
     return true;
   })();
 
-  function extend( destination, source ) {
+  function extend(destination, source) {
     for (var property in source)
       destination[property] = source[property];
     return destination;
   }
 
-  function subclass() {}
+  function subclass() {
+  }
+
   function create() {
     var parent = null, properties = $A(arguments);
     if (object.isFunction(properties[0]))
@@ -145,8 +154,8 @@ var Class = (function() {
   }
 
   function addMethods(source) {
-    var ancestor   = this.superclass && this.superclass.prototype,
-        properties = object.keys(source);
+    var ancestor = this.superclass && this.superclass.prototype,
+      properties = object.keys(source);
 
     // IE6 doesn't enumerate `toString` and `valueOf` (among other built-in `Object.prototype`) properties,
     // Force copy if they're not Object.prototype ones.
@@ -160,12 +169,14 @@ var Class = (function() {
 
     for (var i = 0, length = properties.length; i < length; i++) {
       var property = properties[i],
-          value = source[property];
+        value = source[property];
       if (ancestor && object.isFunction(value) &&
-          value.argumentNames()[0] == "$super") {
+        value.argumentNames()[0] == "$super") {
         var method = value;
         value = (function(m) {
-          return function() { return ancestor[m].apply(this, arguments); };
+          return function() {
+            return ancestor[m].apply(this, arguments);
+          };
         })(property).wrap(method);
 
         value.valueOf = method.valueOf.bind(method);

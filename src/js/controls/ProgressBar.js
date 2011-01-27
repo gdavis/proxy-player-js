@@ -1,78 +1,79 @@
 //= require <controls/FControl>
 //= require <utils/function_util>
+//= require <utils/event_util>
 //= require <utils/dom_util>
 //= require <utils/mouse_util>
 //= require <video/core/FVideoModel>
 
-var ProgressBar = Class.create( FControl, {
+var ProgressBar = Class.create(FControl, {
 
-    initialize: function($super, $model, $controller, $container) {
-        $super( $model, $controller, $container );
-    },
-    
-    build: function( $super ) {
-        $super();
+  initialize: function($super, $model, $controller, $container) {
+    $super($model, $controller, $container);
+  },
 
-        // configure main element with the proper classes
-        $(this.element).addClass('fdl-control-flexible fdl-progress-bar');
+  build: function($super) {
+    $super();
 
-        // create download bar
-        this.downloadBar = DOMUtil.createElement('div', { className:"fdl-load-progress"}, this.element );
+    // configure main element with the proper classes
+    $(this.element).addClass('fdl-control-flexible fdl-progress-bar');
 
-        // create play progress bar
-        this.progressBar = DOMUtil.createElement('div', { className:"fdl-play-progress"}, this.element );
+    // create download bar
+    this.downloadBar = DOMUtil.createElement('div', { className:"fdl-load-progress"}, this.element);
 
-        // create a handle
-        this.handle = DOMUtil.createElement('div', { className:"fdl-handle"}, this.element );
-    },
+    // create play progress bar
+    this.progressBar = DOMUtil.createElement('div', { className:"fdl-play-progress"}, this.element);
 
-    setListeners: function() {
-        $( this.element ).mousedown( this.handleMouseDown.context( this ) );
-        $( this.controller.container ).bind('resize', this.update.context( this ) );
-        $( this.model.dispatcher ).bind(FVideoModel.EVENT_LOAD_PROGRESS, this.update.context(this) );
-        $( this.model.dispatcher ).bind(FVideoModel.EVENT_TIME_UPDATE, this.update.context(this) );
-    },
+    // create a handle
+    this.handle = DOMUtil.createElement('div', { className:"fdl-handle"}, this.element);
+  },
 
-    update: function() {
-        var dw;
+  setListeners: function() {
+    bind(this.element, 'mousedown', this.handleMouseDown.context(this));
+    bind(this.controller.container, 'resize', this.update.context(this));
+    bind(this.model.dispatcher, FVideoModel.EVENT_LOAD_PROGRESS, this.update.context(this));
+    bind(this.model.dispatcher, FVideoModel.EVENT_TIME_UPDATE, this.update.context(this));
+  },
 
-        // update download progress
-        dw = ( this.model.getBytesLoaded() / this.model.getBytesTotal() ) * this.element.offsetWidth;
-        $(this.downloadBar).css({width:dw + "px" });
+  update: function() {
+    var dw;
 
-        // update playhead progress
-        dw = ( this.model.getTime() / this.model.getDuration() ) * this.element.offsetWidth;
-        $(this.progressBar).css({width:dw + "px" });
-    },
+    // update download progress
+    dw = ( this.model.getBytesLoaded() / this.model.getBytesTotal() ) * this.element.offsetWidth;
+    $(this.downloadBar).css({width:dw + "px" });
 
-    destroy: function() {
-      $( this.element ).unbind( 'mousedown', this.handleMouseDown.context( this ) );
-      $( this.controller.container ).unbind('resize', this.update.context( this ) );
-      $( this.model.dispatcher ).unbind(FVideoModel.EVENT_LOAD_PROGRESS, this.update.context(this) );
-      $( this.model.dispatcher ).unbind(FVideoModel.EVENT_TIME_UPDATE, this.update.context(this) );
-      $( this.container ).unbind('mousemove');
-      $( document ).unbind('mouseup');
-    },
+    // update playhead progress
+    dw = ( this.model.getTime() / this.model.getDuration() ) * this.element.offsetWidth;
+    $(this.progressBar).css({width:dw + "px" });
+  },
 
-    handleMouseDown: function( $e ) {
-        $( this.container ).mousemove( this.handleMouseMove.context(this) );
-        $( document ).mouseup( this.handleMouseUp.context(this) );
-    },
+  destroy: function() {
+    unbind(this.element, 'mousedown', this.handleMouseDown.context(this));
+    unbind(this.controller.container, 'resize', this.update.context(this));
+    unbind(this.model.dispatcher, FVideoModel.EVENT_LOAD_PROGRESS, this.update.context(this));
+    unbind(this.model.dispatcher, FVideoModel.EVENT_TIME_UPDATE, this.update.context(this));
+    unbind(this.container, 'mousemove', this.handleMouseMove.context(this));
+    unbind(document, 'mouseup', this.handleMouseUp.context(this));
+  },
 
-    handleMouseMove: function( $e ) {
-        var dx = MouseUtil.getRelativeXFromEvent( $e, this.element );
-        this.handle.style.left = dx + "px";
-        var clickedTime = (dx / parseInt( this.element.offsetWidth )) * this.model.getDuration();
-        this.controller.seek( clickedTime );
-    },
+  handleMouseDown: function($e) {
+    bind(this.container, 'mousemove', this.handleMouseMove.context(this));
+    bind(document, 'mouseup', this.handleMouseUp.context(this));
+  },
 
-    handleMouseUp: function( $e ) {
-        // do the update
-        this.handleMouseMove( $e );
+  handleMouseMove: function($e) {
+    var dx = MouseUtil.getRelativeXFromEvent($e, this.element);
+    this.handle.style.left = dx + "px";
+    var clickedTime = (dx / parseInt(this.element.offsetWidth)) * this.model.getDuration();
+    this.controller.seek(clickedTime);
+  },
 
-        // remove listener
-        $( this.container ).unbind('mousemove');
-        $( document ).unbind('mouseup');
-    }
+  handleMouseUp: function($e) {
+    // do the update
+    this.handleMouseMove($e);
+
+    // remove listeners
+    unbind(this.container, 'mousemove', this.handleMouseMove.context(this));
+    unbind(document, 'mouseup', this.handleMouseUp.context(this));
+  }
 
 });

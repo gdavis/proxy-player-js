@@ -5,7 +5,7 @@
 /**
  * Proxy which controlls an HTML video object.
  */
-var HTMLVideoProxy = Class.create( Proxy, {
+var HTMLVideoProxy = Class.create(Proxy, {
   initialize: function($super, $model, $controller, $video) {
     this.bufferInterval = false;
 
@@ -42,14 +42,14 @@ var HTMLVideoProxy = Class.create( Proxy, {
     // add video listeners
     for (i = 0; i < dl; i++) {
       obj = this.videoEvents[i];
-      this.video.removeEventListener(obj.type, obj.handler, false);
+      unbind(this.video, obj.type, obj.handler);
     }
 
     // add model listeners
     dl = this.modelEvents.length;
     for (i = 0; i < dl; i++) {
       obj = this.modelEvents[i];
-      $(this.model.dispatcher).unbind(obj.type, obj.handler);
+      unbind(this.model.dispatcher, obj.type, obj.handler);
     }
 
     delete this.videoEvents;
@@ -121,14 +121,14 @@ var HTMLVideoProxy = Class.create( Proxy, {
     // add video listeners
     for (i = 0; i < dl; i++) {
       obj = this.videoEvents[i];
-      this.video.addEventListener(obj.type, obj.handler, false);
+      bind(this.video, obj.type, obj.handler);
     }
 
     // add model listeners
     dl = this.modelEvents.length;
     for (i = 0; i < dl; i++) {
       obj = this.modelEvents[i];
-      $(this.model.dispatcher).bind(obj.type, obj.handler);
+      bind(this.model.dispatcher, obj.type, obj.handler);
     }
   },
 

@@ -2,20 +2,38 @@
 // when using in event listeners and timeouts
 // ! From video.js
 // Modified to maintain singular references to context-scoped methods so you can remove the listener later.
-Function.prototype.contextMethods = {};
+//Function.prototype.contextMethods = {};
 Function.prototype.context = function(obj) {
   var method = this;
-  if (Function.contextMethods[method] && Function.contextMethods[method][obj]) {
-    return Function.contextMethods[method][obj];
+  if(this.hasContextMethod(this, obj)) {
+    return this.getContextMethod(this, obj);
   }
   else {
     var temp = function() {
       return method.apply(obj, arguments);
     };
-    if (Function.contextMethods[method] === undefined) {
-      Function.contextMethods[method] = {};
+    temp.scope = obj;
+    if (this.contextMethods === undefined) {
+      this.contextMethods = [];
     }
-    Function.contextMethods[method][obj] = temp;
+    this.contextMethods.push( temp );
     return temp;
+  }
+};
+
+Function.prototype.hasContextMethod = function(func, scope) {
+  if(!func.contextMethods) return false;
+  else {
+    for( var i=0; i< func.contextMethods.length; i++) {
+      if( func.contextMethods[i].scope === scope ) return true;
+    }
+  }
+};
+
+Function.prototype.getContextMethod = function(func, scope) {
+  if(this.hasContextMethod(func, scope)){
+    for( var i=0; i< func.contextMethods.length; i++) {
+      if( func.contextMethods[i].scope === scope ) return func.contextMethods[i];
+    }
   }
 };

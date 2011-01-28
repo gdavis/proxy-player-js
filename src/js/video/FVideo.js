@@ -24,11 +24,12 @@ var FVideo = Class.create({
 
   initialize: function($element, $options, $sources, $controlsClasses, $readyCallback) {
 
-    if (typeof $element === 'string') {
-      this.container = $($element).get(0);
-    } else {
-      this.container = $element;
+    // lookup element
+    if( typeof $element === 'string') {
+      var elemID = ( $element.indexOf('#') > -1 ) ? $element.slice( $element.lastIndexOf('#')+1, $element.length ) : $element;
+      this.container = document.getElementById( elemID );
     }
+    else this.container = $element;
 
     this.options = $options || new FVideoConfiguration();
     this.sources = $sources || new FVideoSources();
@@ -156,6 +157,7 @@ var FVideo = Class.create({
 
   /**
    * Resets any currently playing video and sources and returns the player to a "ready" state.
+   * TODO: Finish.
    */
   reset: function() {
     if (this._useHTMLVideo) {
@@ -181,7 +183,8 @@ var FVideo = Class.create({
   },
 
   setVideo: function($video) {
-    this._videoElement = $("#" + $video.id).get(0);
+//    this._videoElement = $("#" + $video.id).get(0);
+    this._videoElement = $video;
     if (this._videoElement) {
       this._isVideoEmbedded = true;
     }
@@ -219,6 +222,7 @@ var FVideo = Class.create({
     this.setVolume(this.options.videoOptions.volume);
     this.setSize(this.options.width, this.options.height);
 
+    // TODO: Bother calling this on iphone/android?
     this._createControls();
 
     // init player to the ready state.
@@ -228,7 +232,8 @@ var FVideo = Class.create({
     this.readyCallback(this);
 
     // fire DOM event
-    $(this.container).trigger(FVideo.EVENT_PLAYER_READY);
+    dispatch( this.container, FVideo.EVENT_PLAYER_READY);
+//    $(this.container).trigger(FVideo.EVENT_PLAYER_READY);
   },
 
   _updatePlayheadTime: function($time) {
@@ -388,9 +393,12 @@ var FVideo = Class.create({
   _findFlashPlayer: function(flashID) {
     var self = this;
     self.flashFinderInterval = setInterval(function() {
-      var flash_element = $('#' + flashID);
-      if (flash_element.length > 0) {
-        self.setVideo(flash_element.get(0));
+//      var flash_element = $('#' + flashID);
+      var flash_element = document.getElementById( flashID );
+      if (flash_element) {
+//      if (flash_element.length > 0) {
+        self.setVideo(flash_element);
+//        self.setVideo(flash_element.get(0));
         self._checkReady();
         clearInterval(self.flashFinderInterval);
       }
@@ -407,11 +415,13 @@ var FVideo = Class.create({
   },
 
   _enterFullscreen: function() {
-    $(this.container).addClass('fdl-fullscreen');
+    DOMUtil.addClass(this.container, 'fdl-fullscreen');
+//    $(this.container).addClass('fdl-fullscreen');
   },
 
   _exitFullscreen: function() {
-    $(this.container).removeClass('fdl-fullscreen');
+    DOMUtil.removeClass( this.container, 'fdl-fullscreen');
+//    $(this.container).removeClass('fdl-fullscreen');
   },
 
   _addModelListeners: function() {
@@ -428,9 +438,13 @@ var FVideo = Class.create({
 
   // applies the current state as a css class to the video container
   _handleStateChange: function() {
-    $(this.container).removeClass(this._lastState);
+    DOMUtil.removeClass(this.container, this._lastState );
     this._lastState = this.model.getPlayerState();
-    $(this.container).addClass(this._lastState);
+    DOMUtil.addClass( this.container, this._lastState );
+
+//    $(this.container).removeClass(this._lastState);
+//    this._lastState = this.model.getPlayerState();
+//    $(this.container).addClass(this._lastState);
   },
 
   _handleResize: function($e) {

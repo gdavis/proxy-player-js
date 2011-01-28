@@ -66,7 +66,8 @@ var HTMLVideoProxy = Class.create(Proxy, {
     if (!EnvironmentUtil.android && $type !== undefined) {
       source.type = $type;
     }
-    $(this.video).append(source);
+    this.video.appendChild( source );
+//    $(this.video).append(source);
   },
 
   load: function($url) {

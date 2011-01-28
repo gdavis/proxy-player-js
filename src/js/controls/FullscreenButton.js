@@ -18,7 +18,8 @@ var FullscreenButton = Class.create(FControl, {
 
   build: function($super) {
     $super();
-    $(this.element).addClass('fdl-fullscreen');
+    DOMUtil.addClass( this.element, 'fdl-fullscreen');
+//    $(this.element).addClass('fdl-fullscreen');
   },
 
   setListeners: function() {

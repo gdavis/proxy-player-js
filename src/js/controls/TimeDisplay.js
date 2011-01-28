@@ -14,7 +14,8 @@ var TimeDisplay = Class.create(FControl, {
 
   build: function($super) {
     $super();
-    $(this.element).addClass('fdl-time-display');
+    DOMUtil.addClass( this.element, 'fdl-time-display');
+//    $(this.element).addClass('fdl-time-display');
     this.currentTime = DOMUtil.createElement('span', { className:"fdl-current-time"}, this.element);
     this.separator = DOMUtil.createElement('span', { className:"fdl-time-separator"}, this.element);
     this.totalTime = DOMUtil.createElement('span', { className:"fdl-total-time"}, this.element);

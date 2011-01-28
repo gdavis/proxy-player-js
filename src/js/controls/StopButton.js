@@ -11,7 +11,8 @@ var StopButton = Class.create(FControl, {
 
   build: function($super) {
     $super();
-    $(this.element).addClass('fdl-stop');
+    DOMUtil.addClass( this.element, 'fdl-stop');
+//    $(this.element).addClass('fdl-stop');
   },
 
   setListeners: function() {

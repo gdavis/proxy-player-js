@@ -15,7 +15,8 @@ var ProgressBar = Class.create(FControl, {
     $super();
 
     // configure main element with the proper classes
-    $(this.element).addClass('fdl-control-flexible fdl-progress-bar');
+    DOMUtil.addClass( this.element, 'fdl-control-flexible fdl-progress-bar');
+//    $(this.element).addClass('fdl-control-flexible fdl-progress-bar');
 
     // create download bar
     this.downloadBar = DOMUtil.createElement('div', { className:"fdl-load-progress"}, this.element);
@@ -39,11 +40,13 @@ var ProgressBar = Class.create(FControl, {
 
     // update download progress
     dw = ( this.model.getBytesLoaded() / this.model.getBytesTotal() ) * this.element.offsetWidth;
-    $(this.downloadBar).css({width:dw + "px" });
+    this.downloadBar.style.width = dw + "px";
+//    $(this.downloadBar).css({width:dw + "px" });
 
     // update playhead progress
     dw = ( this.model.getTime() / this.model.getDuration() ) * this.element.offsetWidth;
-    $(this.progressBar).css({width:dw + "px" });
+    this.progressBar.style.width = dw + "px";
+//    $(this.progressBar).css({width:dw + "px" });
   },
 
   destroy: function() {

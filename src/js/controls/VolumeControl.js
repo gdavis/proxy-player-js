@@ -18,7 +18,9 @@ var VolumeControl = Class.create(FControl, {
 
   build: function($super) {
     $super();
-    $(this.element).addClass('fdl-volume');
+    DOMUtil.addClass( this.element, 'fdl-volume');
+//    $(this.element).addClass('fdl-volume');
+
     this.wrapper = DOMUtil.createElement('div', { className:'fdl-volume-wrapper' }, this.element);
     bind(this.element, 'mousedown', this.handleMouseDown.context(this));
 
@@ -43,10 +45,12 @@ var VolumeControl = Class.create(FControl, {
     for (var i = 0; i < dl; i++) {
       var child = this.wrapper.children[ i ];
       if (i <= maxOnIndex) {
-        $(child).addClass('on');
+        DOMUtil.addClass( child, 'on');
+//        $(child).addClass('on');
       }
       else {
-        $(child).removeClass('on');
+        DOMUtil.removeClass( child, 'on');
+//        $(child).removeClass('on');
       }
     }
   },

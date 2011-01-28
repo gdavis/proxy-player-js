@@ -57,7 +57,8 @@ var FControls = Class.create({
     else if (typeof $controlClass === 'object') {
       if ($controlClass.tagName !== undefined) { // check for a node
         this.container.appendChild($controlClass);
-        $($controlClass).addClass('fdl-control'); // make sure it has the proper class
+        DOMUtil.addClass($controlClass, 'fdl-control');
+//        $($controlClass).addClass('fdl-control'); // make sure it has the proper class
         this.controls.push($controlClass);
       }
     }
@@ -75,11 +76,13 @@ var FControls = Class.create({
     for (i = 0; i < dl; i++) {
       var control = this.controls[i];
       var el = ( control.tagName !== undefined ) ? control : control.element;
-      if ($(el).hasClass('fdl-control-flexible')) {
+      if (DOMUtil.hasClass(el, 'fdl-control-flexible')) {
+//      if ($(el).hasClass('fdl-control-flexible')) {
         flexibles.push(el);
       }
       // ignore absolutely positioned elements
-      else if (!$(el).hasClass('fdl-control-absolute')) {
+      else if (!DOMUtil.hasClass( el, 'fdl-control-absolute')) {
+//      else if (!$(el).hasClass('fdl-control-absolute')) {
         sum += el.offsetWidth;
       }
     }
@@ -87,7 +90,8 @@ var FControls = Class.create({
     var wv = ( this.model.getWidth() - sum ) / dl;
     for (i = 0; i < dl; i++) {
       var flexi = flexibles[i];
-      $(flexi).width(wv);
+      flexi.style.width = wv + 'px';
+//      $(flexi).width(wv);
     }
   }
 });

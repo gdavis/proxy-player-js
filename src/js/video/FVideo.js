@@ -31,6 +31,9 @@ var FVideo = Class.create({
     }
     else this.container = $element;
 
+    // add class to container
+    DOMUtil.addClass( this.container, 'fdl-video');
+
     this.options = $options || new FVideoConfiguration();
     this.sources = $sources || new FVideoSources();
     this.controlsClasses = $controlsClasses ? $controlsClasses : FVideo.defaultControls;
@@ -58,7 +61,7 @@ var FVideo = Class.create({
   // actions
 
   destroy: function() {
-    $(this.container).removeClass(this.model.getPlayerState());
+    DOMUtil.removeClass(this.container, this.model.getPlayerState());
     this._removeModelListeners();
     this.proxy.destroy();
     this.controls.destroy();

@@ -1,75 +1,75 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Factory Video (Dynamic)</title>
-    <link type="text/css" href="stylesheets/fdl-video.css" rel="stylesheet">
+  <title>Factory Video (Dynamic)</title>
+  <link type="text/css" href="stylesheets/fdl-video.css" rel="stylesheet">
 
 
-    <!-- libs -->
-    <!--<script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.4.4/jquery.min.js"></script>-->
-    <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/swfobject/2.2/swfobject.js"></script>
-    <script type="text/javascript" src="../src/js/libs/slick.js"></script>
+  <!-- libs -->
+  <!--<script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.4.4/jquery.min.js"></script>-->
+  <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/swfobject/2.2/swfobject.js"></script>
+  <script type="text/javascript" src="../src/js/libs/slick.js"></script>
 
-    <!-- utils -->
-    <script type="text/javascript" src="../src/js/utils/event_util.js"></script>
-    <script type="text/javascript" src="../src/js/utils/class.js"></script>
-    <script type="text/javascript" src="../src/js/utils/function_util.js"></script>
-    <script type="text/javascript" src="../src/js/utils/mouse_util.js"></script>
-    <script type="text/javascript" src="../src/js/utils/dom_util.js"></script>
-    <script type="text/javascript" src="../src/js/utils/environment_util.js"></script>
+  <!-- utils -->
+  <script type="text/javascript" src="../src/js/utils/event_util.js"></script>
+  <script type="text/javascript" src="../src/js/utils/class.js"></script>
+  <script type="text/javascript" src="../src/js/utils/function_util.js"></script>
+  <script type="text/javascript" src="../src/js/utils/mouse_util.js"></script>
+  <script type="text/javascript" src="../src/js/utils/dom_util.js"></script>
+  <script type="text/javascript" src="../src/js/utils/environment_util.js"></script>
 
-    <!-- video -->
-    <script type="text/javascript" src="../src/js/video/FVideo.js"></script>
-    <script type="text/javascript" src="../src/js/video/proxy/Proxy.js"></script>
-    <script type="text/javascript" src="../src/js/video/proxy/HTMLProxy.js"></script>
-    <script type="text/javascript" src="../src/js/video/proxy/FlashProxy.js"></script>
-    <script type="text/javascript" src="../src/js/video/core/FVideoModel.js"></script>
-    <script type="text/javascript" src="../src/js/video/core/FVideoConfiguration.js"></script>
-    <script type="text/javascript" src="../src/js/video/core/FVideoSources.js"></script>
+  <!-- video -->
+  <script type="text/javascript" src="../src/js/video/FVideo.js"></script>
+  <script type="text/javascript" src="../src/js/video/proxy/Proxy.js"></script>
+  <script type="text/javascript" src="../src/js/video/proxy/HTMLProxy.js"></script>
+  <script type="text/javascript" src="../src/js/video/proxy/FlashProxy.js"></script>
+  <script type="text/javascript" src="../src/js/video/core/FVideoModel.js"></script>
+  <script type="text/javascript" src="../src/js/video/core/FVideoConfiguration.js"></script>
+  <script type="text/javascript" src="../src/js/video/core/FVideoSources.js"></script>
 
-    <!-- controls -->
-    <script type="text/javascript" src="../src/js/controls/FControl.js"></script>
-    <script type="text/javascript" src="../src/js/controls/FControls.js"></script>
-    <script type="text/javascript" src="../src/js/controls/StopButton.js"></script>
-    <script type="text/javascript" src="../src/js/controls/FullscreenButton.js"></script>
-    <script type="text/javascript" src="../src/js/controls/TimeDisplay.js"></script>
-    <script type="text/javascript" src="../src/js/controls/ProgressBar.js"></script>
-    <script type="text/javascript" src="../src/js/controls/VolumeControl.js"></script>
-    <script type="text/javascript" src="../src/js/controls/PlayPauseButton.js"></script>
+  <!-- controls -->
+  <script type="text/javascript" src="../src/js/controls/FControl.js"></script>
+  <script type="text/javascript" src="../src/js/controls/FControls.js"></script>
+  <script type="text/javascript" src="../src/js/controls/StopButton.js"></script>
+  <script type="text/javascript" src="../src/js/controls/FullscreenButton.js"></script>
+  <script type="text/javascript" src="../src/js/controls/TimeDisplay.js"></script>
+  <script type="text/javascript" src="../src/js/controls/ProgressBar.js"></script>
+  <script type="text/javascript" src="../src/js/controls/VolumeControl.js"></script>
+  <script type="text/javascript" src="../src/js/controls/PlayPauseButton.js"></script>
 
-    <script type="text/javascript">
+  <script type="text/javascript">
 
-        var video;
+    var video;
 
-        bind( document, 'DOMContentLoaded',function() {
+    bind(document, 'DOMContentLoaded', function() {
 
-            var options = new FVideoConfiguration( 636, 264, { poster:"media/poster.png", autoplay:false, volume:0 }, "proxy-player.swf" );
+      var options = new FVideoConfiguration(636, 264, { poster:"media/poster.png", autoplay:false, volume:0 }, "proxy-player.swf");
 
-            // create the video object
-            var sources = new FVideoSources();
-            sources.addVideo( 'http://video-js.zencoder.com/oceans-clip.mp4', 'video/mp4', 'Link Label', true );
-            sources.addVideo( 'http://video-js.zencoder.com/oceans-clip.ogv', 'video/ogg', 'Link Label' );
+      // create the video object
+      var sources = new FVideoSources();
+      sources.addVideo('http://video-js.zencoder.com/oceans-clip.mp4', 'video/mp4', 'Link Label', true);
+      sources.addVideo('http://video-js.zencoder.com/oceans-clip.ogv', 'video/ogg', 'Link Label');
 
-            // test setting default controls for all FVideo instances. values must reference the classname of a FControl subclass. can either be passed as an Object reference or string.
-            FVideo.defaultControls = [PlayPauseButton,StopButton,'ProgressBar',TimeDisplay,VolumeControl,FullscreenButton];
+      // test setting default controls for all FVideo instances. values must reference the classname of a FControl subclass. can either be passed as an Object reference or string.
+      FVideo.defaultControls = [PlayPauseButton,StopButton,'ProgressBar',TimeDisplay,VolumeControl,FullscreenButton];
 
-            video = new FVideo( '#video1', options, sources, null, function() {
-                // ready handler
-            });
-        });
-    </script>
-    <style type="text/css">
-        .container {
-            /*margin-top: 100px;*/
-            /*margin-left: 100px;*/
-        }
-    </style>
+      video = new FVideo('#video1', options, sources, null, function() {
+        // ready handler
+      });
+    });
+  </script>
+  <style type="text/css">
+    .container {
+    /*margin-top: 100px;*/
+    /*margin-left: 100px;*/
+    }
+  </style>
 </head>
 <body>
-    <div>
-        <div class="container">
-            <div id="video1" class="fdl-video"></div>
-        </div>
-    </div>
+<div>
+  <div class="container">
+    <div id="video1"></div>
+  </div>
+</div>
 </body>
 </html>

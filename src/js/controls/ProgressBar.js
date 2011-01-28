@@ -41,12 +41,10 @@ var ProgressBar = Class.create(FControl, {
     // update download progress
     dw = ( this.model.getBytesLoaded() / this.model.getBytesTotal() ) * this.element.offsetWidth;
     this.downloadBar.style.width = dw + "px";
-//    $(this.downloadBar).css({width:dw + "px" });
 
     // update playhead progress
     dw = ( this.model.getTime() / this.model.getDuration() ) * this.element.offsetWidth;
     this.progressBar.style.width = dw + "px";
-//    $(this.progressBar).css({width:dw + "px" });
   },
 
   destroy: function() {

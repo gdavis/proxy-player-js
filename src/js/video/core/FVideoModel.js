@@ -5,14 +5,14 @@ var FVideoModel = Class.create({
   initialize: function($dispatcher) {
     this.dispatcher = $dispatcher;
     this._volume = 1;
-    this._time = 0;
-    this._duration = 0;
+    this._time = -1;
+    this._duration = -1;
     this._width = 0;
     this._height = 0;
     this._playing = false;
     this._playerState = false;
-    this._bytesLoaded = 0;
-    this._bytesTotal = 0;
+    this._bytesLoaded = -1;
+    this._bytesTotal = -1;
     this._fullscreen = false;
   },
 

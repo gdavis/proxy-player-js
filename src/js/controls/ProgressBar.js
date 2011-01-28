@@ -40,11 +40,11 @@ var ProgressBar = Class.create(FControl, {
 
     // update download progress
     dw = ( this.model.getBytesLoaded() / this.model.getBytesTotal() ) * this.element.offsetWidth;
-    this.downloadBar.style.width = dw + "px";
+    if(!isNaN(dw)) this.downloadBar.style.width = dw + "px";
 
     // update playhead progress
     dw = ( this.model.getTime() / this.model.getDuration() ) * this.element.offsetWidth;
-    this.progressBar.style.width = dw + "px";
+    if(!isNaN(dw)) this.progressBar.style.width = dw + "px";
   },
 
   destroy: function() {

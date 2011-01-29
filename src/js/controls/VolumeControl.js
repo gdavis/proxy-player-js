@@ -22,7 +22,6 @@ var VolumeControl = Class.create(FControl, {
 //    $(this.element).addClass('fdl-volume');
 
     this.wrapper = DOMUtil.createElement('div', { className:'fdl-volume-wrapper' }, this.element);
-    bind(this.element, 'mousedown', this.handleMouseDown.context(this));
 
     // create volume bars
     for (var i = 0; i < this.numBars; i++) {
@@ -36,6 +35,7 @@ var VolumeControl = Class.create(FControl, {
   },
 
   setListeners: function() {
+    bind(this.element, 'mousedown', this.handleMouseDown.context(this));
     bind(this.model.dispatcher, FVideoModel.EVENT_VOLUME_UPDATE, this.update.context(this));
   },
 

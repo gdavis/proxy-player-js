@@ -64,8 +64,10 @@ var ProgressBar = Class.create(FControl, {
   handleMouseMove: function($e) {
     var dx = MouseUtil.getRelativeXFromEvent($e, this.element);
     this.handle.style.left = dx + "px";
-    var clickedTime = (dx / parseInt(this.element.offsetWidth)) * this.model.getDuration();
-    this.controller.seek(clickedTime);
+    if(this.model.getDuration() > 0) {
+      var clickedTime = (dx / parseInt(this.element.offsetWidth)) * this.model.getDuration();
+      this.controller.seek(clickedTime);
+    }
   },
 
   handleMouseUp: function($e) {

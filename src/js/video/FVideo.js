@@ -232,11 +232,10 @@ var FVideo = Class.create({
     this._updatePlayerState(FVideoModel.STATE_READY);
 
     // fire ready callback.
-    this.readyCallback(this);
+    this.readyCallback.call(this);
 
     // fire DOM event
     dispatch( this.container, FVideo.EVENT_PLAYER_READY);
-//    $(this.container).trigger(FVideo.EVENT_PLAYER_READY);
   },
 
   _updatePlayheadTime: function($time) {
@@ -396,12 +395,9 @@ var FVideo = Class.create({
   _findFlashPlayer: function(flashID) {
     var self = this;
     self.flashFinderInterval = setInterval(function() {
-//      var flash_element = $('#' + flashID);
       var flash_element = document.getElementById( flashID );
       if (flash_element) {
-//      if (flash_element.length > 0) {
         self.setVideo(flash_element);
-//        self.setVideo(flash_element.get(0));
         self._checkReady();
         clearInterval(self.flashFinderInterval);
       }

@@ -12,7 +12,6 @@ var PlayPauseButton = Class.create(FControl, {
   build: function($super) {
     $super();
     DOMUtil.addClass(this.element, 'fdl-play-pause');
-//    $(this.element).addClass('fdl-play-pause');
   },
 
   setListeners: function() {

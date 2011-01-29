@@ -1,5 +1,4 @@
 //= require <libs/swfobject>
-//= require <libs/jquery-1.4.4.min>
 
 /*
  * FVideo <%= FVIDEO_VERSION %>

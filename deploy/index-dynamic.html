@@ -41,8 +41,8 @@
 
     var video;
 
-    bind(document, 'DOMContentLoaded', function() {
-
+    //bind(document, 'DOMContentLoaded', function() {
+    ready(function() {
       var options = new FVideoConfiguration(636, 264, { poster:"media/poster.png", autoplay:false, volume:0 }, "proxy-player.swf");
 
       // create the video object

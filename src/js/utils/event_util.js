@@ -20,7 +20,7 @@ function dispatch() {
       $el.fireEvent($type);
     }
 
-      // if it fails, we likely have a 'custom' event IE doesn't support. to get it working, employ hackery.
+    // if it fails, we likely have a 'custom' event IE doesn't support. to get it working, employ hackery.
     catch(err) {
       evt = document.createEventObject();
       evt.type = $type;
@@ -33,7 +33,7 @@ function dispatch() {
         }
       };
       fireEvent($el);
-
+    
       // mimic bubbling.
       $el = $el.parentNode;
       while ($el) {
@@ -90,4 +90,37 @@ var unbind = (function(window, document) {
       delete elem.events[type][cb];
     }
   }
+})(this, document);
+
+
+// allows binding to the document ready event.
+// some code taken from Dean Edwards: http://dean.edwards.name/weblog/2006/06/again/
+var ready = (function(window, document) {
+  if (/WebKit/i.test(navigator.userAgent)) { // sniff
+    return function( cb ) {
+      var _timer = setInterval(function() {
+        if (/loaded|complete/.test(document.readyState)) {
+          clearInterval(_timer);
+          cb.call( document );
+        }
+      }, 10);
+    }
+  }
+  else if(/MSIE/i.test(navigator.userAgent)) {
+    return function( cb ) {
+      document.write("<script id=__ie_onload defer src=javascript:void(0)><\/script>");
+      var script = document.getElementById("__ie_onload");
+      script.onreadystatechange = function() {
+        if (this.readyState == "complete") {
+          cb.call( document );
+        }
+      };
+    }
+  }
+  else {
+    return function( cb ) {
+      bind( document, 'DOMContentLoaded', cb );
+    }
+  }
+
 })(this, document);

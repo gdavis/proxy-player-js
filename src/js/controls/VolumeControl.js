@@ -19,7 +19,6 @@ var VolumeControl = Class.create(FControl, {
   build: function($super) {
     $super();
     DOMUtil.addClass( this.element, 'fdl-volume');
-//    $(this.element).addClass('fdl-volume');
 
     this.wrapper = DOMUtil.createElement('div', { className:'fdl-volume-wrapper' }, this.element);
 
@@ -35,8 +34,8 @@ var VolumeControl = Class.create(FControl, {
   },
 
   setListeners: function() {
-    bind(this.element, 'mousedown', this.handleMouseDown.context(this));
-    bind(this.model.dispatcher, FVideoModel.EVENT_VOLUME_UPDATE, this.update.context(this));
+    EventUtil.bind(this.element, 'mousedown', this.handleMouseDown.context(this));
+    EventUtil.bind(this.model.dispatcher, FVideoModel.EVENT_VOLUME_UPDATE, this.update.context(this));
   },
 
   update: function() {
@@ -46,25 +45,23 @@ var VolumeControl = Class.create(FControl, {
       var child = this.wrapper.children[ i ];
       if (i <= maxOnIndex) {
         DOMUtil.addClass( child, 'on');
-//        $(child).addClass('on');
       }
       else {
         DOMUtil.removeClass( child, 'on');
-//        $(child).removeClass('on');
       }
     }
   },
 
   destroy: function() {
-    unbind(this.element, 'mousedown', this.handleMouseDown.context(this));
-    unbind(this.model.dispatcher, FVideoModel.EVENT_VOLUME_UPDATE, this.update.context(this));
-    unbind(this.element, 'mousemove', this.handleMouseMove.context(this));
-    unbind(document, 'mouseup', this.handleMouseUp.context(this));
+    EventUtil.unbind(this.element, 'mousedown', this.handleMouseDown.context(this));
+    EventUtil.unbind(this.model.dispatcher, FVideoModel.EVENT_VOLUME_UPDATE, this.update.context(this));
+    EventUtil.unbind(this.element, 'mousemove', this.handleMouseMove.context(this));
+    EventUtil.unbind(document, 'mouseup', this.handleMouseUp.context(this));
   },
 
   handleMouseDown: function($e) {
-    bind(this.element, 'mousemove', this.handleMouseMove.context(this));
-    bind(document, 'mouseup', this.handleMouseUp.context(this));
+    EventUtil.bind(this.element, 'mousemove', this.handleMouseMove.context(this));
+    EventUtil.bind(document, 'mouseup', this.handleMouseUp.context(this));
     this.handleMouseMove($e);
   },
 
@@ -81,7 +78,7 @@ var VolumeControl = Class.create(FControl, {
     this.controller._updateVolume(vol);
 
     // remove listener
-    unbind(this.element, 'mousemove', this.handleMouseMove.context(this));
-    unbind(document, 'mouseup', this.handleMouseUp.context(this));
+    EventUtil.unbind(this.element, 'mousemove', this.handleMouseMove.context(this));
+    EventUtil.unbind(document, 'mouseup', this.handleMouseUp.context(this));
   }
 });

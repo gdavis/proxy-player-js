@@ -12,14 +12,13 @@ var StopButton = Class.create(FControl, {
   build: function($super) {
     $super();
     DOMUtil.addClass( this.element, 'fdl-stop');
-//    $(this.element).addClass('fdl-stop');
   },
 
   setListeners: function() {
-    bind(this.element, 'click', this.controller.stop.context(this.controller));
+    EventUtil.bind(this.element, 'click', this.controller.stop.context(this.controller));
   },
 
   destroy: function() {
-    unbind(this.element, 'click', this.controller.stop.context(this.controller));
+    EventUtil.unbind(this.element, 'click', this.controller.stop.context(this.controller));
   }
 });

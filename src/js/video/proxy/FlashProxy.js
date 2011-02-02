@@ -38,8 +38,8 @@ var FlashVideoProxy = Class.create(Proxy, {
   },
 
   destroy: function($super) {
-    unbind(this.model.dispatcher, FVideoModel.EVENT_RESIZE, this.resize.context(this));
-    unbind(this.model.dispatcher, FVideoModel.EVENT_VOLUME_UPDATE, this.handleVolume.context(this));
+    EventUtil.unbind(this.model.dispatcher, FVideoModel.EVENT_RESIZE, this.resize.context(this));
+    EventUtil.unbind(this.model.dispatcher, FVideoModel.EVENT_VOLUME_UPDATE, this.handleVolume.context(this));
     $super.destroy();
   },
 
@@ -67,8 +67,8 @@ var FlashVideoProxy = Class.create(Proxy, {
   },
 
   setListeners: function() {
-    bind(this.model.dispatcher, FVideoModel.EVENT_RESIZE, this.resize.context(this));
-    bind(this.model.dispatcher, FVideoModel.EVENT_VOLUME_UPDATE, this.handleVolume.context(this));
+    EventUtil.bind(this.model.dispatcher, FVideoModel.EVENT_RESIZE, this.resize.context(this));
+    EventUtil.bind(this.model.dispatcher, FVideoModel.EVENT_VOLUME_UPDATE, this.handleVolume.context(this));
   },
 
   handleVolume: function() {

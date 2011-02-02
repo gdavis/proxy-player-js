@@ -15,14 +15,13 @@ var TimeDisplay = Class.create(FControl, {
   build: function($super) {
     $super();
     DOMUtil.addClass( this.element, 'fdl-time-display');
-//    $(this.element).addClass('fdl-time-display');
     this.currentTime = DOMUtil.createElement('span', { className:"fdl-current-time"}, this.element);
     this.separator = DOMUtil.createElement('span', { className:"fdl-time-separator"}, this.element);
     this.totalTime = DOMUtil.createElement('span', { className:"fdl-total-time"}, this.element);
   },
 
   setListeners: function() {
-    bind(this.model.dispatcher, FVideoModel.EVENT_TIME_UPDATE, this.update.context(this));
+    EventUtil.bind(this.model.dispatcher, FVideoModel.EVENT_TIME_UPDATE, this.update.context(this));
   },
 
   update: function() {
@@ -31,7 +30,7 @@ var TimeDisplay = Class.create(FControl, {
   },
 
   destroy: function() {
-    unbind(this.model.dispatcher, FVideoModel.EVENT_TIME_UPDATE, this.update.context(this));
+    EventUtil.unbind(this.model.dispatcher, FVideoModel.EVENT_TIME_UPDATE, this.update.context(this));
   },
 
   formatTime: function($time) {

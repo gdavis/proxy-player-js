@@ -42,14 +42,14 @@ var HTMLVideoProxy = Class.create(Proxy, {
     // add video listeners
     for (i = 0; i < dl; i++) {
       obj = this.videoEvents[i];
-      unbind(this.video, obj.type, obj.handler);
+      EventUtil.unbind(this.video, obj.type, obj.handler);
     }
 
     // add model listeners
     dl = this.modelEvents.length;
     for (i = 0; i < dl; i++) {
       obj = this.modelEvents[i];
-      unbind(this.model.dispatcher, obj.type, obj.handler);
+      EventUtil.unbind(this.model.dispatcher, obj.type, obj.handler);
     }
 
     delete this.videoEvents;
@@ -122,14 +122,14 @@ var HTMLVideoProxy = Class.create(Proxy, {
     // add video listeners
     for (i = 0; i < dl; i++) {
       obj = this.videoEvents[i];
-      bind(this.video, obj.type, obj.handler);
+      EventUtil.bind(this.video, obj.type, obj.handler);
     }
 
     // add model listeners
     dl = this.modelEvents.length;
     for (i = 0; i < dl; i++) {
       obj = this.modelEvents[i];
-      bind(this.model.dispatcher, obj.type, obj.handler);
+      EventUtil.bind(this.model.dispatcher, obj.type, obj.handler);
     }
   },
 

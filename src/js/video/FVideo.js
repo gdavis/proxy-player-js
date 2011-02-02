@@ -165,7 +165,7 @@ var FVideo = Class.create({
   reset: function() {
     if (this._useHTMLVideo) {
       // remove <source> tags from DOM
-      $('source', this.player).remove();
+//      $('source', this.player).remove();
       // remove from sources
     }
     else {
@@ -235,7 +235,7 @@ var FVideo = Class.create({
     this.readyCallback.call(this);
 
     // fire DOM event
-    dispatch( this.container, FVideo.EVENT_PLAYER_READY);
+    EventUtil.dispatch( this.container, FVideo.EVENT_PLAYER_READY);
   },
 
   _updatePlayheadTime: function($time) {
@@ -415,24 +415,22 @@ var FVideo = Class.create({
 
   _enterFullscreen: function() {
     DOMUtil.addClass(this.container, 'fdl-fullscreen');
-//    $(this.container).addClass('fdl-fullscreen');
   },
 
   _exitFullscreen: function() {
     DOMUtil.removeClass( this.container, 'fdl-fullscreen');
-//    $(this.container).removeClass('fdl-fullscreen');
   },
 
   _addModelListeners: function() {
-    bind(this.model.dispatcher, FVideoModel.EVENT_RESIZE, this._handleResize.context(this));
-    bind(this.model.dispatcher, FVideoModel.EVENT_PLAYER_STATE_CHANGE, this._handleStateChange.context(this));
-    bind(this.model.dispatcher, FVideoModel.EVENT_TOGGLE_FULLSCREEN, this._handleFullscreen.context(this));
+    EventUtil.bind(this.model.dispatcher, FVideoModel.EVENT_RESIZE, this._handleResize.context(this));
+    EventUtil.bind(this.model.dispatcher, FVideoModel.EVENT_PLAYER_STATE_CHANGE, this._handleStateChange.context(this));
+    EventUtil.bind(this.model.dispatcher, FVideoModel.EVENT_TOGGLE_FULLSCREEN, this._handleFullscreen.context(this));
   },
 
   _removeModelListeners: function() {
-    unbind(this.model.dispatcher, FVideoModel.EVENT_RESIZE, this._handleResize.context(this));
-    unbind(this.model.dispatcher, FVideoModel.EVENT_PLAYER_STATE_CHANGE, this._handleStateChange.context(this));
-    unbind(this.model.dispatcher, FVideoModel.EVENT_TOGGLE_FULLSCREEN, this._handleFullscreen.context(this));
+    EventUtil.unbind(this.model.dispatcher, FVideoModel.EVENT_RESIZE, this._handleResize.context(this));
+    EventUtil.unbind(this.model.dispatcher, FVideoModel.EVENT_PLAYER_STATE_CHANGE, this._handleStateChange.context(this));
+    EventUtil.unbind(this.model.dispatcher, FVideoModel.EVENT_TOGGLE_FULLSCREEN, this._handleFullscreen.context(this));
   },
 
   // applies the current state as a css class to the video container
@@ -440,10 +438,6 @@ var FVideo = Class.create({
     DOMUtil.removeClass(this.container, this._lastState );
     this._lastState = this.model.getPlayerState();
     DOMUtil.addClass( this.container, this._lastState );
-
-//    $(this.container).removeClass(this._lastState);
-//    this._lastState = this.model.getPlayerState();
-//    $(this.container).addClass(this._lastState);
   },
 
   _handleResize: function($e) {

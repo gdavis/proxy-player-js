@@ -1,7 +1,11 @@
 /**
  * Fires an HTML Event.
  */
-function dispatch() {
+
+var EventUtil = {};
+
+
+EventUtil.dispatch = function() {
   var $el, $type, evt;
   // only one value passed, assume we are given the type and dispatch from the document.
   if (arguments.length == 1) {
@@ -56,7 +60,7 @@ function dispatch() {
 }
 
 
-var bind = (function(window, document) {
+EventUtil.bind = (function(window, document) {
   if (document.addEventListener) {
     return function(elem, type, cb) {
       elem.addEventListener(type, cb, false);
@@ -78,7 +82,7 @@ var bind = (function(window, document) {
 })(this, document);
 
 
-var unbind = (function(window, document) {
+EventUtil.unbind = (function(window, document) {
   if (document.removeEventListener) {
     return function(elem, type, cb) {
       elem.removeEventListener(type, cb, false);
@@ -95,7 +99,7 @@ var unbind = (function(window, document) {
 
 // allows binding to the document ready event.
 // some code taken from Dean Edwards: http://dean.edwards.name/weblog/2006/06/again/
-var ready = (function(window, document) {
+EventUtil.documentReady = (function(window, document) {
   if (/WebKit/i.test(navigator.userAgent)) { // sniff
     return function( cb ) {
       var _timer = setInterval(function() {
@@ -119,7 +123,7 @@ var ready = (function(window, document) {
   }
   else {
     return function( cb ) {
-      bind( document, 'DOMContentLoaded', cb );
+      EventUtil.bind( document, 'DOMContentLoaded', cb );
     }
   }
 

@@ -37,7 +37,7 @@ var FControls = Class.create({
   },
 
   destroy: function() {
-    unbind(this.model.dispatcher, FVideoModel.EVENT_RESIZE, this.position.context(this));
+    EventUtil.unbind(this.model.dispatcher, FVideoModel.EVENT_RESIZE, this.position.context(this));
     var i, dl = this.controls.length;
     for (i = 0; i < dl; i++) {
       var control = this.controls[i];
@@ -58,14 +58,13 @@ var FControls = Class.create({
       if ($controlClass.tagName !== undefined) { // check for a node
         this.container.appendChild($controlClass);
         DOMUtil.addClass($controlClass, 'fdl-control');
-//        $($controlClass).addClass('fdl-control'); // make sure it has the proper class
         this.controls.push($controlClass);
       }
     }
   },
 
   setListeners: function() {
-    bind(this.model.dispatcher, FVideoModel.EVENT_RESIZE, this.position.context(this));
+    EventUtil.bind(this.model.dispatcher, FVideoModel.EVENT_RESIZE, this.position.context(this));
   },
 
   position: function() {
@@ -77,12 +76,10 @@ var FControls = Class.create({
       var control = this.controls[i];
       var el = ( control.tagName !== undefined ) ? control : control.element;
       if (DOMUtil.hasClass(el, 'fdl-control-flexible')) {
-//      if ($(el).hasClass('fdl-control-flexible')) {
         flexibles.push(el);
       }
       // ignore absolutely positioned elements
       else if (!DOMUtil.hasClass( el, 'fdl-control-absolute')) {
-//      else if (!$(el).hasClass('fdl-control-absolute')) {
         sum += el.offsetWidth;
       }
     }
@@ -91,7 +88,6 @@ var FControls = Class.create({
     for (i = 0; i < dl; i++) {
       var flexi = flexibles[i];
       flexi.style.width = wv + 'px';
-//      $(flexi).width(wv);
     }
   }
 });

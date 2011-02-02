@@ -29,10 +29,10 @@ var ProgressBar = Class.create(FControl, {
   },
 
   setListeners: function() {
-    bind(this.element, 'mousedown', this.handleMouseDown.context(this));
-    bind(this.controller.container, 'resize', this.update.context(this));
-    bind(this.model.dispatcher, FVideoModel.EVENT_LOAD_PROGRESS, this.update.context(this));
-    bind(this.model.dispatcher, FVideoModel.EVENT_TIME_UPDATE, this.update.context(this));
+    EventUtil.bind(this.element, 'mousedown', this.handleMouseDown.context(this));
+    EventUtil.bind(this.controller.container, 'resize', this.update.context(this));
+    EventUtil.bind(this.model.dispatcher, FVideoModel.EVENT_LOAD_PROGRESS, this.update.context(this));
+    EventUtil.bind(this.model.dispatcher, FVideoModel.EVENT_TIME_UPDATE, this.update.context(this));
   },
 
   update: function() {
@@ -48,17 +48,17 @@ var ProgressBar = Class.create(FControl, {
   },
 
   destroy: function() {
-    unbind(this.element, 'mousedown', this.handleMouseDown.context(this));
-    unbind(this.controller.container, 'resize', this.update.context(this));
-    unbind(this.model.dispatcher, FVideoModel.EVENT_LOAD_PROGRESS, this.update.context(this));
-    unbind(this.model.dispatcher, FVideoModel.EVENT_TIME_UPDATE, this.update.context(this));
-    unbind(this.container, 'mousemove', this.handleMouseMove.context(this));
-    unbind(document, 'mouseup', this.handleMouseUp.context(this));
+    EventUtil.unbind(this.element, 'mousedown', this.handleMouseDown.context(this));
+    EventUtil.unbind(this.controller.container, 'resize', this.update.context(this));
+    EventUtil.unbind(this.model.dispatcher, FVideoModel.EVENT_LOAD_PROGRESS, this.update.context(this));
+    EventUtil.unbind(this.model.dispatcher, FVideoModel.EVENT_TIME_UPDATE, this.update.context(this));
+    EventUtil.unbind(this.container, 'mousemove', this.handleMouseMove.context(this));
+    EventUtil.unbind(document, 'mouseup', this.handleMouseUp.context(this));
   },
 
   handleMouseDown: function($e) {
-    bind(this.container, 'mousemove', this.handleMouseMove.context(this));
-    bind(document, 'mouseup', this.handleMouseUp.context(this));
+    EventUtil.bind(this.container, 'mousemove', this.handleMouseMove.context(this));
+    EventUtil.bind(document, 'mouseup', this.handleMouseUp.context(this));
   },
 
   handleMouseMove: function($e) {
@@ -75,8 +75,8 @@ var ProgressBar = Class.create(FControl, {
     this.handleMouseMove($e);
 
     // remove listeners
-    unbind(this.container, 'mousemove', this.handleMouseMove.context(this));
-    unbind(document, 'mouseup', this.handleMouseUp.context(this));
+    EventUtil.unbind(this.container, 'mousemove', this.handleMouseMove.context(this));
+    EventUtil.unbind(document, 'mouseup', this.handleMouseUp.context(this));
   }
 
 });

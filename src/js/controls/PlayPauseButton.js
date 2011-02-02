@@ -15,11 +15,11 @@ var PlayPauseButton = Class.create(FControl, {
   },
 
   setListeners: function() {
-    bind(this.element, 'click', this.handleClick.context(this));
+    EventUtil.bind(this.element, 'click', this.handleClick.context(this));
   },
 
   destroy: function() {
-    unbind(this.element, 'click', this.handleClick.context(this));
+    EventUtil.unbind(this.element, 'click', this.handleClick.context(this));
   },
 
   handleClick: function() {

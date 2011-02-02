@@ -19,18 +19,17 @@ var FullscreenButton = Class.create(FControl, {
   build: function($super) {
     $super();
     DOMUtil.addClass( this.element, 'fdl-fullscreen');
-//    $(this.element).addClass('fdl-fullscreen');
   },
 
   setListeners: function() {
-    bind(this.element, 'click', this.toggleFullscreen.context(this));
-    bind(this.model.dispatcher, FVideoModel.EVENT_TOGGLE_FULLSCREEN, this.handleFullscreen.context(this));
+    EventUtil.bind(this.element, 'click', this.toggleFullscreen.context(this));
+    EventUtil.bind(this.model.dispatcher, FVideoModel.EVENT_TOGGLE_FULLSCREEN, this.handleFullscreen.context(this));
   },
 
   destroy: function() {
-    unbind( window, 'resize', this.size.context(this));
-    unbind(this.element, 'click', this.toggleFullscreen.context(this));
-    unbind(this.model.dispatcher, FVideoModel.EVENT_TOGGLE_FULLSCREEN, this.handleFullscreen.context(this));
+    EventUtil.unbind( window, 'resize', this.size.context(this));
+    EventUtil.unbind(this.element, 'click', this.toggleFullscreen.context(this));
+    EventUtil.unbind(this.model.dispatcher, FVideoModel.EVENT_TOGGLE_FULLSCREEN, this.handleFullscreen.context(this));
   },
 
   handleFullscreen: function() {
@@ -53,11 +52,11 @@ var FullscreenButton = Class.create(FControl, {
 
   enterFullscreen: function() {
     this.size();
-    bind(window, 'resize', this.size.context(this));
+    EventUtil.bind(window, 'resize', this.size.context(this));
   },
 
   exitFullscreen: function() {
-    unbind( window, 'resize', this.size.context(this));
+    EventUtil.unbind( window, 'resize', this.size.context(this));
     this.controller.setSize(this.origWidth, this.origHeight);
   },
 

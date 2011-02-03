@@ -67,7 +67,6 @@ var HTMLVideoProxy = Class.create(Proxy, {
       source.type = $type;
     }
     this.video.appendChild( source );
-//    $(this.video).append(source);
   },
 
   load: function($url) {

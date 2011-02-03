@@ -50,6 +50,11 @@ var FVideo = Class.create({
     this._initialized = false;
     this._isReady = false;
     this._lastState = '';
+    
+    // force browser controls to show on iOS 3.2. otherwise, the video won't play at all.
+    if ( EnvironmentUtil.iOS && EnvironmentUtil.iOS_3 ) {
+      this.options.videoOptions.controls = true;
+    }
 
     this._init();
   },
@@ -61,6 +66,7 @@ var FVideo = Class.create({
   // actions
 
   destroy: function() {
+    if( EnvironmentUtil.android ) { EventUtil.unbind( this._videoElement, 'click', this.play.context(this)); }
     DOMUtil.removeClass(this.container, this.model.getPlayerState());
     this._removeModelListeners();
     this.proxy.destroy();
@@ -141,23 +147,6 @@ var FVideo = Class.create({
     this.model.setFullscreen($value);
   },
 
-
-  // utility
-
-  addVideoSource: function($path, $type, $flashDefault) {
-
-    /*
-     if( this._canBrowserPlayVideo() ) {
-     var source = document.createElement('source');
-     source.src = $path;
-     // don't add the 'type' attribute if we are in andriod.
-     if( !EnvironmentUtil.android && $type !== undefined ){ source.type = $type; }
-     $( this._videoElement ).append(source);
-     }
-     */
-    this.proxy.addVideoSource($path, $type);
-  },
-
   /**
    * Resets any currently playing video and sources and returns the player to a "ready" state.
    * TODO: Finish.
@@ -182,17 +171,8 @@ var FVideo = Class.create({
    */
   fallback: function() {
     this.player.innerHTML = '';
-    this._createSourceAnchors(this.player);
+    this._createAnchorTags(this.player);
   },
-
-  setVideo: function($video) {
-//    this._videoElement = $("#" + $video.id).get(0);
-    this._videoElement = $video;
-    if (this._videoElement) {
-      this._isVideoEmbedded = true;
-    }
-  },
-
 
   //////////////////////////////////////////////////////////////////////////////////
   // Methods called from the video player to update state
@@ -201,6 +181,14 @@ var FVideo = Class.create({
   _videoReady: function() {
     this._isVideoReady = true;
     this._checkReady();
+  },
+
+  _setVideo: function($video) {
+
+    this._videoElement = $video;
+    if (this._videoElement) {
+      this._isVideoEmbedded = true;
+    }
   },
 
   // called immediately when under html5, by flash when it has initialized if not
@@ -212,11 +200,14 @@ var FVideo = Class.create({
     // create proxy object
     this.proxy = this._createVideoProxy();
 
-    // create source tags
-    var dl = this.sources.videos.length;
-    for (var i = 0; i < dl; i++) {
-      var source = this.sources.videos[ i ];
-      this.addVideoSource(source.file, source.type);
+    // build controls for platforms that allow inline playback.
+    if(!EnvironmentUtil.iPhone && !EnvironmentUtil.android ) {
+      this._createControls();
+    }
+
+    // bind 'click to play' functionality when on android
+    if( EnvironmentUtil.android || (EnvironmentUtil.iPad && EnvironmentUtil.iOS_3 )) {
+      EventUtil.bind( this.container, 'click', this.play.context(this));
     }
 
     // sync relevant values from the player onto the model.
@@ -224,9 +215,6 @@ var FVideo = Class.create({
     // it also allows us to update the starting volume on the flash when it is ready.
     this.setVolume(this.options.videoOptions.volume);
     this.setSize(this.options.width, this.options.height);
-
-    // TODO: Bother calling this on iphone/android?
-    this._createControls();
 
     // init player to the ready state.
     this._updatePlayerState(FVideoModel.STATE_READY);
@@ -271,7 +259,7 @@ var FVideo = Class.create({
   _init: function() {
 
     // create container for the player
-    this.player = DOMUtil.createElement('div', {className:'player'}, this.container);
+    this.player = DOMUtil.createElement('div', {className:'fdl-player'}, this.container);
 
     // create a uniquely named player container for the video. used for flash fallback
     this.playerId = parseInt(Math.random() * 100000, 10);
@@ -324,14 +312,42 @@ var FVideo = Class.create({
   _createHTMLVideoObject: function() {
     var video = document.createElement('video');
     FVideo.applyAttributes(video, this.options.videoOptions);
-    this._createSourceAnchors(video);
+    this.sources.videos.sort(this._sortVideos);
+    this._createSourceTags(video);
+    this._createAnchorTags(video);
     this.player.appendChild(video);
     this._isVideoEmbedded = true;
     return video;
   },
 
-  _createSourceAnchors: function($el) {
-    // write anchor fallback tags
+  _createSourceTags: function( $video ) {
+    var dl = this.sources.videos.length;
+    for ( var i=0; i < dl; i++) {
+      var source = this.sources.videos[ i ];
+      var tag = this._createSourceTag( source.file, source.type );
+      $video.appendChild( tag );
+    }
+  },
+
+  _sortVideos: function( a, b ) {
+    var aIsMp4 = a.file.match(/.mp4/i) !== null;
+    var bIsMp4 = b.file.match(/.mp4/i) !== null;
+    if( aIsMp4 && !bIsMp4 ) { return -1; }
+    else if ( bIsMp4 ) { return 1; }
+    else return 0;
+  },
+
+  _createSourceTag: function( $path, $type ) {
+    var source = document.createElement('source');
+    source.src = $path;
+    // don't add the 'type' attribute if we are in andriod.
+    if (!EnvironmentUtil.android && $type !== undefined) {
+      source.type = $type;
+    }
+    return source;
+  },
+
+  _createAnchorTags: function($el) {
     var dl = this.sources.videos.length;
     for (var i = 0; i < dl; i++) {
       var source = this.sources.videos[ i ];
@@ -397,7 +413,7 @@ var FVideo = Class.create({
     self.flashFinderInterval = setInterval(function() {
       var flash_element = document.getElementById( flashID );
       if (flash_element) {
-        self.setVideo(flash_element);
+        self._setVideo(flash_element);
         self._checkReady();
         clearInterval(self.flashFinderInterval);
       }
@@ -435,6 +451,7 @@ var FVideo = Class.create({
 
   // applies the current state as a css class to the video container
   _handleStateChange: function() {
+    console.log('state change! ' + this.model.getPlayerState());
     DOMUtil.removeClass(this.container, this._lastState );
     this._lastState = this.model.getPlayerState();
     DOMUtil.addClass( this.container, this._lastState );
@@ -554,10 +571,10 @@ FVideo.applyAttributes = function($elem, $attr) {
     if (it == 'width' || it == 'height') {
       $elem[it] = parseInt($attr[it], 10);
     }
-//        else if( it.match(/poster/i) != null && FUserEnvironment.iOS && FUserEnvironment.iOS_3 ) {
-    // ignore the 'poster' attribute on iOS
-//            alert('ignoring poster!');
-//        }
+    else if( it.match(/poster/i) != null && EnvironmentUtil.iOS && EnvironmentUtil.iOS_3 ) {
+      // ignore the 'poster' attribute on iOS3.x
+      // see #3 here: http://camendesign.com/code/video_for_everybody#notes
+    }
     // make sure we only map values that aren't false
     else if ($attr[it] && typeof $attr[it] === 'string') {
       if ($attr[it].toLowerCase() !== 'false') {
@@ -570,12 +587,47 @@ FVideo.applyAttributes = function($elem, $attr) {
   }
 };
 
+//    FROM: http://roblaplaca.com/blog/2010/03/30/html5-video-on-the-ipad/
+//
+//    There’s no auto-play. If you try to play the HTML5 video player purely in JS without any event tied to it, it won’t work. (UPDATE: There is no working video autoplay attribute, however I just wrote a post about a workaround) Apple mentions why in the Safari Reference Library.
+//
+//    “In Safari on iPhone OS (for all devices, including iPad), where the user may be on a cellular network and be charged per data unit, autobuffering and autoplay are disabled. No data is loaded until the user initiates it. This means the JavaScript play() and load() methods are also inactive until the user initiates playback, unless the play() method is triggered by user action. In other words, a user-initiated Play button works, but an onLoad play event does not.”
+//
+//    After injecting the video tag via javascript you can’t put anything on top of the video. I tried adjusting the z-index and all sorts of hackery, but for the life of me I couldn’t get my custom controls to sit on top of the player unless the player was on the page first. That was really annoying because I had my HTML5 video class all set up to just inject the player into a container. It was all nice and self contained. Since it had to start on the page by default that caused a big mess and I had to do a lot of re-engineering to get it to work. Yuck!
+//
+//    If you do put an element on top of video, the video tag will devour any click events that occur… For example, I placed a play button and an image (“poster”) on top of my video. I wanted the button and poster to disappear when you click the play button. However when I clicked play it’s click event didn’t fire, but the movie did play. If I moved the button off of the video and clicked it, it worked fine. I still have to test if I can preventDefault on the video tag’s click event,  but for now I just did a workaround instead. I moved the video to the left until the user clicks play. Once play is clicked the poster gets hidden and moves the movie over and plays. That worked fine.
+//
+//    The poster attribute only shows up if the movie isn’t loaded. I was hoping it would show up as the default frame for the movie before it played, but instead it just showed the first frame of the movie.
+
+// -------------
+
+//    FROM: http://diveintohtml5.org/video.html
+//
+//    ISSUES ON IPHONES AND IPADS
+//
+//    iOS is Apple’s operating system that powers iPhones, iPod Touches, and iPads. iOS 3.2 has a number of issues with HTML5 video.
+//
+//    iOS will not recognize the video if you include a poster attribute. The poster attribute of the <video> element allows you to display a custom image while the video is loading, or until the user presses “play.” This bug is fixed in iOS 4.0, but it will be some time before users upgrade.
+//    If you have multiple <source> elements, iOS will not recognize anything but the first one. Since iOS devices only support H.264+AAC+MP4, this effectively means you must always list your MP4 first. This bug is also fixed in iOS 4.0.
+//    ❧
+//    
+//    ISSUES ON ANDROID DEVICES
+//
+//    Android is Google’s operating system that powers a number of different phones and handheld devices. Versions of Android before 2.3 had a number of issues with HTML5 video.
+//
+//    The type attribute on <source> elements confused Android greatly. The only way to get it to recognize a video source is, ironically, to omit the type attribute altogether and ensure that your H.264+AAC+MP4 video file’s name ends with an .mp4 extension. This does not appear to affect any other browser’s ability to detect support for the video; in the absence of a type attribute, other browsers appear to guess based on file extension as well. You can still include the type attribute on your other video sources, since H.264 is the only video format that Android 2.2 supports. (This bug is fixed in Android 2.3.)
+//    The controls attribute was not supported. There are no ill effects to including it, but Android will not display any user interface controls for a video. You will need to provide your own user interface controls. At a minimum, you should provide a script that starts playing the video when the user clicks the video. This bug is also fixed in Android 2.3.
+
+// -------------
 
 //    At time of writing (May 20, 2010), the iPad has a bug that prevents it from noticing anything but the first video source
 //    listed. Sadly, this means you will need to list your MP4 file first, followed by the free video formats. Sigh.
 //
 //    http://diveintohtml5.org/video.html
 //
+
+// -------------
+
 //
 //    From: http://camendesign.com/code/video_for_everybody
 //

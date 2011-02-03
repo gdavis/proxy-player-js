@@ -23,27 +23,21 @@ var FVideoModel = Class.create({
     EventUtil.dispatch(this.dispatcher, FVideoModel.EVENT_RESIZE);
   },
 
-  getWidth: function() {
-    return this._width
-  },
+  getWidth: function() { return this._width; },
   setWidth: function($value) {
     if (this._width === $value) return;
     this._width = $value;
     EventUtil.dispatch(this.dispatcher, FVideoModel.EVENT_RESIZE);
   },
 
-  getHeight: function() {
-    return this._height
-  },
+  getHeight: function() { return this._height; },
   setHeight: function($value) {
     if (this._height === $value) return;
     this._height = $value;
     EventUtil.dispatch(this.dispatcher, FVideoModel.EVENT_RESIZE);
   },
 
-  getVolume: function() {
-    return this._volume;
-  },
+  getVolume: function() { return this._volume; },
   setVolume: function($value) {
     // normalize value
     $value = parseFloat($value);
@@ -53,63 +47,49 @@ var FVideoModel = Class.create({
     EventUtil.dispatch(this.dispatcher, FVideoModel.EVENT_VOLUME_UPDATE);
   },
 
-  getTime: function() {
-    return this._time;
-  },
+  getTime: function() { return this._time; },
   setTime: function($value) {
     if (this._time == $value) return;
     this._time = $value;
     EventUtil.dispatch(this.dispatcher, FVideoModel.EVENT_TIME_UPDATE);
   },
 
-  getDuration: function() {
-    return this._duration;
-  },
+  getDuration: function() { return this._duration; },
   setDuration: function($value) {
     if (this._duration == $value) return;
     this._duration = $value;
     EventUtil.dispatch(this.dispatcher, FVideoModel.EVENT_TIME_UPDATE);
   },
 
-  getPlaying: function() {
-    return this._playing;
-  },
+  getPlaying: function() { return this._playing; },
   setPlaying: function($value) {
     if (this._playing == $value) return;
     this._playing = $value;
     EventUtil.dispatch(this.dispatcher, FVideoModel.EVENT_PLAY_STATE_CHANGE);
   },
 
-  getPlayerState: function() {
-    return this._playerState;
-  },
+  getPlayerState: function() { return this._playerState; },
   setPlayerState: function($value) {
     if (this._playerState === $value) return;
     this._playerState = $value;
     EventUtil.dispatch(this.dispatcher, FVideoModel.EVENT_PLAYER_STATE_CHANGE);
   },
 
-  getBytesLoaded: function() {
-    return this._bytesLoaded
-  },
+  getBytesLoaded: function() { return this._bytesLoaded; },
   setBytesLoaded: function($value) {
     if (this._bytesLoaded == $value) return;
     this._bytesLoaded = $value;
     EventUtil.dispatch(this.dispatcher, FVideoModel.EVENT_LOAD_PROGRESS);
   },
 
-  getBytesTotal: function() {
-    return this._bytesTotal
-  },
+  getBytesTotal: function() { return this._bytesTotal; },
   setBytesTotal: function($value) {
     if (this._bytesTotal == $value) return;
     this._bytesTotal = $value;
     EventUtil.dispatch(this.dispatcher, FVideoModel.EVENT_LOAD_PROGRESS);
   },
 
-  getFullscreen: function() {
-    return this._fullscreen
-  },
+  getFullscreen: function() { return this._fullscreen; },
   setFullscreen: function($value) {
     if (this._fullscreen == $value) return;
     this._fullscreen = $value;

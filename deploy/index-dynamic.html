@@ -41,24 +41,25 @@
 
     var video;
 
-    //bind(document, 'DOMContentLoaded', function() {
     EventUtil.documentReady(function() {
       var options = new FVideoConfiguration(636, 264, { poster:"media/poster.png", autoplay:false, volume:0 }, "proxy-player.swf");
-
+      
       // create the video object
       var sources = new FVideoSources();
-      sources.addVideo('http://video-js.zencoder.com/oceans-clip.mp4', 'video/mp4', 'Link Label', true);
       sources.addVideo('http://video-js.zencoder.com/oceans-clip.ogv', 'video/ogg', 'Link Label');
+      sources.addVideo('http://video-js.zencoder.com/oceans-clip.mov', 'video/mov', 'Link Label');
+      sources.addVideo('http://video-js.zencoder.com/oceans-clip.mp4', 'video/mp4', 'Link Label', true);
 
       // test setting default controls for all FVideo instances. values must reference the classname of a FControl subclass. can either be passed as an Object reference or string.
       FVideo.defaultControls = [PlayPauseButton,StopButton,'ProgressBar',TimeDisplay,VolumeControl,FullscreenButton];
 
       video = new FVideo('#video1', options, sources, null, function() {
         // ready handler
-        this.play();
+//        this.play();
       });
     });
   </script>
+
   <style type="text/css">
     .container {
     /*margin-top: 100px;*/
@@ -72,5 +73,8 @@
     <div id="video1"></div>
   </div>
 </div>
+
+
+
 </body>
 </html>

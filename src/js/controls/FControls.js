@@ -25,13 +25,20 @@ var FControls = Class.create({
     this.controller = $controller;
     this.container = $container;
     this.controls = [];
-    if (arguments[3] !== undefined) {
-      var controls = arguments[3];
-      var dl = controls.length;
-      for (var i = 0; i < dl; i++) {
-        this.addControl(controls[i]);
+    if( EnvironmentUtil.iOS && EnvironmentUtil.iOS_3 ) {
+      this.addControl('FControl');
+      console.log('doing iOS 3 specific controls hack!');
+    }
+    else {
+      if (arguments[3] !== undefined) {
+        var controls = arguments[3];
+        var dl = controls.length;
+        for (var i = 0; i < dl; i++) {
+          this.addControl(controls[i]);
+        }
       }
     }
+
     this.setListeners();
     this.position();
   },

@@ -53,11 +53,13 @@ var FullscreenButton = Class.create(FControl, {
   enterFullscreen: function() {
     this.size();
     EventUtil.bind(window, 'resize', this.size.context(this));
+    DOMUtil.addClass(this.controller.container, 'fdl-fullscreen');
   },
 
   exitFullscreen: function() {
     EventUtil.unbind( window, 'resize', this.size.context(this));
     this.controller.setSize(this.origWidth, this.origHeight);
+    DOMUtil.removeClass(this.controller.container, 'fdl-fullscreen');
   },
 
   getViewportSize: function() {

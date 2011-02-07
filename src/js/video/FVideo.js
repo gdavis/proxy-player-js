@@ -184,7 +184,6 @@ var FVideo = Class.create({
   },
 
   _setVideo: function($video) {
-
     this._videoElement = $video;
     if (this._videoElement) {
       this._isVideoEmbedded = true;
@@ -200,6 +199,10 @@ var FVideo = Class.create({
     // create proxy object
     this.proxy = this._createVideoProxy();
 
+    // init model with settings from the options.
+    this.setSize(this.options.width, this.options.height);
+    this.setVolume(this.options.videoOptions.volume);
+
     // build controls for platforms that allow inline playback.
     if(!EnvironmentUtil.iPhone && !EnvironmentUtil.android ) {
       this._createControls();
@@ -210,13 +213,7 @@ var FVideo = Class.create({
       EventUtil.bind( this.container, 'click', this.play.context(this));
     }
 
-    // sync relevant values from the player onto the model.
-    // by setting these on the model we also dispatch events which update the UI to its default state.
-    // it also allows us to update the starting volume on the flash when it is ready.
-    this.setVolume(this.options.videoOptions.volume);
-    this.setSize(this.options.width, this.options.height);
-
-    // init player to the ready state.
+    // set player to the ready state.
     this._updatePlayerState(FVideoModel.STATE_READY);
 
     // fire ready callback.
@@ -429,29 +426,18 @@ var FVideo = Class.create({
     }
   },
 
-  _enterFullscreen: function() {
-    DOMUtil.addClass(this.container, 'fdl-fullscreen');
-  },
-
-  _exitFullscreen: function() {
-    DOMUtil.removeClass( this.container, 'fdl-fullscreen');
-  },
-
   _addModelListeners: function() {
     EventUtil.bind(this.model.dispatcher, FVideoModel.EVENT_RESIZE, this._handleResize.context(this));
     EventUtil.bind(this.model.dispatcher, FVideoModel.EVENT_PLAYER_STATE_CHANGE, this._handleStateChange.context(this));
-    EventUtil.bind(this.model.dispatcher, FVideoModel.EVENT_TOGGLE_FULLSCREEN, this._handleFullscreen.context(this));
   },
 
   _removeModelListeners: function() {
     EventUtil.unbind(this.model.dispatcher, FVideoModel.EVENT_RESIZE, this._handleResize.context(this));
     EventUtil.unbind(this.model.dispatcher, FVideoModel.EVENT_PLAYER_STATE_CHANGE, this._handleStateChange.context(this));
-    EventUtil.unbind(this.model.dispatcher, FVideoModel.EVENT_TOGGLE_FULLSCREEN, this._handleFullscreen.context(this));
   },
 
   // applies the current state as a css class to the video container
   _handleStateChange: function() {
-    console.log('state change! ' + this.model.getPlayerState());
     DOMUtil.removeClass(this.container, this._lastState );
     this._lastState = this.model.getPlayerState();
     DOMUtil.addClass( this.container, this._lastState );

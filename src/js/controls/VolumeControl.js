@@ -31,6 +31,9 @@ var VolumeControl = Class.create(FControl, {
       el.style.width = this.barWidth + 'px';
       el.style.height = hv + 'px';
     }
+
+    // update UI to match model.
+    this.update();
   },
 
   setListeners: function() {

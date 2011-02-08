@@ -25,9 +25,9 @@ var FControls = Class.create({
     this.controller = $controller;
     this.container = $container;
     this.controls = [];
+    // hack for iOS 3.x to ignore custom controls, and use the built-in UI. we just build an empty control to fill the space.
     if( EnvironmentUtil.iOS && EnvironmentUtil.iOS_3 ) {
       this.addControl('FControl');
-      console.log('doing iOS 3 specific controls hack!');
     }
     else {
       if (arguments[3] !== undefined) {

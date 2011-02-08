@@ -4,7 +4,6 @@
 
 var EventUtil = {};
 
-
 EventUtil.dispatch = function() {
   var $el, $type, evt;
   // only one value passed, assume we are given the type and dispatch from the document.
@@ -23,32 +22,20 @@ EventUtil.dispatch = function() {
     try {
       $el.fireEvent($type);
     }
-
     // if it fails, we likely have a 'custom' event IE doesn't support. to get it working, employ hackery.
     catch(err) {
       evt = document.createEventObject();
       evt.type = $type;
-
-      var fireEvent = function(element) {
-        if (element.events && element.events[$type]) {
-          for (var callback in element.events[$type]) {
-            element.events[$type][callback].call(element, evt);
-          }
+      evt.target = $el;
+      if (EventUtil.events && EventUtil.events[$type]) {
+        for (var callbackID in EventUtil.events[$type]) {
+          EventUtil.events[$type][callbackID].call($el, evt);
         }
-      };
-      fireEvent($el);
-    
-      // mimic bubbling.
-      $el = $el.parentNode;
-      while ($el) {
-        fireEvent($el);
-        $el = $el.parentNode;
       }
     }
-    return;
   }
   // dispatch for Gecko
-  if (document.createEvent) {
+  else if (document.createEvent) {
     evt = document.createEvent('HTMLEvents');
     if (evt.initEvent) {
       evt.initEvent($type, true, true);
@@ -57,8 +44,7 @@ EventUtil.dispatch = function() {
       $el.dispatchEvent(evt);
     }
   }
-}
-
+};
 
 EventUtil.bind = (function(window, document) {
   if (document.addEventListener) {
@@ -67,14 +53,22 @@ EventUtil.bind = (function(window, document) {
     };
   }
   else if (document.attachEvent) {
+    // setup prototype function to generate unique IDs for objects under IE.
+    var id = 0;
+    Object.prototype.uniqueId = function() {
+      if( typeof this.__id == 'undefined' ) {
+        this.__id = ++id;
+      }
+      return this.__id;
+    };
     return function (elem, type, cb) {
       if (elem && type && cb) {
-        if (!elem.events) elem.events = {};
-        if (!elem.events[type]) elem.events[type] = {};
-        var handler = function() {
-          return cb.call(elem, window.event)
+        if (!EventUtil.events) EventUtil.events = {};
+        if (!EventUtil.events[type]) EventUtil.events[type] = {};
+        var handler = function( e ) {
+          return cb.call(elem, e);
         };
-        elem.events[type][cb] = handler;
+        EventUtil.events[type][cb.uniqueId()] = handler;
         elem.attachEvent('on' + type, handler);
       }
     };
@@ -89,9 +83,8 @@ EventUtil.unbind = (function(window, document) {
     }
   } else if (document.detachEvent) {
     return function(elem, type, cb) {
-      var handler = elem.events[type][cb];
-      elem.detachEvent('on' + type, handler);
-      delete elem.events[type][cb];
+      elem.detachEvent('on' + type, cb);
+      delete EventUtil.events[type][cb.uniqueId()];
     }
   }
 })(this, document);

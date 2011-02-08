@@ -443,7 +443,7 @@ var FVideo = Class.create({
     DOMUtil.addClass( this.container, this._lastState );
   },
 
-  _handleResize: function($e) {
+  _handleResize: function() {
     var wv = this.model.getWidth();
     var hv = this.model.getHeight();
     var wStr = typeof wv == 'string' ? wv : wv + "px";

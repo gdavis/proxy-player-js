@@ -83,7 +83,7 @@ EventUtil.unbind = (function(window, document) {
     }
   } else if (document.detachEvent) {
     return function(elem, type, cb) {
-      elem.detachEvent('on' + type, cb);
+      elem.detachEvent('on' + type, EventUtil.events[type][cb.uniqueId()]);
       delete EventUtil.events[type][cb.uniqueId()];
     }
   }

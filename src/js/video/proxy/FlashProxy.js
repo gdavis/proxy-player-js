@@ -11,9 +11,11 @@ var FlashVideoProxy = Class.create(Proxy, {
     this.video = $el;
   },
 
+  /*
   // TODO: Refactor into FVideo
   addVideoSource: function($path) {
   },
+  */
 
   load: function($url) {
     if ($url) this.video._load($url);

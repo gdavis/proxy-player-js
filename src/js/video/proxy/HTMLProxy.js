@@ -58,6 +58,7 @@ var HTMLVideoProxy = Class.create(Proxy, {
     $super();
   },
 
+  /*
   // TODO: Refactor into FVideo
   addVideoSource: function($path, $type) {
     var source = document.createElement('source');
@@ -68,6 +69,7 @@ var HTMLVideoProxy = Class.create(Proxy, {
     }
     this.video.appendChild( source );
   },
+  */
 
   load: function($url) {
     if ($url !== undefined) this.video.src = $url;

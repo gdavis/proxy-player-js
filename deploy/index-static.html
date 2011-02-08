@@ -3,7 +3,8 @@
 <head>
     <title>Factory Video (Static)</title>
     <link type="text/css" href="stylesheets/fdl-video.css" rel="stylesheet">
-    <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.4.4/jquery.min.js"></script>
+
+    <!-- libs -->
     <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/swfobject/2.2/swfobject.js"></script>
 
     <!-- utils -->
@@ -34,18 +35,23 @@
     <script type="text/javascript" src="../src/js/controls/VolumeControl.js"></script>
     <script type="text/javascript" src="../src/js/controls/PlayPauseButton.js"></script>
     <script type="text/javascript">
-        $(document).ready(function() {
-            FVideo.activateAll( function( $fvideo ) {
-                // callback for individual video embeds
-            });
+        EventUtil.documentReady(function() {
+          
+          // set default controls
+          FVideo.defaultControls = [PlayPauseButton,StopButton,'ProgressBar',TimeDisplay,VolumeControl,FullscreenButton];
+
+          // activate
+          FVideo.activateAll( function( $fvideo ) {
+              // callback for individual video embeds
+          });
         });
     </script>
 </head>
 <body>
     <div id="video1" class="fdl-video">
-        <video width="320" height="240" data-volume=".5" data-controls="true" data-flash-swf="proxy-player.swf" poster="media/poster.png">
-            <source src="Source-Code.flv" type="video/flv" data-label="Sweet Video (m4v)" data-flash-default="true" />
-            <source src="http://video-js.zencoder.com/oceans-clip.mp4" type="video/mp4" data-label="Sweet Video (m4v)"/>
+        <video width="320" height="240" data-volume=".5" data-flash-swf="proxy-player.swf" poster="media/poster.png">
+            <source src="http://video-js.zencoder.com/oceans-clip.mp4" type="video/mp4" data-label="Sweet Video (m4v)" data-flash-default='true' />
+            <sour , ce src="http://video-js.zencoder.com/oceans-clip.mp4" type="video/mp4" data-label="Sweet Video (m4v)"/>
             <source src="http://video-js.zencoder.com/oceans-clip.ogv" type="video/ogg" data-label="Sweet Video (OGG)"/>
         </video>
     </div>
@@ -56,7 +62,7 @@
         </video>
     </div>
     <div id="vid3" class="fdl-video">
-        <video width="720" height="588" data-autoplay="false" data-volume=".5" data-flash-swf="proxy-player.swf" data-controls-list="ProgressBar,VolumeControl,FullscreenButton" poster="media/poster.png">
+        <video width="720" height="588" data-autoplay="false" data-volume=".5" data-flash-swf="proxy-player.swf" data-controls-list="PlayPauseButton,ProgressBar,VolumeControl,FullscreenButton" poster="media/poster.png">
             <source src="http://video-js.zencoder.com/oceans-clip.mp4" type="video/mp4" data-label="Sweet Video (m4v)" data-flash-default='true' />
             <source src="http://video-js.zencoder.com/oceans-clip.ogv" type="video/ogg" data-label="Sweet Video (OGG)"/>
         </video>

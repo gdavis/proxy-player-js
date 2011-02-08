@@ -204,7 +204,7 @@ var FVideo = Class.create({
     this.setVolume(this.options.videoOptions.volume);
 
     // build controls for platforms that allow inline playback.
-    if(!EnvironmentUtil.iPhone && !EnvironmentUtil.android ) {
+    if(!EnvironmentUtil.iPhone && !EnvironmentUtil.android && !this.options.videoOptions.controls ) {
       this._createControls();
     }
 
@@ -263,7 +263,7 @@ var FVideo = Class.create({
     FVideo.instances[this.playerId] = this;
 
     // check browser capabilities 
-    this._useHTMLVideo = this._canBrowserPlayVideo();
+    this._useHTMLVideo = FVideo.canBrowserPlayVideo();
 
     // create the video element
     this._videoElement = this._createVideo();
@@ -288,13 +288,6 @@ var FVideo = Class.create({
     if (this._isVideoReady && this._isVideoEmbedded) {
       this._startupVideo();
     }
-  },
-
-  _canBrowserPlayVideo: function() {
-    var vid = document.createElement('video');
-    var canPlay = vid.play;
-    return canPlay !== undefined;
-//        return false;
   },
 
   _createVideo: function() {
@@ -364,13 +357,11 @@ var FVideo = Class.create({
     // create empty div for swfobject to replace
     DOMUtil.createElement('div', { id:replaceID }, this.player);
 
-    // map the default video file as the source for flash.
     this.options.flashOptions.attributes.id = flashID;
     this.options.flashOptions.variables.playerId = this.playerId;
     this.options.flashOptions.variables.src = this.sources.flashVideo;
     this.options.flashOptions.variables.autoplay = this.options.videoOptions.autoplay;
 
-    // embed the SWF
     var self = this;
     swfobject.embedSWF(this.options.flashOptions.swf,
       replaceID,
@@ -473,76 +464,90 @@ FVideo.defaultControls = null;
 // class variable for storing all created FVideo instances on the page.
 FVideo.instances = {};
 
+FVideo.canBrowserPlayVideo = function() {
+  var vid = document.createElement('video');
+  var canPlay = vid.play;
+  return canPlay !== undefined;
+//  return false;
+};
+
 /**
  * Searches the DOM and creates and activates all video players on the page.
  * @param $callback
  */
 FVideo.activateAll = function($callback) {
 
-  $('.fdl-video').each(function() {
+  var videos = document.getElementsByClassName('fdl-video');
+  for( var i=0; i<videos.length; i++ ) {
+    
+    var container = videos[i];
+    var videoElement = container.getElementsByTagName('video').item(0);
 
-    var video = $('video', this).get(0);
-    video.pause();
-    video.src = '';
-    if (EnvironmentUtil.firefox_3) {
-      video.load();        // initiate new load, required in FF 3.x as noted at http://blog.pearce.org.nz/2010/11/how-to-stop-video-or-audio-element.html
+    if(FVideo.canBrowserPlayVideo()) {
+      videoElement.pause();
+      videoElement.src = '';
+      if (EnvironmentUtil.firefox_3) {
+        videoElement.load();        // initiate new load, required in FF 3.x as noted at http://blog.pearce.org.nz/2010/11/how-to-stop-video-or-audio-element.html
+      }
     }
 
     var sourceList = new FVideoSources();
-    var sources = $('source', video).each(function() {
-      sourceList.addVideo(this.src, this.type, this.getAttribute('data-label'), this.getAttribute('data-flash-default') || false);
-    });
+    var sourceElements = container.getElementsByTagName('source');
+    for( var j=0; j< sourceElements.length; j++) {
+      var sourceElement = sourceElements.item(j);
+      sourceList.addVideo( sourceElement.src, sourceElement.type, sourceElement.getAttribute('data-label'), sourceElement.getAttribute('data-flash-default') || false );
+    }
 
     var videoOptions = {};
     var flashSwf;
-    var callback;
-    if (video.width) {
-      videoOptions.width = video.width;
+    if (videoElement.width) {
+      videoOptions.width = videoElement.width;
     }
-    if (video.height) {
-      videoOptions.height = video.height;
+    if (videoElement.height) {
+      videoOptions.height = videoElement.height;
     }
-    if (video.getAttribute('data-flash-swf')) {
-      flashSwf = video.getAttribute('data-flash-swf');
+    if (videoElement.getAttribute('data-flash-swf')) {
+      flashSwf = videoElement.getAttribute('data-flash-swf');
     }
-    if (video.getAttribute('data-controls')) {
-      videoOptions.controls = video.getAttribute('data-controls');
+    if (videoElement.getAttribute('data-controls')) {
+      videoOptions.controls = videoElement.getAttribute('data-controls');
     }
-    if (video.getAttribute('data-volume')) {
-      videoOptions.volume = video.getAttribute('data-volume');
+    if (videoElement.getAttribute('data-volume')) {
+      videoOptions.volume = videoElement.getAttribute('data-volume');
     }
-    if (video.getAttribute('data-autoplay')) {
-      videoOptions.autoplay = video.getAttribute('data-autoplay');
+    if (videoElement.getAttribute('data-autoplay')) {
+      videoOptions.autoplay = videoElement.getAttribute('data-autoplay');
     }
-    if (video.getAttribute('data-preload')) {
-      videoOptions.preload = video.getAttribute('data-preload');
+    if (videoElement.getAttribute('data-preload')) {
+      videoOptions.preload = videoElement.getAttribute('data-preload');
     }
-    if (video.getAttribute('data-loop')) {
-      videoOptions.loop = video.getAttribute('data-loop');
+    if (videoElement.getAttribute('data-loop')) {
+      videoOptions.loop = videoElement.getAttribute('data-loop');
     }
-    if (video.getAttribute('data-poster')) {
-      videoOptions.poster = video.getAttribute('data-poster');
+    if (videoElement.getAttribute('data-poster')) {
+      videoOptions.poster = videoElement.getAttribute('data-poster');
     }
-    if (video.getAttribute('data-src')) {
-      videoOptions.src = video.getAttribute('data-src');
+    if (videoElement.getAttribute('data-src')) {
+      videoOptions.src = videoElement.getAttribute('data-src');
     }
 
     // create a list of controls classes from the data-controls-list attribute separated by commas.
-    var controls = video.getAttribute('data-controls-list');
+    var controls = videoElement.getAttribute('data-controls-list'),
+      classList;
     if (controls !== undefined && controls !== null) {
       controls = controls.replace(' ', '');
-      var classList = controls.split(',');
+      classList = controls.split(',');
     }
 
     // create options for video
-    var options = new FVideoConfiguration(video.width, video.height, videoOptions, flashSwf);
+    var options = new FVideoConfiguration(videoElement.width, videoElement.height, videoOptions, flashSwf);
 
     // clear out container contents
-    this.innerHTML = '';
+    container.innerHTML = '';
 
     // create new FVideo obj
-    var fVideo = new FVideo(this, options, sourceList, classList, $callback);
-  });
+    new FVideo(container, options, sourceList, classList, $callback);
+  }
 };
 
 
@@ -571,6 +576,17 @@ FVideo.applyAttributes = function($elem, $attr) {
       $elem[it] = $attr[it];
     }
   }
+};
+
+document.getElementsByClassName = function(cl) {
+  var retnode = [];
+  var myclass = new RegExp('\\b' + cl + '\\b');
+  var elem = this.getElementsByTagName('*');
+  for (var i = 0; i < elem.length; i++) {
+    var classes = elem[i].className;
+    if (myclass.test(classes)) retnode.push(elem[i]);
+  }
+  return retnode;
 };
 
 //    FROM: http://roblaplaca.com/blog/2010/03/30/html5-video-on-the-ipad/

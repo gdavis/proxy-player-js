@@ -4,11 +4,8 @@
   <title>Factory Video (Dynamic)</title>
   <link type="text/css" href="stylesheets/fdl-video.css" rel="stylesheet">
 
-
   <!-- libs -->
-  <!--<script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.4.4/jquery.min.js"></script>-->
   <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/swfobject/2.2/swfobject.js"></script>
-  <script type="text/javascript" src="../src/js/libs/slick.js"></script>
 
   <!-- utils -->
   <script type="text/javascript" src="../src/js/utils/array_util.js"></script>
@@ -40,8 +37,6 @@
 
   <script type="text/javascript">
 
-    var video;
-
     EventUtil.documentReady(function() {
       var options = new FVideoConfiguration(636, 264, { poster:"media/poster.png", autoplay:false, volume:0 }, "proxy-player.swf");
       
@@ -54,9 +49,8 @@
       // test setting default controls for all FVideo instances. values must reference the classname of a FControl subclass. can either be passed as an Object reference or string.
       FVideo.defaultControls = [PlayPauseButton,StopButton,'ProgressBar',TimeDisplay,VolumeControl,FullscreenButton];
 
-      video = new FVideo('#video1', options, sources, null, function() {
+      var video = new FVideo('#video1', options, sources, null, function() {
         // ready handler
-//        this.play();
       });
     });
   </script>

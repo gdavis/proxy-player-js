@@ -133,6 +133,7 @@
     float: left;
     margin-right: 2px;
     background-color: #f0f;
+    overflow: hidden;
 }
 
 .fdl-controls .fdl-volume-wrapper div.on {

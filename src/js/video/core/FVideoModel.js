@@ -1,10 +1,14 @@
 //= require <utils/Class>
-//= require <FVideoEvent>
+//= require <video/core/FVideoEvent>
 
 var FVideoModel = Class.create({
 
   initialize: function($dispatcher) {
     this.dispatcher = $dispatcher;
+    this.init();
+  },
+
+  init: function() {
     this._volume = 1;
     this._time = 0;
     this._duration = 0;

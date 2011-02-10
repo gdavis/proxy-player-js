@@ -3,10 +3,8 @@
 <head>
   <title>Factory Video (Dynamic)</title>
   <link type="text/css" href="stylesheets/fdl-video.css" rel="stylesheet">
-
   <!-- libs -->
   <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/swfobject/2.2/swfobject.js"></script>
-
   <!-- utils -->
   <script type="text/javascript" src="../src/js/utils/array_util.js"></script>
   <script type="text/javascript" src="../src/js/utils/event_util.js"></script>
@@ -15,7 +13,6 @@
   <script type="text/javascript" src="../src/js/utils/mouse_util.js"></script>
   <script type="text/javascript" src="../src/js/utils/dom_util.js"></script>
   <script type="text/javascript" src="../src/js/utils/environment_util.js"></script>
-
   <!-- video -->
   <script type="text/javascript" src="../src/js/video/FVideo.js"></script>
   <script type="text/javascript" src="../src/js/video/proxy/Proxy.js"></script>
@@ -26,7 +23,6 @@
   <script type="text/javascript" src="../src/js/video/core/FVideoEvent.js"></script>
   <script type="text/javascript" src="../src/js/video/core/FVideoConfiguration.js"></script>
   <script type="text/javascript" src="../src/js/video/core/FVideoSources.js"></script>
-
   <!-- controls -->
   <script type="text/javascript" src="../src/js/controls/FControl.js"></script>
   <script type="text/javascript" src="../src/js/controls/FControls.js"></script>
@@ -36,8 +32,26 @@
   <script type="text/javascript" src="../src/js/controls/ProgressBar.js"></script>
   <script type="text/javascript" src="../src/js/controls/VolumeControl.js"></script>
   <script type="text/javascript" src="../src/js/controls/PlayPauseButton.js"></script>
-
   <script type="text/javascript">
+
+    var video;
+
+    function playVideoOne() {
+      // create the video object
+      var sources = new FVideoSources();
+      sources.addVideo('http://video-js.zencoder.com/oceans-clip.ogv', 'video/ogg', 'Link Label');
+      sources.addVideo('http://video-js.zencoder.com/oceans-clip.mov', 'video/mov', 'Link Label');
+      sources.addVideo('http://video-js.zencoder.com/oceans-clip.mp4', 'video/mp4', 'Link Label', true);
+      video.setNewSources( sources );
+    }
+
+    function playVideoTwo() {
+      var newSrc = new FVideoSources();
+      newSrc.addVideo('media/Source-Code.mov', 'video/mp4', 'New Link Label', true );
+      newSrc.addVideo('media/Source-Code.ogv', 'video/ogg', 'New Link Label');
+      video.setNewSources( newSrc );
+    }
+    
     EventUtil.documentReady(function() {
 
       var options = new FVideoConfiguration(636, 264, { poster:"media/poster.png", autoplay:false, volume:0 }, "proxy-player.swf");
@@ -51,19 +65,18 @@
       // test setting default controls for all FVideo instances. values must reference the classname of a FControl subclass. can either be passed as an Object reference or string.
       FVideo.defaultControls = [PlayPauseButton,StopButton,'ProgressBar',TimeDisplay,VolumeControl,FullscreenButton];
 
-      var video = new FVideo('#video1', options, sources, null, function() {
+      video = new FVideo('#video1', options, sources, null, function() {
         // ready handler
       });
 
-
+      EventUtil.bind( document.getElementById('video1'), FVideoEvent.STATE_CHANGE, handleStateEvent );
       EventUtil.bind( document.getElementById('video1'), FVideoEvent.READY, handleVideoEvent );
       EventUtil.bind( document.getElementById('video1'), FVideoEvent.COMPLETE, handleVideoEvent );
       EventUtil.bind( document.getElementById('video1'), FVideoEvent.LOAD_PROGRESS, handleVideoEvent );
       EventUtil.bind( document.getElementById('video1'), FVideoEvent.METADATA, handleVideoEvent );
       EventUtil.bind( document.getElementById('video1'), FVideoEvent.PLAY_STATE_CHANGE, handleVideoEvent );
-      EventUtil.bind( document.getElementById('video1'), FVideoEvent.STATE_CHANGE, handleStateEvent );
       EventUtil.bind( document.getElementById('video1'), FVideoEvent.RESIZE, handleVideoEvent );
-      EventUtil.bind( document.getElementById('video1'), FVideoEvent.TIME_UPDATE, handleVideoEvent );
+//      EventUtil.bind( document.getElementById('video1'), FVideoEvent.TIME_UPDATE, handleVideoEvent );
       EventUtil.bind( document.getElementById('video1'), FVideoEvent.TOGGLE_FULLSCREEN, handleVideoEvent );
       EventUtil.bind( document.getElementById('video1'), FVideoEvent.VOLUME_UPDATE, handleVideoEvent );
       EventUtil.bind( document.getElementById('video1'), FVideoEvent.PLAYER_READY, handleVideoEvent );
@@ -91,7 +104,6 @@
         console_elem.appendChild(txt);
         console_elem.scrollTop = console_elem.scrollHeight;
       }
-
     });
   </script>
 
@@ -107,15 +119,23 @@
       overflow-y: scroll;
       float: left;
     }
+    #playlist a {
+      display: block;
+    }
   </style>
 </head>
 <body>
-<div>
-  <div class="container">
-    <div id="video1"></div>
+  <div>
+    <div class="container">
+      <div id="video1"></div>
+    </div>
+    <div id="event_log"></div>
+    <div id="state_log"></div>
+    <div id="playlist">
+      <a href="javascript:playVideoOne();">Video One</a>
+      <a href="javascript:playVideoTwo();">Video Two</a>
+      <!--<a href="javascript:playVideoThree();">Video Three</a>-->
+    </div>
   </div>
-  <div id="event_log"></div>
-  <div id="state_log"></div>
-</div>
 </body>
 </html>

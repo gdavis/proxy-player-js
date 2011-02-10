@@ -36,6 +36,9 @@ var FVideo = Class.create({
     // add class to container
     DOMUtil.addClass( this.container, 'fdl-video');
 
+    // create container for the player
+    this.player = DOMUtil.createElement('div', {className:'fdl-player'}, this.container);
+
     this.options = $options || new FVideoConfiguration();
     this.sources = $sources || new FVideoSources();
     this.controlsClasses = $controlsClasses ? $controlsClasses : FVideo.defaultControls;
@@ -48,15 +51,26 @@ var FVideo = Class.create({
     this._isVideoReady = false;
     this._isVideoEmbedded = false;
     this._videoElement = false;
-    this._useHTMLVideo = true;
-    this._initialized = false;
     this._isReady = false;
     this._lastState = '';
-    
+
     // force browser controls to show on iOS 3.2. otherwise, the video won't play at all.
     if ( EnvironmentUtil.iOS && EnvironmentUtil.iOS_3 ) {
       this.options.videoOptions.controls = true;
     }
+
+    // check browser capabilities
+    this._useHTMLVideo = FVideo.canBrowserPlayVideo();
+
+    // create a uniquely named player container for the video. used for flash fallback
+    this.playerId = parseInt(Math.random() * 100000, 10);
+    FVideo.instances[this.playerId] = this;
+
+    // brainzzzzz
+    this.model = new FVideoModel(this.container);
+
+    // listen for model events
+    this._addModelListeners();
 
     this._init();
   },
@@ -110,9 +124,6 @@ var FVideo = Class.create({
     this.proxy.seek(parseFloat($time));
   },
 
-
-  // adjustments
-
   setSize: function($width, $height) {
     this.model.setSize($width, $height);
   },
@@ -149,21 +160,31 @@ var FVideo = Class.create({
     this.model.setFullscreen($value);
   },
 
+  setNewSources: function( $sources ) {
+    this.reset();
+    this.sources = $sources;
+    this._init();
+  },
+
   /**
-   * Resets any currently playing video and sources and returns the player to a "ready" state.
-   * TODO: Finish.
+   * Returns the player to its initialized state as if it was just constructed. When used,
+   * the FVideo.setNewSources() method should be called to reinitialize the player with new source videos.
    */
   reset: function() {
-    if (this._useHTMLVideo) {
-      // remove <source> tags from DOM
-//      $('source', this.player).remove();
-      // remove from sources
-    }
-    else {
-      // reset currently playing video.
-      this.proxy.stop();
-      this.proxy.load('');
-    }
+    this.stop();
+    this.proxy.destroy();
+    this.controls.destroy();
+    this._videoElement.parentNode.removeChild(this._videoElement);
+    this.controlsContainer.parentNode.removeChild(this.controlsContainer);
+    delete this.proxy;
+    delete this.controls;
+    delete this._videoElement;
+    delete this.controlsContainer;
+    
+    this.model.init();
+    this._isReady = false;
+    this._isVideoReady = false;
+    this._isVideoEmbedded = false;
   },
 
   /**
@@ -172,6 +193,7 @@ var FVideo = Class.create({
    * when the <video> tag encounters an error.
    */
   fallback: function() {
+    this.reset();
     this.player.innerHTML = '';
     this._createAnchorTags(this.player);
   },
@@ -180,11 +202,6 @@ var FVideo = Class.create({
   // Methods called from the video player to update state
   //////////////////////////////////////////////////////////////////////////////////
 
-  _videoReady: function() {
-    this._isVideoReady = true;
-    this._checkReady();
-  },
-
   _setVideo: function($video) {
     this._videoElement = $video;
     if (this._videoElement) {
@@ -192,37 +209,15 @@ var FVideo = Class.create({
     }
   },
 
-  // called immediately when under html5, by flash when it has initialized if not
-  _startupVideo: function() {
+  _videoReady: function() {
+    this._isVideoReady = true;
+    this._checkReady();
+  },
 
-    if (this._isReady) return;
-    this._isReady = true;
-
-    // create proxy object
-    this.proxy = this._createVideoProxy();
-
-    // init model with settings from the options.
-    this.setSize(this.options.width, this.options.height);
-    this.setVolume(this.options.videoOptions.volume);
-
-    // build controls for platforms that allow inline playback.
-    if(!EnvironmentUtil.iPhone && !EnvironmentUtil.android && !this.options.videoOptions.controls ) {
-      this._createControls();
+  _checkReady: function() {
+    if (this._isVideoReady && this._isVideoEmbedded) {
+      this._startupVideo();
     }
-
-    // bind 'click to play' functionality when on android
-    if( EnvironmentUtil.android || (EnvironmentUtil.iPad && EnvironmentUtil.iOS_3 )) {
-      EventUtil.bind( this.container, 'click', this.play.context(this));
-    }
-
-    // set player to the ready state.
-    this._updatePlayerState(FVideoState.READY);
-
-    // fire ready callback.
-    this.readyCallback.call(this);
-
-    // fire DOM event
-    EventUtil.dispatch( this.container, FVideoEvent.PLAYER_READY);
   },
 
   _updatePlayheadTime: function($time) {
@@ -260,25 +255,8 @@ var FVideo = Class.create({
   //////////////////////////////////////////////////////////////////////////////////
 
   _init: function() {
-
-    // create container for the player
-    this.player = DOMUtil.createElement('div', {className:'fdl-player'}, this.container);
-
-    // create a uniquely named player container for the video. used for flash fallback
-    this.playerId = parseInt(Math.random() * 100000, 10);
-    FVideo.instances[this.playerId] = this;
-
-    // check browser capabilities 
-    this._useHTMLVideo = FVideo.canBrowserPlayVideo();
-
     // create the video element
     this._videoElement = this._createVideo();
-
-    // brainzzzzz
-    this.model = new FVideoModel(this.container);
-
-    // listen for model events
-    this._addModelListeners();
 
     // if we're using html5 video, we're ready to move on.
     if (this._useHTMLVideo) {
@@ -290,10 +268,37 @@ var FVideo = Class.create({
     }
   },
 
-  _checkReady: function() {
-    if (this._isVideoReady && this._isVideoEmbedded) {
-      this._startupVideo();
+  // called immediately when under html5, by flash when it has initialized
+  _startupVideo: function() {
+    if (this._isReady) return;
+    this._isReady = true;
+
+    // create proxy object
+    this.proxy = this._createVideoProxy();
+
+    // init model with settings from the options.
+    this.setSize(this.options.width, this.options.height);
+    this.setVolume(this.options.videoOptions.volume);
+
+    // build controls for platforms that allow inline playback.
+    if(!EnvironmentUtil.iPhone && !EnvironmentUtil.android && !this.options.videoOptions.controls ) {
+      this._createControls();
     }
+
+    // bind 'click to play' functionality when on android
+    // TODO: Refactor someplace else?? Like FControls?
+    if( EnvironmentUtil.android || (EnvironmentUtil.iPad && EnvironmentUtil.iOS_3 )) {
+      EventUtil.bind( this.container, 'click', this.play.context(this));
+    }
+
+    // set player to the ready state.
+    this._updatePlayerState(FVideoState.READY);
+
+    // fire ready callback.
+    this.readyCallback.call(this);
+
+    // fire DOM event
+    EventUtil.dispatch( this.container, FVideoEvent.PLAYER_READY);
   },
 
   _createVideo: function() {
@@ -325,14 +330,6 @@ var FVideo = Class.create({
     }
   },
 
-  _sortVideos: function( a, b ) {
-    var aIsMp4 = a.file.match(/.mp4/i) !== null;
-    var bIsMp4 = b.file.match(/.mp4/i) !== null;
-    if( aIsMp4 && !bIsMp4 ) { return -1; }
-    else if ( bIsMp4 ) { return 1; }
-    else return 0;
-  },
-
   _createSourceTag: function( $path, $type ) {
     var source = document.createElement('source');
     source.src = $path;
@@ -341,6 +338,15 @@ var FVideo = Class.create({
       source.type = $type;
     }
     return source;
+  },
+
+  // sorts an array of videos so that .mp4 files are listed first. fixes known issues with iOS 3.2.
+  _sortVideos: function( a, b ) {
+    var aIsMp4 = a.file.match(/.mp4/i) !== null;
+    var bIsMp4 = b.file.match(/.mp4/i) !== null;
+    if( aIsMp4 && !bIsMp4 ) { return -1; }
+    else if ( bIsMp4 ) { return 1; }
+    else return 0;
   },
 
   _createAnchorTags: function($el) {
@@ -424,16 +430,16 @@ var FVideo = Class.create({
 
   _addModelListeners: function() {
     EventUtil.bind(this.model.dispatcher, FVideoEvent.RESIZE, this._handleResize.context(this));
-    EventUtil.bind(this.model.dispatcher, FVideoState.STATE_CHANGE, this._handleStateChange.context(this));
+    EventUtil.bind(this.model.dispatcher, FVideoEvent.STATE_CHANGE, this._handleState.context(this));
   },
 
   _removeModelListeners: function() {
     EventUtil.unbind(this.model.dispatcher, FVideoEvent.RESIZE, this._handleResize.context(this));
-    EventUtil.unbind(this.model.dispatcher, FVideoState.STATE_CHANGE, this._handleStateChange.context(this));
+    EventUtil.unbind(this.model.dispatcher, FVideoEvent.STATE_CHANGE, this._handleState.context(this));
   },
 
   // applies the current state as a css class to the video container
-  _handleStateChange: function() {
+  _handleState: function() {
     DOMUtil.removeClass(this.container, this._lastState );
     this._lastState = this.model.getPlayerState();
     DOMUtil.addClass( this.container, this._lastState );

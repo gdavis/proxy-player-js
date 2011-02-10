@@ -1,6 +1,8 @@
 //= require <utils/Class>
 //= require <video/proxy/Proxy>
 //= require <video/core/FVideoModel>
+//= require <video/core/FVideoEvent>
+//= require <video/core/FVideoState>
 
 /**
  * Proxy which controlls an HTML video object.
@@ -8,7 +10,6 @@
 var HTMLVideoProxy = Class.create(Proxy, {
   initialize: function($super, $model, $controller, $video) {
     this.bufferInterval = false;
-
     this.videoEvents = [
       { type:"metadata",        handler:this.handleMetadata.context(this) },
       { type:"loadstart",       handler:this.handleLoadStart.context(this) },
@@ -26,12 +27,10 @@ var HTMLVideoProxy = Class.create(Proxy, {
       { type:"timeupdate",      handler:this.handleTimeUpdate.context(this) },
       { type:"durationchange",  handler:this.handleDurationChange.context(this) }
     ];
-
     this.modelEvents = [
       { type:FVideoEvent.RESIZE,          handler:this.resize.context(this) },
       { type:FVideoEvent.VOLUME_UPDATE,   handler:this._updateVolume.context(this) }
     ];
-
     $super($model, $controller, $video);
   },
 
@@ -54,22 +53,10 @@ var HTMLVideoProxy = Class.create(Proxy, {
 
     delete this.videoEvents;
     delete this.modelEvents;
+    clearInterval(this.bufferInterval);
 
     $super();
   },
-
-  /*
-  // TODO: Refactor into FVideo
-  addVideoSource: function($path, $type) {
-    var source = document.createElement('source');
-    source.src = $path;
-    // don't add the 'type' attribute if we are in andriod.
-    if (!EnvironmentUtil.android && $type !== undefined) {
-      source.type = $type;
-    }
-    this.video.appendChild( source );
-  },
-  */
 
   load: function($url) {
     if ($url !== undefined) this.video.src = $url;
@@ -186,13 +173,14 @@ var HTMLVideoProxy = Class.create(Proxy, {
     this.controller._updatePlayerState(FVideoState.LOADING);
   },
 
-
   handleBuffering: function($e) {
     this.controller._updatePlayerState(FVideoState.BUFFERING);
   },
 
   handlePlay: function($e) {
-    this.startBufferInterval();
+    if( !this.bufferInterval ) {
+      this.startBufferInterval();
+    }
     this.controller._updateIsPlaying(true);
     this.controller._updatePlayerState(FVideoState.PLAYING);
   },

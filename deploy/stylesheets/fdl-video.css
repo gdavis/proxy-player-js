@@ -56,7 +56,6 @@
     display: none;
 }
 
-
 .fdl-fullscreen .fdl-controls {
     bottom: 0;
 }
@@ -140,7 +139,6 @@
     background-color: #0f0;
 }
 
-
 .fdl-video .player {
     height: 100%;
 }
@@ -150,14 +148,6 @@
 .fdl-control-flexible,
 .fdl-control-absolute {
     float:left;
-}
-
-.fdl-control .top {
-    
-}
-
-.fdl-control .bottom {
-
 }
 
 .fdl-control-absolute {

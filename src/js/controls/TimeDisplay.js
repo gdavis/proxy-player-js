@@ -21,7 +21,7 @@ var TimeDisplay = Class.create(FControl, {
   },
 
   setListeners: function() {
-    EventUtil.bind(this.model.dispatcher, FVideoModel.EVENT_TIME_UPDATE, this.update.context(this));
+    EventUtil.bind(this.model.dispatcher, FVideoEvent.TIME_UPDATE, this.update.context(this));
   },
 
   update: function() {
@@ -30,7 +30,7 @@ var TimeDisplay = Class.create(FControl, {
   },
 
   destroy: function() {
-    EventUtil.unbind(this.model.dispatcher, FVideoModel.EVENT_TIME_UPDATE, this.update.context(this));
+    EventUtil.unbind(this.model.dispatcher, FVideoEvent.TIME_UPDATE, this.update.context(this));
   },
 
   formatTime: function($time) {

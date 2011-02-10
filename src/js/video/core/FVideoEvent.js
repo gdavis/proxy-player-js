@@ -1,0 +1,11 @@
+FVideoEvent                         = {};
+FVideoEvent.RESIZE                  = "resize";
+FVideoEvent.COMPLETE                = "complete";
+FVideoEvent.METADATA                = "metadata";
+FVideoEvent.TIME_UPDATE             = "timeUpdate";
+FVideoEvent.PLAYER_READY            = "playerReady";
+FVideoEvent.LOAD_PROGRESS           = "loadProgress";
+FVideoEvent.VOLUME_UPDATE           = "volumeUpdate";
+FVideoEvent.PLAY_STATE_CHANGE       = "playStateChange";
+FVideoEvent.TOGGLE_FULLSCREEN       = "toggleFullscreen";
+FVideoEvent.STATE_CHANGE     = "stateChange";

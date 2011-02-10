@@ -23,13 +23,13 @@ var FullscreenButton = Class.create(FControl, {
 
   setListeners: function() {
     EventUtil.bind(this.element, 'click', this.toggleFullscreen.context(this));
-    EventUtil.bind(this.model.dispatcher, FVideoModel.EVENT_TOGGLE_FULLSCREEN, this.handleFullscreen.context(this));
+    EventUtil.bind(this.model.dispatcher, FVideoEvent.TOGGLE_FULLSCREEN, this.handleFullscreen.context(this));
   },
 
   destroy: function() {
     EventUtil.unbind( window, 'resize', this.size.context(this));
     EventUtil.unbind(this.element, 'click', this.toggleFullscreen.context(this));
-    EventUtil.unbind(this.model.dispatcher, FVideoModel.EVENT_TOGGLE_FULLSCREEN, this.handleFullscreen.context(this));
+    EventUtil.unbind(this.model.dispatcher, FVideoEvent.TOGGLE_FULLSCREEN, this.handleFullscreen.context(this));
   },
 
   handleFullscreen: function() {

@@ -31,8 +31,8 @@ var ProgressBar = Class.create(FControl, {
   setListeners: function() {
     EventUtil.bind(this.element, 'mousedown', this.handleMouseDown.context(this));
     EventUtil.bind(this.controller.container, 'resize', this.update.context(this));
-    EventUtil.bind(this.model.dispatcher, FVideoModel.EVENT_LOAD_PROGRESS, this.update.context(this));
-    EventUtil.bind(this.model.dispatcher, FVideoModel.EVENT_TIME_UPDATE, this.update.context(this));
+    EventUtil.bind(this.model.dispatcher, FVideoEvent.LOAD_PROGRESS, this.update.context(this));
+    EventUtil.bind(this.model.dispatcher, FVideoEvent.TIME_UPDATE, this.update.context(this));
   },
 
   update: function() {
@@ -50,8 +50,8 @@ var ProgressBar = Class.create(FControl, {
   destroy: function() {
     EventUtil.unbind(this.element, 'mousedown', this.handleMouseDown.context(this));
     EventUtil.unbind(this.controller.container, 'resize', this.update.context(this));
-    EventUtil.unbind(this.model.dispatcher, FVideoModel.EVENT_LOAD_PROGRESS, this.update.context(this));
-    EventUtil.unbind(this.model.dispatcher, FVideoModel.EVENT_TIME_UPDATE, this.update.context(this));
+    EventUtil.unbind(this.model.dispatcher, FVideoEvent.LOAD_PROGRESS, this.update.context(this));
+    EventUtil.unbind(this.model.dispatcher, FVideoEvent.TIME_UPDATE, this.update.context(this));
     EventUtil.unbind(this.container, 'mousemove', this.handleMouseMove.context(this));
     EventUtil.unbind(document, 'mouseup', this.handleMouseUp.context(this));
   },

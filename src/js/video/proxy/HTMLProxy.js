@@ -28,8 +28,8 @@ var HTMLVideoProxy = Class.create(Proxy, {
     ];
 
     this.modelEvents = [
-      { type:FVideoModel.EVENT_RESIZE,          handler:this.resize.context(this) },
-      { type:FVideoModel.EVENT_VOLUME_UPDATE,   handler:this._updateVolume.context(this) }
+      { type:FVideoEvent.RESIZE,          handler:this.resize.context(this) },
+      { type:FVideoEvent.VOLUME_UPDATE,   handler:this._updateVolume.context(this) }
     ];
 
     $super($model, $controller, $video);
@@ -155,7 +155,7 @@ var HTMLVideoProxy = Class.create(Proxy, {
   },
 
   handleError: function($e) {
-    this.controller._updatePlayerState(FVideoModel.STATE_ERROR);
+    this.controller._updatePlayerState(FVideoState.ERROR);
     // TODO: Add this back with certain error states
 //        this.controller.fallback();
   },
@@ -183,33 +183,33 @@ var HTMLVideoProxy = Class.create(Proxy, {
   },
 
   handleLoadStart: function($e) {
-    this.controller._updatePlayerState(FVideoModel.STATE_LOADING);
+    this.controller._updatePlayerState(FVideoState.LOADING);
   },
 
 
   handleBuffering: function($e) {
-    this.controller._updatePlayerState(FVideoModel.STATE_BUFFERING);
+    this.controller._updatePlayerState(FVideoState.BUFFERING);
   },
 
   handlePlay: function($e) {
     this.startBufferInterval();
     this.controller._updateIsPlaying(true);
-    this.controller._updatePlayerState(FVideoModel.STATE_PLAYING);
+    this.controller._updatePlayerState(FVideoState.PLAYING);
   },
 
   handlePause: function($e) {
     this.controller._updateIsPlaying(false);
     if (this.video.currentTime == 0 && this.video.paused) {
-      this.controller._updatePlayerState(FVideoModel.STATE_STOPPED);
+      this.controller._updatePlayerState(FVideoState.STOPPED);
     }
     else {
-      this.controller._updatePlayerState(FVideoModel.STATE_PAUSED);
+      this.controller._updatePlayerState(FVideoState.PAUSED);
     }
   },
 
   handleSeek: function($e) {
     this.controller._updateIsPlaying(false);
-    this.controller._updatePlayerState(FVideoModel.STATE_SEEKING);
+    this.controller._updatePlayerState(FVideoState.SEEKING);
   },
 
   handleSeeked: function($e) {
@@ -224,7 +224,8 @@ var HTMLVideoProxy = Class.create(Proxy, {
 
   handleEnd: function($e) {
     this.controller._updateIsPlaying(false);
-    this.controller._updatePlayerState(FVideoModel.STATE_STOPPED);
+    this.controller._updatePlayerState(FVideoState.STOPPED);
+    this.controller._complete();
   },
 
   handleVolume: function($e) {

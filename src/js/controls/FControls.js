@@ -44,7 +44,7 @@ var FControls = Class.create({
   },
 
   destroy: function() {
-    EventUtil.unbind(this.model.dispatcher, FVideoModel.EVENT_RESIZE, this.position.context(this));
+    EventUtil.unbind(this.model.dispatcher, FVideoEvent.RESIZE, this.position.context(this));
     var i, dl = this.controls.length;
     for (i = 0; i < dl; i++) {
       var control = this.controls[i];
@@ -71,7 +71,7 @@ var FControls = Class.create({
   },
 
   setListeners: function() {
-    EventUtil.bind(this.model.dispatcher, FVideoModel.EVENT_RESIZE, this.position.context(this));
+    EventUtil.bind(this.model.dispatcher, FVideoEvent.RESIZE, this.position.context(this));
   },
 
   position: function() {

@@ -6,6 +6,8 @@
 //= require <controls/FControls>
 //= require <video/core/FVideoConfiguration>
 //= require <video/core/FVideoModel>
+//= require <video/core/FVideoEvent>
+//= require <video/core/FVideoState>
 //= require <video/core/FVideoSources>
 //= require <video/proxy/HTMLProxy>
 //= require <video/proxy/FlashProxy>
@@ -214,13 +216,13 @@ var FVideo = Class.create({
     }
 
     // set player to the ready state.
-    this._updatePlayerState(FVideoModel.STATE_READY);
+    this._updatePlayerState(FVideoState.READY);
 
     // fire ready callback.
     this.readyCallback.call(this);
 
     // fire DOM event
-    EventUtil.dispatch( this.container, FVideo.EVENT_PLAYER_READY);
+    EventUtil.dispatch( this.container, FVideoEvent.PLAYER_READY);
   },
 
   _updatePlayheadTime: function($time) {
@@ -246,6 +248,10 @@ var FVideo = Class.create({
   _updateLoadProgress: function($bytesLoaded, $bytesTotal) {
     this.model.setBytesTotal($bytesTotal);
     this.model.setBytesLoaded($bytesLoaded);
+  },
+
+  _complete: function() {
+    EventUtil.dispatch( this.container, FVideoEvent.COMPLETE);
   },
 
 
@@ -350,7 +356,6 @@ var FVideo = Class.create({
   },
 
   _createFlashVideoObject: function() {
-
     var replaceID = 'player-wrapper-' + this.playerId;
     var flashID = "fdl-player-" + this.playerId;
 
@@ -418,13 +423,13 @@ var FVideo = Class.create({
   },
 
   _addModelListeners: function() {
-    EventUtil.bind(this.model.dispatcher, FVideoModel.EVENT_RESIZE, this._handleResize.context(this));
-    EventUtil.bind(this.model.dispatcher, FVideoModel.EVENT_PLAYER_STATE_CHANGE, this._handleStateChange.context(this));
+    EventUtil.bind(this.model.dispatcher, FVideoEvent.RESIZE, this._handleResize.context(this));
+    EventUtil.bind(this.model.dispatcher, FVideoState.STATE_CHANGE, this._handleStateChange.context(this));
   },
 
   _removeModelListeners: function() {
-    EventUtil.unbind(this.model.dispatcher, FVideoModel.EVENT_RESIZE, this._handleResize.context(this));
-    EventUtil.unbind(this.model.dispatcher, FVideoModel.EVENT_PLAYER_STATE_CHANGE, this._handleStateChange.context(this));
+    EventUtil.unbind(this.model.dispatcher, FVideoEvent.RESIZE, this._handleResize.context(this));
+    EventUtil.unbind(this.model.dispatcher, FVideoState.STATE_CHANGE, this._handleStateChange.context(this));
   },
 
   // applies the current state as a css class to the video container
@@ -441,20 +446,8 @@ var FVideo = Class.create({
     var hStr = typeof hv == 'string' ? hv : hv + "px";
     this.container.style.width = wStr;
     this.container.style.height = hStr;
-  },
-
-  _handleFullscreen: function() {
-    if (this.model.getFullscreen()) {
-      this._enterFullscreen();
-    }
-    else {
-      this._exitFullscreen();
-    }
   }
 });
-
-// events
-FVideo.EVENT_PLAYER_READY = "FVideo:PlayerReady";
 
 // this value allows default controls to be specified for all video instances created.
 // when constructing a new instance and no controls are passed into the constructor, the player will check

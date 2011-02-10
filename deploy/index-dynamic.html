@@ -22,6 +22,8 @@
   <script type="text/javascript" src="../src/js/video/proxy/HTMLProxy.js"></script>
   <script type="text/javascript" src="../src/js/video/proxy/FlashProxy.js"></script>
   <script type="text/javascript" src="../src/js/video/core/FVideoModel.js"></script>
+  <script type="text/javascript" src="../src/js/video/core/FVideoState.js"></script>
+  <script type="text/javascript" src="../src/js/video/core/FVideoEvent.js"></script>
   <script type="text/javascript" src="../src/js/video/core/FVideoConfiguration.js"></script>
   <script type="text/javascript" src="../src/js/video/core/FVideoSources.js"></script>
 
@@ -36,8 +38,8 @@
   <script type="text/javascript" src="../src/js/controls/PlayPauseButton.js"></script>
 
   <script type="text/javascript">
-
     EventUtil.documentReady(function() {
+
       var options = new FVideoConfiguration(636, 264, { poster:"media/poster.png", autoplay:false, volume:0 }, "proxy-player.swf");
       
       // create the video object
@@ -52,6 +54,44 @@
       var video = new FVideo('#video1', options, sources, null, function() {
         // ready handler
       });
+
+
+      EventUtil.bind( document.getElementById('video1'), FVideoEvent.READY, handleVideoEvent );
+      EventUtil.bind( document.getElementById('video1'), FVideoEvent.COMPLETE, handleVideoEvent );
+      EventUtil.bind( document.getElementById('video1'), FVideoEvent.LOAD_PROGRESS, handleVideoEvent );
+      EventUtil.bind( document.getElementById('video1'), FVideoEvent.METADATA, handleVideoEvent );
+      EventUtil.bind( document.getElementById('video1'), FVideoEvent.PLAY_STATE_CHANGE, handleVideoEvent );
+      EventUtil.bind( document.getElementById('video1'), FVideoEvent.STATE_CHANGE, handleStateEvent );
+      EventUtil.bind( document.getElementById('video1'), FVideoEvent.RESIZE, handleVideoEvent );
+      EventUtil.bind( document.getElementById('video1'), FVideoEvent.TIME_UPDATE, handleVideoEvent );
+      EventUtil.bind( document.getElementById('video1'), FVideoEvent.TOGGLE_FULLSCREEN, handleVideoEvent );
+      EventUtil.bind( document.getElementById('video1'), FVideoEvent.VOLUME_UPDATE, handleVideoEvent );
+      EventUtil.bind( document.getElementById('video1'), FVideoEvent.PLAYER_READY, handleVideoEvent );
+
+      function handleVideoEvent( $e ) {
+        logEvent( $e.type );
+      }
+
+      function handleStateEvent( $e ) {
+        logState( video.model.getPlayerState() );
+      }
+
+      function logEvent( $msg ) {
+        var console_elem = document.getElementById('event_log');
+        var txt = document.createElement('p');
+        txt.innerHTML = $msg;
+        console_elem.appendChild(txt);
+        console_elem.scrollTop = console_elem.scrollHeight;
+      }
+
+      function logState( $msg ) {
+        var console_elem = document.getElementById('state_log');
+        var txt = document.createElement('p');
+        txt.innerHTML = $msg;
+        console_elem.appendChild(txt);
+        console_elem.scrollTop = console_elem.scrollHeight;
+      }
+
     });
   </script>
 
@@ -60,6 +100,13 @@
     /*margin-top: 100px;*/
     /*margin-left: 100px;*/
     }
+    #event_log,
+    #state_log {
+      width: 350px;
+      height: 200px;
+      overflow-y: scroll;
+      float: left;
+    }
   </style>
 </head>
 <body>
@@ -67,9 +114,8 @@
   <div class="container">
     <div id="video1"></div>
   </div>
+  <div id="event_log"></div>
+  <div id="state_log"></div>
 </div>
-
-
-
 </body>
 </html>

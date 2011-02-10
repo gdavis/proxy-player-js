@@ -1,6 +1,8 @@
 //= require <utils/Class>
 //= require <video/proxy/Proxy>
 //= require <video/core/FVideoModel>
+//= require <video/core/FVideoEvent>
+//= require <video/core/FVideoState>
 
 /**
  * Proxy which controls a Flash video object.
@@ -10,12 +12,6 @@ var FlashVideoProxy = Class.create(Proxy, {
   setVideo:function($el) {
     this.video = $el;
   },
-
-  /*
-  // TODO: Refactor into FVideo
-  addVideoSource: function($path) {
-  },
-  */
 
   load: function($url) {
     if ($url) this.video._load($url);
@@ -42,7 +38,7 @@ var FlashVideoProxy = Class.create(Proxy, {
   destroy: function($super) {
     EventUtil.unbind(this.model.dispatcher, FVideoEvent.RESIZE, this.resize.context(this));
     EventUtil.unbind(this.model.dispatcher, FVideoEvent.VOLUME_UPDATE, this.handleVolume.context(this));
-    $super.destroy();
+    $super();
   },
 
   setWidth: function($value) {

@@ -10,10 +10,14 @@ var FVideoModel = Class.create({
 
   init: function() {
     this._volume = 1;
-    this._time = 0;
-    this._duration = 0;
     this._width = 0;
     this._height = 0;
+    this.reset();
+  },
+
+  reset: function() {
+    this._time = 0;
+    this._duration = 0;
     this._playing = false;
     this._playerState = false;
     this._bytesLoaded = 0;
@@ -73,8 +77,8 @@ var FVideoModel = Class.create({
     EventUtil.dispatch(this.dispatcher, FVideoEvent.PLAY_STATE_CHANGE);
   },
 
-  getPlayerState: function() { return this._playerState; },
-  setPlayerState: function($value) {
+  getState: function() { return this._playerState; },
+  setState: function($value) {
     if (this._playerState === $value) return;
     this._playerState = $value;
     EventUtil.dispatch(this.dispatcher, FVideoEvent.STATE_CHANGE);

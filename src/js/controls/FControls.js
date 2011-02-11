@@ -38,7 +38,6 @@ var FControls = Class.create({
         }
       }
     }
-
     this.setListeners();
     this.position();
   },

@@ -38,16 +38,13 @@ var FVideo = Class.create({
 
     // create container for the player
     this.player = DOMUtil.createElement('div', {className:'fdl-player'}, this.container);
-
     this.options = $options || new FVideoConfiguration();
     this.sources = $sources || new FVideoSources();
     this.controlsClasses = $controlsClasses ? $controlsClasses : FVideo.defaultControls;
     this.readyCallback = $readyCallback;
-
     this.model = false;
     this.proxy = false;
     this.controls = false;
-
     this._isVideoReady = false;
     this._isVideoEmbedded = false;
     this._videoElement = false;
@@ -59,6 +56,11 @@ var FVideo = Class.create({
       this.options.videoOptions.controls = true;
     }
 
+    // force 1 as the volume under iOS.
+    if( EnvironmentUtil.iOS ) {
+      this.options.videoOptions.volume = 1;
+    }
+
     // check browser capabilities
     this._useHTMLVideo = FVideo.canBrowserPlayVideo();
 
@@ -68,6 +70,8 @@ var FVideo = Class.create({
 
     // brainzzzzz
     this.model = new FVideoModel(this.container);
+    this.model.setSize(this.options.width,this.options.height);
+    this.model.setVolume(this.options.videoOptions.volume);
 
     // listen for model events
     this._addModelListeners();
@@ -83,12 +87,17 @@ var FVideo = Class.create({
 
   destroy: function() {
     if( EnvironmentUtil.android ) { EventUtil.unbind( this._videoElement, 'click', this.play.context(this)); }
-    DOMUtil.removeClass(this.container, this.model.getPlayerState());
+    DOMUtil.removeClass(this.container, this.model.getState());
     this._removeModelListeners();
     this.proxy.destroy();
-    this.controls.destroy();
+    if( this.controls ) {
+      this.controls.destroy();
+      delete this.controls;
+      delete this.controlsContainer;
+    }
     this.container.innerHTML = '';
     delete this.container;
+    delete this.player;
     delete this._videoElement;
     delete this.sources;
     delete this.options;
@@ -124,46 +133,22 @@ var FVideo = Class.create({
     this.proxy.seek(parseFloat($time));
   },
 
-  setSize: function($width, $height) {
-    this.model.setSize($width, $height);
-  },
-
-  getWidth: function() {
-    return this.model.getWidth();
-  },
-  setWidth: function($width) {
-    this.model.setWidth($width);
-  },
-
-  getHeight: function() {
-    return this.model.getHeight();
-  },
-  setHeight: function($height) {
-    this.model.setHeight($height);
-  },
-
-  getTime: function() {
-    return this.proxy.getTime();
-  },
-
-  getVolume: function() {
-    return this.model.getVolume();
-  },
-  setVolume: function($vol) {
-    this.model.setVolume($vol);
-  },
-
-  getFullscreen: function() {
-    return this.model.getFullscreen();
-  },
-  setFullscreen: function($value) {
-    this.model.setFullscreen($value);
-  },
-
   setNewSources: function( $sources ) {
-    this.reset();
     this.sources = $sources;
-    this._init();
+    // rebuild the HTML5 video tag when resetting. some browses (like firefox) behave really buggy when you try to dynamically
+    // update the <source> tags and not just set the src attribute.
+    if( this._useHTMLVideo ) {
+      this.reset();
+      this._init();
+    }
+    // don't rebuild the flash player when possible to prevent memory leaks in browsers such as IE.
+    else {
+      this.model.reset();
+      this.proxy.load(this.sources.flashVideo);
+      if( this.options.videoOptions.autoplay ) {
+        this.proxy.play();
+      }
+    }
   },
 
   /**
@@ -171,17 +156,18 @@ var FVideo = Class.create({
    * the FVideo.setNewSources() method should be called to reinitialize the player with new source videos.
    */
   reset: function() {
-    this.stop();
+//    this.stop();
     this.proxy.destroy();
-    this.controls.destroy();
     this._videoElement.parentNode.removeChild(this._videoElement);
-    this.controlsContainer.parentNode.removeChild(this.controlsContainer);
     delete this.proxy;
-    delete this.controls;
     delete this._videoElement;
-    delete this.controlsContainer;
-    
-    this.model.init();
+    if( this.controls ) {
+      this.controls.destroy();
+      this.controlsContainer.parentNode.removeChild(this.controlsContainer);
+      delete this.controls;
+      delete this.controlsContainer;
+    }
+    this.model.reset();
     this._isReady = false;
     this._isVideoReady = false;
     this._isVideoEmbedded = false;
@@ -196,6 +182,33 @@ var FVideo = Class.create({
     this.reset();
     this.player.innerHTML = '';
     this._createAnchorTags(this.player);
+  },
+
+  setSize: function($width, $height) {
+    this.model.setSize($width, $height);
+  },
+
+  getTime: function() { return this.model.getTime(); },
+  getDuration: function() { return this.model.getDuration(); },
+
+  getWidth: function() { return this.model.getWidth(); },
+  setWidth: function($width) {
+    this.model.setWidth($width);
+  },
+
+  getHeight: function() { return this.model.getHeight(); },
+  setHeight: function($height) {
+    this.model.setHeight($height);
+  },
+
+  getVolume: function() { return this.model.getVolume(); },
+  setVolume: function($vol) {
+    this.model.setVolume($vol);
+  },
+
+  getFullscreen: function() { return this.model.getFullscreen(); },
+  setFullscreen: function($value) {
+    this.model.setFullscreen($value);
   },
 
   //////////////////////////////////////////////////////////////////////////////////
@@ -233,7 +246,7 @@ var FVideo = Class.create({
   },
 
   _updatePlayerState: function($state) {
-    this.model.setPlayerState($state);
+    this.model.setState($state);
   },
 
   _updateVolume: function($volume) {
@@ -276,10 +289,6 @@ var FVideo = Class.create({
     // create proxy object
     this.proxy = this._createVideoProxy();
 
-    // init model with settings from the options.
-    this.setSize(this.options.width, this.options.height);
-    this.setVolume(this.options.videoOptions.volume);
-
     // build controls for platforms that allow inline playback.
     if(!EnvironmentUtil.iPhone && !EnvironmentUtil.android && !this.options.videoOptions.controls ) {
       this._createControls();
@@ -313,6 +322,8 @@ var FVideo = Class.create({
   _createHTMLVideoObject: function() {
     var video = document.createElement('video');
     FVideo.applyAttributes(video, this.options.videoOptions);
+    video.width = this.model.getWidth();
+    video.height = this.model.getHeight();
     this.sources.videos.sort(this._sortVideos);
     this._createSourceTags(video);
     this._createAnchorTags(video);
@@ -372,12 +383,13 @@ var FVideo = Class.create({
     this.options.flashOptions.variables.playerId = this.playerId;
     this.options.flashOptions.variables.src = this.sources.flashVideo;
     this.options.flashOptions.variables.autoplay = this.options.videoOptions.autoplay;
+    this.options.flashOptions.variables.volume = this.model.getVolume();
 
     var self = this;
     swfobject.embedSWF(this.options.flashOptions.swf,
       replaceID,
-      this.options.width,
-      this.options.height,
+      this.model.getWidth(),
+      this.model.getHeight(),
       this.options.flashOptions.version,
       this.options.flashOptions.expressInstall,
       this.options.flashOptions.variables,
@@ -441,7 +453,7 @@ var FVideo = Class.create({
   // applies the current state as a css class to the video container
   _handleState: function() {
     DOMUtil.removeClass(this.container, this._lastState );
-    this._lastState = this.model.getPlayerState();
+    this._lastState = this.model.getState();
     DOMUtil.addClass( this.container, this._lastState );
   },
 

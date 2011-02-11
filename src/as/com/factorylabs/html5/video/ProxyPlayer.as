@@ -157,7 +157,7 @@ package com.factorylabs.html5.video
 		{
 //			log('registering callbacks on object id: ' + ExternalInterface.objectID );
 //			ExternalInterface.addCallback( '_addVideoSource', jsAddVideoSource );
-			ExternalInterface.addCallback( '_play', playVideo );
+			ExternalInterface.addCallback( '_load', load );			ExternalInterface.addCallback( '_play', playVideo );
 			ExternalInterface.addCallback( '_pause', _player.pause );
 			ExternalInterface.addCallback( '_seek', _player.seek );
 			ExternalInterface.addCallback( '_stop', _player.stop );

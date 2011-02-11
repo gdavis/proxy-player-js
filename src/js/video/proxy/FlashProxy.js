@@ -9,6 +9,12 @@
  */
 var FlashVideoProxy = Class.create(Proxy, {
 
+  initialize: function($super, $model, $controller, $video) {
+    $super($model, $controller, $video);
+    this.setVolume(this.model.getVolume());
+    this.resize();
+  },
+
   setVideo:function($el) {
     this.video = $el;
   },

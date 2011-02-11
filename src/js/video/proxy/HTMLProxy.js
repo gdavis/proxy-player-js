@@ -32,6 +32,10 @@ var HTMLVideoProxy = Class.create(Proxy, {
       { type:FVideoEvent.VOLUME_UPDATE,   handler:this._updateVolume.context(this) }
     ];
     $super($model, $controller, $video);
+
+    // sync with model.
+    this.setVolume(this.model.getVolume());
+    this.resize();
   },
 
 
@@ -74,7 +78,9 @@ var HTMLVideoProxy = Class.create(Proxy, {
 
   stop: function() {
     this.video.pause();
-    this.video.currentTime = 0;
+    if( this.video.currentTime > 0 ) {
+      this.video.currentTime = 0;
+    }
   },
 
   seek: function($time) {
@@ -90,7 +96,7 @@ var HTMLVideoProxy = Class.create(Proxy, {
   },
 
   getVolume: function() {
-    return this.video.volume
+    return this.video.volume;
   },
   setVolume: function($volume) {
     this.video.volume = parseFloat($volume);

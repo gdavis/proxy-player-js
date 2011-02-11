@@ -25,10 +25,16 @@ var FControls = Class.create({
     this.controller = $controller;
     this.container = $container;
     this.controls = [];
-    // hack for iOS 3.x to ignore custom controls, and use the built-in UI. we just build an empty control to fill the space.
-    if( EnvironmentUtil.iOS && EnvironmentUtil.iOS_3 ) {
-      this.addControl('FControl');
+
+    // disable dragging and highlighting of elements
+    this.container.onmousedown = function() { return false; };
+    this.container.onselectstart = function() { return false; };
+
+    // under android, we cannot use custom controls so we just bind the video container's click event to start playback
+    if( EnvironmentUtil.android ) {
+      EventUtil.bind( this.controller.container, 'click', this.controller.play.context(this.controller));
     }
+    // otherwise, go ahead and build controls.
     else {
       if (arguments[3] !== undefined) {
         var controls = arguments[3];
@@ -43,6 +49,9 @@ var FControls = Class.create({
   },
 
   destroy: function() {
+    if( EnvironmentUtil.android || (EnvironmentUtil.iPad && EnvironmentUtil.iOS_3 )) {
+      EventUtil.unbind( this.controller.container, 'click', this.controller.play.context(this.controller));
+    }
     EventUtil.unbind(this.model.dispatcher, FVideoEvent.RESIZE, this.position.context(this));
     var i, dl = this.controls.length;
     for (i = 0; i < dl; i++) {
@@ -54,11 +63,16 @@ var FControls = Class.create({
   },
 
   addControl: function($controlClass) {
+    var control;
     if (typeof $controlClass === 'string') {
-      this.controls.push(new window[$controlClass](this.model, this.controller, this.container));
+      control = new window[$controlClass](this.model, this.controller, this.container);
+      if( control.canSupportPlatform()) this.controls.push(control);
+      else control.destroy();
     }
     else if (typeof $controlClass === 'function') {
-      this.controls.push(new $controlClass(this.model, this.controller, this.container));
+      control = new $controlClass(this.model, this.controller, this.container);
+      if( control.canSupportPlatform()) this.controls.push(control);
+      else control.destroy();
     }
     else if (typeof $controlClass === 'object') {
       if ($controlClass.tagName !== undefined) { // check for a node

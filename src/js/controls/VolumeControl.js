@@ -42,6 +42,10 @@ var VolumeControl = Class.create(FControl, {
     EventUtil.bind(this.model.dispatcher, FVideoEvent.VOLUME_UPDATE, this.update.context(this));
   },
 
+  canSupportPlatform: function() {
+    return !EnvironmentUtil.iOS;
+  },
+
   update: function() {
     var dl = this.wrapper.children.length;
     var maxOnIndex = Math.round(this.model.getVolume() * dl);

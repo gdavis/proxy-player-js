@@ -40,7 +40,7 @@ var FVideo = Class.create({
     this.player = DOMUtil.createElement('div', {className:'fdl-player'}, this.container);
     this.options = $options || new FVideoConfiguration();
     this.sources = $sources || new FVideoSources();
-    this.controlsClasses = $controlsClasses ? $controlsClasses : FVideo.defaultControls;
+    this.controlsClasses = $controlsClasses ? $controlsClasses : FVideo.defaultControls ? FVideo.defaultControls : [];
     this.readyCallback = $readyCallback;
     this.model = false;
     this.proxy = false;
@@ -51,14 +51,14 @@ var FVideo = Class.create({
     this._isReady = false;
     this._lastState = '';
 
-    // force browser controls to show on iOS 3.2. otherwise, the video won't play at all.
-    if ( EnvironmentUtil.iOS && EnvironmentUtil.iOS_3 ) {
-      this.options.videoOptions.controls = true;
-    }
-
     // force 1 as the volume under iOS.
     if( EnvironmentUtil.iOS ) {
       this.options.videoOptions.volume = 1;
+      // force browser controls to show on iOS 3.2. otherwise, the video won't play at all.
+      // also force under iPhone, since we'll be using the built-in controls on that platform as well.
+      if ( EnvironmentUtil.iOS_3 || EnvironmentUtil.iPhone ) {
+        this.options.videoOptions.controls = true;
+      }
     }
 
     // check browser capabilities
@@ -70,7 +70,7 @@ var FVideo = Class.create({
 
     // brainzzzzz
     this.model = new FVideoModel(this.container);
-    this.model.setSize(this.options.width,this.options.height);
+    this.model.setSize(this.options.width, this.options.height);
     this.model.setVolume(this.options.videoOptions.volume);
 
     // listen for model events
@@ -86,7 +86,6 @@ var FVideo = Class.create({
   // actions
 
   destroy: function() {
-    if( EnvironmentUtil.android ) { EventUtil.unbind( this._videoElement, 'click', this.play.context(this)); }
     DOMUtil.removeClass(this.container, this.model.getState());
     this._removeModelListeners();
     this.proxy.destroy();
@@ -156,7 +155,6 @@ var FVideo = Class.create({
    * the FVideo.setNewSources() method should be called to reinitialize the player with new source videos.
    */
   reset: function() {
-//    this.stop();
     this.proxy.destroy();
     this._videoElement.parentNode.removeChild(this._videoElement);
     delete this.proxy;
@@ -289,16 +287,13 @@ var FVideo = Class.create({
     // create proxy object
     this.proxy = this._createVideoProxy();
 
-    // build controls for platforms that allow inline playback.
-    if(!EnvironmentUtil.iPhone && !EnvironmentUtil.android && !this.options.videoOptions.controls ) {
+    // build controls when we aren't using native controls and have control classes
+    if( !this.options.videoOptions.controls && this.controlsClasses.length > 0 ) {
       this._createControls();
     }
 
-    // bind 'click to play' functionality when on android
-    // TODO: Refactor someplace else?? Like FControls?
-    if( EnvironmentUtil.android || (EnvironmentUtil.iPad && EnvironmentUtil.iOS_3 )) {
-      EventUtil.bind( this.container, 'click', this.play.context(this));
-    }
+    // force resize
+    this._handleResize();
 
     // set player to the ready state.
     this._updatePlayerState(FVideoState.READY);
@@ -404,21 +399,6 @@ var FVideo = Class.create({
     return null;
   },
 
-  _createControls: function() {
-    if (this.controlsClasses) {
-      if (this.controlsClasses.length > 0) {
-        this.controlsContainer = DOMUtil.createElement('div', { className:'fdl-controls' }, this.container);
-        this.controlsContainer.onmousedown = function() {
-          return false;
-        };
-        this.controlsContainer.onselectstart = function() {
-          return false;
-        };
-        this.controls = new FControls(this.model, this, this.controlsContainer, this.controlsClasses);
-      }
-    }
-  },
-
   _findFlashPlayer: function(flashID) {
     var self = this;
     self.flashFinderInterval = setInterval(function() {
@@ -429,6 +409,11 @@ var FVideo = Class.create({
         clearInterval(self.flashFinderInterval);
       }
     }, 10);
+  },
+
+  _createControls: function() {
+    this.controlsContainer = DOMUtil.createElement('div', { className:'fdl-controls' }, this.container);
+    this.controls = new FControls(this.model, this, this.controlsContainer, this.controlsClasses);
   },
 
   _createVideoProxy: function() {
@@ -560,7 +545,6 @@ FVideo.activateAll = function($callback) {
     new FVideo(container, options, sourceList, classList, $callback);
   }
 };
-
 
 /**
  * Applies a hash of name/value pairs as attributes on an HTMLElement.

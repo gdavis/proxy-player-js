@@ -21,6 +21,11 @@ var FControl = Class.create({
     this.element = DOMUtil.createElement('div', { className:"fdl-control" }, this.container);
   },
 
+  canSupportPlatform: function() {
+    // return true if the current platform is supported.
+    return true;
+  },
+
   setListeners: function() {
     // adds listeners to the model, controls, or whatever else on the page
   },
@@ -31,5 +36,9 @@ var FControl = Class.create({
 
   destroy: function() {
     // called to clean up the control for garbage collection
+    this.container.removeChild(this.element);
+    delete this.element;
+    delete this.controller;
+    delete this.container;
   }
 });

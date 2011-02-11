@@ -1,69 +1,70 @@
 * {
-    margin: 0;
-    padding: 0;
+  margin: 0;
+  padding: 0;
 }
 
 .fdl-video {
-    position: relative;
+  position: relative;
+  background-color: #000;
 }
 
 .fdl-video.fdl-fullscreen {
-    position: fixed;
-    top: 0;
-    left: 0;
-    margin: 0;
-    overflow: hidden;
+  position: fixed;
+  top: 0;
+  left: 0;
+  margin: 0;
+  overflow: hidden;
 }
 
 .fdl-video .player {
-    z-index:665;
-    position: absolute;
+  z-index: 665;
+  position: absolute;
 }
 
 .fdl-video .player object {
-    outline: none;
+  outline: none;
 }
 
 .fdl-video .fdl-controls {
-    position: absolute;
-    z-index:666;
-    width: 100%;
-    height: 20px;
-    bottom: 0;
+  position: absolute;
+  z-index: 666;
+  width: 100%;
+  height: 20px;
+  bottom: 0;
 }
 
 .fdl-video .fdl-controls .fdl-hit-area {
-    position: absolute;
-    width: 100%;
-    height: 100%;
+  position: absolute;
+  width: 100%;
+  height: 100%;
 }
 
 .fdl-video .fdl-controls .fdl-controls-bar {
-    position: absolute;
-    height: 25px;
-    bottom: 0;
-    color: #fff;
-    background-color: #333;
+  position: absolute;
+  height: 20px;
+  bottom: 0;
+  color: #fff;
+  background-color: #333;
 }
 
 .fdl-video .fdl-controls .fdl-video-play-button {
-    position: absolute;
-    left: 50%;
-    top: 50%;
+  position: absolute;
+  left: 50%;
+  top: 50%;
 }
 
 .playing .fdl-controls .fdl-video-play-button {
-    display: none;
+  display: none;
 }
 
 .fdl-fullscreen .fdl-controls {
-    bottom: 0;
+  bottom: 0;
 }
 
 .fdl-controls .fdl-play-pause {
-    width: 20px;
-    height: 20px;
-    background-color: #ff0;
+  width: 20px;
+  height: 20px;
+  background-color: #ff0;
 }
 
 .ready .fdl-controls .fdl-play-pause,
@@ -71,86 +72,86 @@
 .buffering .fdl-controls .fdl-play-pause,
 .stopped .fdl-controls .fdl-play-pause,
 .paused .fdl-controls .fdl-play-pause {
-    background-color: #0f0;
+  background-color: #0f0;
 }
 
 .fdl-controls .fdl-stop {
-    width: 20px;
-    height: 20px;
-    background-color: #f00;
+  width: 20px;
+  height: 20px;
+  background-color: #f00;
 }
 
 .fdl-controls .fdl-progress-bar {
-    position: relative;
-    height: 20px;
-    background-color: #0ff;
-    overflow: hidden; 
+  position: relative;
+  height: 20px;
+  background-color: #0ff;
+  overflow: hidden;
 }
 
 .fdl-controls .fdl-progress-bar .fdl-load-progress,
 .fdl-controls .fdl-progress-bar .fdl-play-progress {
-    position: absolute;
-    height: 100%;
+  position: absolute;
+  height: 100%;
 }
 
 .fdl-controls .fdl-progress-bar .fdl-play-progress {
-    background-color: #999;
+  background-color: #999;
 }
 
 .fdl-controls .fdl-progress-bar .fdl-load-progress {
-    background-color: #666;
+  background-color: #666;
 }
 
 .fdl-controls .fdl-progress-bar .fdl-handle {
-    width: 1px;
-    height: 100%;
-    background-color: #f00;
-    position: absolute;
+  width: 1px;
+  height: 100%;
+  background-color: #f00;
+  position: absolute;
 }
 
 .fdl-controls .fdl-fullscreen {
-    width: 20px;
-    height: 20px;
-    background-color: #f0f;
+  width: 20px;
+  height: 20px;
+  background-color: #f0f;
 }
 
 .fdl-controls .fdl-time-separator {
-    display: inline-block;
-    width: 1px;
-    height: 10px;
-    margin: 0 6px;
-    background-color: #f00;
+  display: inline-block;
+  width: 1px;
+  height: 10px;
+  margin: 0 6px;
+  background-color: #f00;
 }
 
 .fdl-controls .fdl-volume {
-    position: relative;
-    width: 40px;
-    background-color: #000;
+  position: relative;
+  width: 40px;
+  background-color: #000;
 }
 
 .fdl-controls .fdl-volume-wrapper div {
-    float: left;
-    margin-right: 2px;
-    background-color: #f0f;
-    overflow: hidden;
+  float: left;
+  margin-right: 2px;
+  background-color: #f0f;
+  overflow: hidden;
 }
 
 .fdl-controls .fdl-volume-wrapper div.on {
-    background-color: #0f0;
+  background-color: #0f0;
 }
 
 .fdl-video .player {
-    height: 100%;
+  height: 100%;
 }
 
 .fdl-control,
 .fdl-control-fixed,
 .fdl-control-flexible,
 .fdl-control-absolute {
-    float:left;
+  float: left;
 }
 
 .fdl-control-absolute {
-    position: absolute;
+  position: absolute;
 }
 

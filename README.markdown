@@ -31,9 +31,19 @@ Proxy subclass that interacts with the HTML5 <video> tag.
 **FlashProxy.js**
 Proxy subclass that interacts with the Flash Player object via ExternalInterface.
 
+**FVideoEvent.js**
+Contains all events dispatched by the container element of the FVideo instance.
+
+**FVideoState.js**
+Contains all possible states the FVideo player can enter. These values are also applied as a CSS class to the container of the FVideo class for styling controls and updating UI elements.
+
 ## Usage
 
 ## Platform Notes
+
+### iOS General
+It is not possible to adjust volume on iOS devices, as specified in Apple's Mobile Safari documentation. The volume read off the video element will always return 1. 
+See: http://developer.apple.com/library/safari/documentation/AudioVideo/Conceptual/Using_HTML5_Audio_Video/Using_HTML5_Audio_Video.pdf
 
 ### iOS 3
 

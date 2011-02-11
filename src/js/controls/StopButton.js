@@ -3,6 +3,7 @@
 //= require <utils/event_util>
 //= require <utils/function_util>
 //= require <video/core/FVideoModel>
+//= require <video/core/FVideoEvent>
 
 var StopButton = Class.create(FControl, {
   initialize: function($super, $model, $controller, $container) {

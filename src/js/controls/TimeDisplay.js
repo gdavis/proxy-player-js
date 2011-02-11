@@ -3,6 +3,7 @@
 //= require <utils/event_util>
 //= require <utils/function_util>
 //= require <video/core/FVideoModel>
+//= require <video/core/FVideoEvent>
 
 var TimeDisplay = Class.create(FControl, {
 

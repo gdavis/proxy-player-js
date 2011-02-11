@@ -3,6 +3,7 @@
 //= require <utils/function_util>
 //= require <utils/event_util>
 //= require <video/core/FVideoModel>
+//= require <video/core/FVideoEvent>
 //= require <controls/FControl>
 
 var FullscreenButton = Class.create(FControl, {

@@ -4,6 +4,7 @@
 //= require <utils/dom_util>
 //= require <utils/mouse_util>
 //= require <video/core/FVideoModel>
+//= require <video/core/FVideoEvent>
 
 var ProgressBar = Class.create(FControl, {
 

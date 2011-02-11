@@ -74,13 +74,13 @@ var FControls = Class.create({
       if( control.canSupportPlatform()) this.controls.push(control);
       else control.destroy();
     }
-    else if (typeof $controlClass === 'object') {
-      if ($controlClass.tagName !== undefined) { // check for a node
-        this.container.appendChild($controlClass);
-        DOMUtil.addClass($controlClass, 'fdl-control');
-        this.controls.push($controlClass);
-      }
-    }
+//    else if (typeof $controlClass === 'object') {
+//      if ($controlClass.tagName !== undefined) { // check for a node
+//        this.container.appendChild($controlClass);
+//        DOMUtil.addClass($controlClass, 'fdl-control');
+//        this.controls.push($controlClass);
+//      }
+//    }
   },
 
   setListeners: function() {

@@ -56,11 +56,12 @@ var VolumeControl = Class.create(FControl, {
     }
   },
 
-  destroy: function() {
+  destroy: function( $super ) {
     EventUtil.unbind(this.element, 'mousedown', this.handleMouseDown.context(this));
     EventUtil.unbind(this.model.dispatcher, FVideoEvent.VOLUME_UPDATE, this.update.context(this));
     EventUtil.unbind(this.element, 'mousemove', this.handleMouseMove.context(this));
     EventUtil.unbind(document, 'mouseup', this.handleMouseUp.context(this));
+    $super();
   },
 
   handleMouseDown: function($e) {

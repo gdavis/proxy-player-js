@@ -30,8 +30,9 @@ var TimeDisplay = Class.create(FControl, {
     this.totalTime.innerHTML = this.formatTime(this.model.getDuration());
   },
 
-  destroy: function() {
+  destroy: function( $super ) {
     EventUtil.unbind(this.model.dispatcher, FVideoEvent.TIME_UPDATE, this.update.context(this));
+    $super();
   },
 
   formatTime: function($time) {

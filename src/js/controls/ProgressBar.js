@@ -48,13 +48,14 @@ var ProgressBar = Class.create(FControl, {
     if(!isNaN(dw)) this.progressBar.style.width = dw + "px";
   },
 
-  destroy: function() {
+  destroy: function( $super ) {
     EventUtil.unbind(this.element, 'mousedown', this.handleMouseDown.context(this));
     EventUtil.unbind(this.controller.container, 'resize', this.update.context(this));
     EventUtil.unbind(this.model.dispatcher, FVideoEvent.LOAD_PROGRESS, this.update.context(this));
     EventUtil.unbind(this.model.dispatcher, FVideoEvent.TIME_UPDATE, this.update.context(this));
     EventUtil.unbind(this.container, 'mousemove', this.handleMouseMove.context(this));
     EventUtil.unbind(document, 'mouseup', this.handleMouseUp.context(this));
+    $super();
   },
 
   handleMouseDown: function($e) {

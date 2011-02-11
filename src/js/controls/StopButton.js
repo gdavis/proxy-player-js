@@ -19,7 +19,8 @@ var StopButton = Class.create(FControl, {
     EventUtil.bind(this.element, 'click', this.controller.stop.context(this.controller));
   },
 
-  destroy: function() {
+  destroy: function( $super ) {
     EventUtil.unbind(this.element, 'click', this.controller.stop.context(this.controller));
+    $super();
   }
 });

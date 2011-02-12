@@ -25,7 +25,12 @@ var StartVideoButton = Class.create(FControl, {
     $super();
   },
 
-  handleClick: function( $e ) {
-    this.controller.play();
+  handleClick: function() {
+    if (this.model.getPlaying()) {
+      this.controller.pause();
+    }
+    else {
+      this.controller.play();
+    }
   }
 });

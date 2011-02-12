@@ -44,10 +44,8 @@
 }
 
 /*--- Start Video Button ---*/
-.fdl-video .fdl-controls .fdl-start-video {
-  display: none;
-}
 .fdl-video .fdl-controls .fdl-start-video .button {
+  display: none;
   position: absolute;
   left: 50%;
   top: 50%;
@@ -57,12 +55,11 @@
   height: 20px;
   background-color: #f0f;
 }
-
-.ready .fdl-controls .fdl-start-video,
-.loading .fdl-controls .fdl-start-video,
-.paused .fdl-controls .fdl-start-video,
-.stopped .fdl-controls .fdl-start-video,
-.buffering .fdl-controls .fdl-start-video {
+.ready .fdl-controls .fdl-start-video .button,
+.loading .fdl-controls .fdl-start-video .button,
+.paused .fdl-controls .fdl-start-video .button,
+.stopped .fdl-controls .fdl-start-video .button,
+.buffering .fdl-controls .fdl-start-video .button {
   display: block;
 }
 

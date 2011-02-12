@@ -13,6 +13,7 @@
 //= require <video/proxy/FlashProxy>
 
 //  CONTROLS: Be sure to omit any controls you don't plan on using.
+//= require <controls/StartVideoButton>
 //= require <controls/PlayPauseButton>
 //= require <controls/StopButton>
 //= require <controls/ProgressBar>
@@ -24,7 +25,7 @@ var FVideo = Class.create({
 
   VERSION: '<%= FVIDEO_VERSION %>',
 
-  initialize: function($element, $options, $sources, $controlsClasses, $readyCallback) {
+  initialize: function($element, $options, $sources, $controlsClasses, $overlayClasses, $readyCallback) {
 
     // lookup element
     if( typeof $element === 'string') {
@@ -41,6 +42,7 @@ var FVideo = Class.create({
     this.options = $options || new FVideoConfiguration();
     this.sources = $sources || new FVideoSources();
     this.controlsClasses = $controlsClasses ? $controlsClasses : FVideo.defaultControls ? FVideo.defaultControls : [];
+    this.overlayClasses = $overlayClasses ? $overlayClasses : FVideo.defaultOverlays ? FVideo.defaultOverlays : [];
     this.readyCallback = $readyCallback;
     this.model = false;
     this.proxy = false;
@@ -288,7 +290,8 @@ var FVideo = Class.create({
     this.proxy = this._createVideoProxy();
 
     // build controls when we aren't using native controls and have control classes
-    if( !this.options.videoOptions.controls && this.controlsClasses.length > 0 ) {
+    // TODO: do we need this condition? should the controls just always be built and use the canSupportPlatform flag??
+    if( !this.options.videoOptions.controls && ( this.controlsClasses.length > 0 || this.overlayClasses.length > 0 )) {
       this._createControls();
     }
 
@@ -413,7 +416,7 @@ var FVideo = Class.create({
 
   _createControls: function() {
     this.controlsContainer = DOMUtil.createElement('div', { className:'fdl-controls' }, this.container);
-    this.controls = new FControls(this.model, this, this.controlsContainer, this.controlsClasses);
+    this.controls = new FControls(this.model, this, this.controlsContainer, this.controlsClasses, this.overlayClasses );
   },
 
   _createVideoProxy: function() {
@@ -456,6 +459,7 @@ var FVideo = Class.create({
 // when constructing a new instance and no controls are passed into the constructor, the player will check
 // for this variable and use these if defined.
 FVideo.defaultControls = null;
+FVideo.defaultOverlays = null;
 
 // class variable for storing all created FVideo instances on the page.
 FVideo.instances = {};
@@ -535,6 +539,14 @@ FVideo.activateAll = function($callback) {
       classList = controls.split(',');
     }
 
+    // create a list of overlay classes from the data-controls-list attribute separated by commas.
+    var overlays = videoElement.getAttribute('data-overlays-list'),
+      overlayList;
+    if (controls !== undefined && overlays !== null) {
+      overlays = overlays.replace(' ', '');
+      overlayList = overlays.split(',');
+    }
+
     // create options for video
     var options = new FVideoConfiguration(videoElement.width, videoElement.height, videoOptions, flashSwf);
 
@@ -542,7 +554,7 @@ FVideo.activateAll = function($callback) {
     container.innerHTML = '';
 
     // create new FVideo obj
-    new FVideo(container, options, sourceList, classList, $callback);
+    new FVideo(container, options, sourceList, classList, overlayList, $callback);
   }
 };
 

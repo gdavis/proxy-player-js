@@ -2,16 +2,18 @@
 //= require <utils/dom_util>
 //= require <utils/function_util>
 //= require <utils/event_util>
-//= require <video/core/FVideoModel>
 
-var PlayPauseButton = Class.create(FControl, {
+var StartVideoButton = Class.create(FControl, {
   initialize: function($super, $model, $controller, $container) {
-    $super($model, $controller, $container);
+    $super( $model, $controller, $container );
   },
 
   build: function($super) {
     $super();
-    DOMUtil.addClass(this.element, 'fdl-play-pause');
+    DOMUtil.addClass(this.element, 'fdl-start-video');
+
+    // create centered button
+    DOMUtil.createElement( 'div', { className:'button' }, this.element );
   },
 
   setListeners: function() {
@@ -23,12 +25,7 @@ var PlayPauseButton = Class.create(FControl, {
     $super();
   },
 
-  handleClick: function() {
-    if (this.model.getPlaying()) {
-      this.controller.pause();
-    }
-    else {
-      this.controller.play();
-    }
+  handleClick: function( $e ) {
+    this.controller.play();
   }
 });

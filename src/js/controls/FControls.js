@@ -20,11 +20,16 @@
 //= require <video/core/FVideoModel>
 
 var FControls = Class.create({
-  initialize: function($model, $controller, $container) {
+  initialize: function($model, $controller, $container, $controls, $overlays ) {
     this.model = $model;
     this.controller = $controller;
     this.container = $container;
     this.controls = [];
+    this.overlays = [];
+
+    // create containers for overlays and the control bar
+    this.overlayContainer = DOMUtil.createElement( 'div', { className:'fdl-overlays' }, this.container );
+    this.controlBar = DOMUtil.createElement( 'div', { className:'fdl-control-bar' }, this.container );
 
     // disable dragging and highlighting of elements
     this.container.onmousedown = function() { return false; };
@@ -36,11 +41,20 @@ var FControls = Class.create({
     }
     // otherwise, go ahead and build controls.
     else {
-      if (arguments[3] !== undefined) {
-        var controls = arguments[3];
-        var dl = controls.length;
-        for (var i = 0; i < dl; i++) {
-          this.addControl(controls[i]);
+      var i, dl = $controls.length;
+      for (i = 0; i < dl; i++) {
+        var control = this.createControl($controls[i], this.controlBar );
+        if( control ) {
+          DOMUtil.addClass( control.element, 'fdl-control');
+          this.controls.push(control);
+        }
+      }
+      dl = $overlays.length;
+      for (i = 0; i < dl; i++) {
+        var overlay = this.createControl($overlays[i], this.overlayContainer );
+        if( overlay ) {
+          DOMUtil.addClass( overlay.element, 'fdl-overlay');
+          this.overlays.push(overlay);
         }
       }
     }
@@ -60,27 +74,38 @@ var FControls = Class.create({
         control.destroy();
       }
     }
+    for (i = 0; i < dl; i++) {
+      var overlay = this.overlays[i];
+      if (typeof overlay == 'function') {
+        overlay.destroy();
+      }
+    }
   },
 
-  addControl: function($controlClass) {
-    var control;
-    if (typeof $controlClass === 'string') {
-      control = new window[$controlClass](this.model, this.controller, this.container);
-      if( control.canSupportPlatform()) this.controls.push(control);
-      else control.destroy();
+  createControl: function($controlClass, $container ) {
+    var control = this.constructControl( $controlClass, $container );
+    if( control.canSupportPlatform()) {
+      control.build();
+      control.setListeners();
+      control.update();
+      return control;
     }
-    else if (typeof $controlClass === 'function') {
-      control = new $controlClass(this.model, this.controller, this.container);
-      if( control.canSupportPlatform()) this.controls.push(control);
-      else control.destroy();
+    else {
+      control.destroy();
+      delete control;
     }
-//    else if (typeof $controlClass === 'object') {
-//      if ($controlClass.tagName !== undefined) { // check for a node
-//        this.container.appendChild($controlClass);
-//        DOMUtil.addClass($controlClass, 'fdl-control');
-//        this.controls.push($controlClass);
-//      }
-//    }
+    return false;
+  },
+
+  constructControl: function($klass, $container ) {
+    var obj;
+    if (typeof $klass === 'string') {
+      obj = new window[$klass](this.model, this.controller, $container);
+    }
+    else if (typeof $klass === 'function') {
+      obj = new $klass(this.model, this.controller, $container);
+    }
+    return obj;
   },
 
   setListeners: function() {
@@ -88,18 +113,18 @@ var FControls = Class.create({
   },
 
   position: function() {
-    var dl = this.controls.length,
+    var el,
+      dl = this.controls.length,
       flexibles = [],
       sum = 0,
       i;
     for (i = 0; i < dl; i++) {
       var control = this.controls[i];
-      var el = ( control.tagName !== undefined ) ? control : control.element;
+      el = ( control.tagName !== undefined ) ? control : control.element;
       if (DOMUtil.hasClass(el, 'fdl-control-flexible')) {
         flexibles.push(el);
       }
-      // ignore absolutely positioned elements
-      else if (!DOMUtil.hasClass( el, 'fdl-control-absolute')) {
+      else {
         sum += el.offsetWidth;
       }
     }
@@ -108,6 +133,15 @@ var FControls = Class.create({
     for (i = 0; i < dl; i++) {
       var flexi = flexibles[i];
       flexi.style.width = wv + 'px';
+    }
+
+    // size overlays to match player size.
+    dl = this.overlays.length;
+    for (i = 0; i < dl; i++) {
+      var overlay = this.overlays[i];
+      el = ( overlay.tagName !== undefined ) ? overlay : overlay.element;
+      el.style.width = this.model.getWidth() + 'px';
+      el.style.height = this.model.getHeight() + 'px';
     }
   }
 });

@@ -11,19 +11,22 @@ var FControl = Class.create({
     this.controller = $controller;
     this.container = $container;
     this.element = undefined;
-    this.build();
-    this.setListeners();
-    this.update();
   },
 
+  /**
+   * @return Boolean Returns true if the current platform is supported. The control will not be created if it is not supported.
+   */
+  canSupportPlatform: function() {
+    // return
+    return true;
+  },
+
+  /**
+   * Builds the elements for this control. Only called if canSupportPlatform() returns true.
+   */
   build: function() {
     //  create the main element for this control
-    this.element = DOMUtil.createElement('div', { className:"fdl-control" }, this.container);
-  },
-
-  canSupportPlatform: function() {
-    // return true if the current platform is supported.
-    return true;
+    this.element = DOMUtil.createElement('div', {}, this.container);
   },
 
   setListeners: function() {
@@ -36,7 +39,9 @@ var FControl = Class.create({
 
   destroy: function() {
     // called to clean up the control for garbage collection
-    this.container.removeChild(this.element);
+    if( this.element ) {
+      this.container.removeChild(this.element);
+    }
     delete this.element;
     delete this.controller;
     delete this.container;

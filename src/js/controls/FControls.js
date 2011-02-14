@@ -39,23 +39,23 @@ var FControls = Class.create({
     if( EnvironmentUtil.android ) {
       EventUtil.bind( this.controller.container, 'click', this.controller.play.context(this.controller));
     }
-    // otherwise, go ahead and build controls.
-    else {
-      var i, dl = $controls.length;
-      for (i = 0; i < dl; i++) {
-        var control = this.createControl($controls[i], this.controlBar );
-        if( control ) {
-          DOMUtil.addClass( control.element, 'fdl-control');
-          this.controls.push(control);
-        }
+    
+    // build control bar
+    var i, dl = $controls.length;
+    for (i = 0; i < dl; i++) {
+      var control = this.createControl($controls[i], this.controlBar );
+      if( control ) {
+        DOMUtil.addClass( control.element, 'fdl-control');
+        this.controls.push(control);
       }
-      dl = $overlays.length;
-      for (i = 0; i < dl; i++) {
-        var overlay = this.createControl($overlays[i], this.overlayContainer );
-        if( overlay ) {
-          DOMUtil.addClass( overlay.element, 'fdl-overlay');
-          this.overlays.push(overlay);
-        }
+    }
+    // build overlays
+    dl = $overlays.length;
+    for (i = 0; i < dl; i++) {
+      var overlay = this.createControl($overlays[i], this.overlayContainer );
+      if( overlay ) {
+        DOMUtil.addClass( overlay.element, 'fdl-overlay');
+        this.overlays.push(overlay);
       }
     }
     this.setListeners();
@@ -90,10 +90,7 @@ var FControls = Class.create({
       control.update();
       return control;
     }
-    else {
-      control.destroy();
-      delete control;
-    }
+    delete control;
     return false;
   },
 

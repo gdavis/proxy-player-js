@@ -43,7 +43,7 @@ var VolumeControl = Class.create(FControl, {
   },
 
   canSupportPlatform: function() {
-    return !EnvironmentUtil.iOS;
+    return !(!EnvironmentUtil.iOS || !EnvironmentUtil.android );
   },
 
   update: function() {

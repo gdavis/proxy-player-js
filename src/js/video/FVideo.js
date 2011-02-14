@@ -289,11 +289,8 @@ var FVideo = Class.create({
     // create proxy object
     this.proxy = this._createVideoProxy();
 
-    // build controls when we aren't using native controls and have control classes
-    // TODO: do we need this condition? should the controls just always be built and use the canSupportPlatform flag??
-    if( !this.options.videoOptions.controls && ( this.controlsClasses.length > 0 || this.overlayClasses.length > 0 )) {
-      this._createControls();
-    }
+    // create ui
+    this._createControls();
 
     // force resize
     this._handleResize();

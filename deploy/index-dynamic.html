@@ -36,24 +36,35 @@
   <script type="text/javascript">
 
     var video;
-
-    function playVideoOne() {
-      // create the video object
-      var sources = new FVideoSources();
-      sources.addVideo('http://video-js.zencoder.com/oceans-clip.ogv', 'video/ogg', 'Link Label');
-      sources.addVideo('http://video-js.zencoder.com/oceans-clip.mov', 'video/mov', 'Link Label');
-      sources.addVideo('http://video-js.zencoder.com/oceans-clip.mp4', 'video/mp4', 'Link Label', true);
-      video.setNewSources( sources );
-    }
-
-    function playVideoTwo() {
-      var newSrc = new FVideoSources();
-      newSrc.addVideo('media/Source-Code.mov', 'video/mp4', 'New Link Label', true );
-      newSrc.addVideo('media/Source-Code.ogv', 'video/ogg', 'New Link Label');
-      video.setNewSources( newSrc );
-    }
     
     EventUtil.documentReady(function() {
+
+      EventUtil.bind( document.getElementById('video1'), FVideoEvent.STATE_CHANGE, handleStateEvent );
+      EventUtil.bind( document.getElementById('video1'), FVideoEvent.READY, handleVideoEvent );
+      EventUtil.bind( document.getElementById('video1'), FVideoEvent.COMPLETE, handleVideoEvent );
+      EventUtil.bind( document.getElementById('video1'), FVideoEvent.LOAD_PROGRESS, handleVideoEvent );
+      EventUtil.bind( document.getElementById('video1'), FVideoEvent.METADATA, handleVideoEvent );
+      EventUtil.bind( document.getElementById('video1'), FVideoEvent.PLAY_STATE_CHANGE, handleVideoEvent );
+      EventUtil.bind( document.getElementById('video1'), FVideoEvent.RESIZE, handleVideoEvent );
+//      EventUtil.bind( document.getElementById('video1'), FVideoEvent.TIME_UPDATE, handleVideoEvent );
+      EventUtil.bind( document.getElementById('video1'), FVideoEvent.TOGGLE_FULLSCREEN, handleVideoEvent );
+      EventUtil.bind( document.getElementById('video1'), FVideoEvent.VOLUME_UPDATE, handleVideoEvent );
+      EventUtil.bind( document.getElementById('video1'), FVideoEvent.PLAYER_READY, handleVideoEvent );
+
+      EventUtil.bind( document.getElementById('vidOne'), 'click', function() {
+        var sources = new FVideoSources();
+        sources.addVideo('http://video-js.zencoder.com/oceans-clip.ogv', 'video/ogg', 'Link Label');
+        sources.addVideo('http://video-js.zencoder.com/oceans-clip.mov', 'video/mov', 'Link Label');
+        sources.addVideo('http://video-js.zencoder.com/oceans-clip.mp4', 'video/mp4', 'Link Label', true);
+        video.setNewSources(sources);
+      });
+      EventUtil.bind( document.getElementById('vidTwo'), 'click', function() {
+        var sources = new FVideoSources();
+        sources.addVideo('media/Source-Code.ogv', 'video/ogg', 'Link Label');
+        sources.addVideo('media/Source-Code.mov', 'video/mov', 'Link Label', true);
+        video.setNewSources(sources);
+      });
+
 
       var options = new FVideoConfiguration(636, 264, { poster:"media/poster.png", autoplay:false, volume:0 }, "proxy-player.swf");
       
@@ -70,18 +81,6 @@
       video = new FVideo('#video1', options, sources, null, null, function() {
         // ready handler
       });
-
-      EventUtil.bind( document.getElementById('video1'), FVideoEvent.STATE_CHANGE, handleStateEvent );
-      EventUtil.bind( document.getElementById('video1'), FVideoEvent.READY, handleVideoEvent );
-      EventUtil.bind( document.getElementById('video1'), FVideoEvent.COMPLETE, handleVideoEvent );
-      EventUtil.bind( document.getElementById('video1'), FVideoEvent.LOAD_PROGRESS, handleVideoEvent );
-      EventUtil.bind( document.getElementById('video1'), FVideoEvent.METADATA, handleVideoEvent );
-      EventUtil.bind( document.getElementById('video1'), FVideoEvent.PLAY_STATE_CHANGE, handleVideoEvent );
-      EventUtil.bind( document.getElementById('video1'), FVideoEvent.RESIZE, handleVideoEvent );
-//      EventUtil.bind( document.getElementById('video1'), FVideoEvent.TIME_UPDATE, handleVideoEvent );
-      EventUtil.bind( document.getElementById('video1'), FVideoEvent.TOGGLE_FULLSCREEN, handleVideoEvent );
-      EventUtil.bind( document.getElementById('video1'), FVideoEvent.VOLUME_UPDATE, handleVideoEvent );
-      EventUtil.bind( document.getElementById('video1'), FVideoEvent.PLAYER_READY, handleVideoEvent );
 
       function handleVideoEvent( $e ) {
         logEvent( $e.type );
@@ -108,35 +107,33 @@
       }
     });
   </script>
-
   <style type="text/css">
-    .container {
-    /*margin-top: 100px;*/
-    /*margin-left: 100px;*/
-    }
     #event_log,
-    #state_log {
-      width: 350px;
+    #state_log,
+    #playlist {
+      width: 270px;
       height: 200px;
       overflow-y: scroll;
       float: left;
     }
-    #playlist a {
-      display: block;
+    #playlist div {
+      width: 100px;
+      height: 25px;
+      background-color: #f00;
+      margin: 2px;
     }
   </style>
 </head>
 <body>
   <div>
-    <div class="container">
-      <div id="video1"></div>
-    </div>
+    <div id="video1"></div>
+  </div>
+  <div>
     <div id="event_log"></div>
     <div id="state_log"></div>
     <div id="playlist">
-      <a href="javascript:playVideoOne();">Video One</a>
-      <a href="javascript:playVideoTwo();">Video Two</a>
-      <!--<a href="javascript:playVideoThree();">Video Three</a>-->
+      <div id="vidOne">Video One</div>
+      <div id="vidTwo">Video Two</div>
     </div>
   </div>
 </body>

@@ -15,10 +15,10 @@ var FControl = Class.create({
 
   /**
    * @return Boolean Returns true if the current platform is supported. The control will not be created if it is not supported.
+   * By default, iPhone and Android devices don't get controls.
    */
   canSupportPlatform: function() {
-    // return
-    return true;
+    return ( EnvironmentUtil.iPhone || EnvironmentUtil.android ) ? false : true;
   },
 
   /**
@@ -39,8 +39,8 @@ var FControl = Class.create({
 
   destroy: function() {
     // called to clean up the control for garbage collection
-    if( this.element ) {
-      this.container.removeChild(this.element);
+    if( this.element && this.element.parentNode ) {
+      this.element.parentNode.removeChild(this.element);
     }
     delete this.element;
     delete this.controller;

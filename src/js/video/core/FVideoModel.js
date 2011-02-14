@@ -19,7 +19,7 @@ var FVideoModel = Class.create({
     this._time = 0;
     this._duration = 0;
     this._playing = false;
-    this._playerState = false;
+    this._state = false;
     this._bytesLoaded = 0;
     this._bytesTotal = 0;
     this._fullscreen = false;
@@ -77,10 +77,10 @@ var FVideoModel = Class.create({
     EventUtil.dispatch(this.dispatcher, FVideoEvent.PLAY_STATE_CHANGE);
   },
 
-  getState: function() { return this._playerState; },
+  getState: function() { return this._state; },
   setState: function($value) {
-    if (this._playerState === $value) return;
-    this._playerState = $value;
+    if (this._state === $value) return;
+    this._state = $value;
     EventUtil.dispatch(this.dispatcher, FVideoEvent.STATE_CHANGE);
   },
 

@@ -149,8 +149,10 @@ var HTMLVideoProxy = Class.create(Proxy, {
 
   handleError: function($e) {
     this.controller._updatePlayerState(FVideoState.ERROR);
-    // TODO: Add this back with certain error states
-//        this.controller.fallback();
+    var video = $e.target;
+    if( video.networkState === 4 ) {
+      this.controller.fallback();
+    }
   },
 
   handleTimeUpdate: function($e) {

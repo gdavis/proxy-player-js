@@ -39,6 +39,21 @@
     
     EventUtil.documentReady(function() {
 
+      var config = new FVideoConfiguration(636, 264, { poster:"media/poster.png", autoplay:false, volume:0 }, "proxy-player.swf");
+      
+      // create the video object
+      var sources = new FVideoSources();
+      sources.addVideo('http://video-js.zencoder.com/oceans-clip.ogv', 'video/ogg', 'Link Label');
+      sources.addVideo('http://video-js.zencoder.com/oceans-clip.mp4', 'video/mp4', 'Link Label', true);
+
+      // test setting default controls for all FVideo instances. values must reference the classname of a FControl subclass. can either be passed as an Object reference or string.
+      FVideo.defaultControls = [PlayPauseButton,StopButton,'ProgressBar',TimeDisplay,VolumeControl,FullscreenButton];
+      FVideo.defaultOverlays = [StartVideoButton];
+
+      video = new FVideo('#video1', config, sources, null, null, function() {
+        // ready handler
+      });
+
       EventUtil.bind( document.getElementById('video1'), FVideoEvent.STATE_CHANGE, handleStateEvent );
       EventUtil.bind( document.getElementById('video1'), FVideoEvent.READY, handleVideoEvent );
       EventUtil.bind( document.getElementById('video1'), FVideoEvent.COMPLETE, handleVideoEvent );
@@ -50,14 +65,14 @@
       EventUtil.bind( document.getElementById('video1'), FVideoEvent.TOGGLE_FULLSCREEN, handleVideoEvent );
       EventUtil.bind( document.getElementById('video1'), FVideoEvent.VOLUME_UPDATE, handleVideoEvent );
       EventUtil.bind( document.getElementById('video1'), FVideoEvent.PLAYER_READY, handleVideoEvent );
-
+      
       EventUtil.bind( document.getElementById('vidOne'), 'click', function() {
         var sources = new FVideoSources();
         sources.addVideo('http://video-js.zencoder.com/oceans-clip.ogv', 'video/ogg', 'Link Label');
-        sources.addVideo('http://video-js.zencoder.com/oceans-clip.mov', 'video/mov', 'Link Label');
         sources.addVideo('http://video-js.zencoder.com/oceans-clip.mp4', 'video/mp4', 'Link Label', true);
         video.setNewSources(sources);
       });
+
       EventUtil.bind( document.getElementById('vidTwo'), 'click', function() {
         var sources = new FVideoSources();
         sources.addVideo('media/Source-Code.ogv', 'video/ogg', 'Link Label');
@@ -65,22 +80,11 @@
         video.setNewSources(sources);
       });
 
-
-      var options = new FVideoConfiguration(636, 264, { poster:"media/poster.png", autoplay:false, volume:0 }, "proxy-player.swf");
-      
-      // create the video object
-      var sources = new FVideoSources();
-      sources.addVideo('http://video-js.zencoder.com/oceans-clip.ogv', 'video/ogg', 'Link Label');
-      sources.addVideo('http://video-js.zencoder.com/oceans-clip.mov', 'video/mov', 'Link Label');
-      sources.addVideo('http://video-js.zencoder.com/oceans-clip.mp4', 'video/mp4', 'Link Label', true);
-
-      // test setting default controls for all FVideo instances. values must reference the classname of a FControl subclass. can either be passed as an Object reference or string.
-      FVideo.defaultControls = [PlayPauseButton,StopButton,'ProgressBar',TimeDisplay,VolumeControl,FullscreenButton];
-      FVideo.defaultOverlays = [StartVideoButton];
-
-      video = new FVideo('#video1', options, sources, null, null, function() {
-        // ready handler
+      EventUtil.bind( document.getElementById('configOne'), 'click', function() {
+        var config = new FVideoConfiguration(1024, 512, { poster:"media/birds-poster.jpg", autoplay:false, volume:0 });
+        video.setNewConfiguration(config);
       });
+
 
       function handleVideoEvent( $e ) {
         logEvent( $e.type );
@@ -117,7 +121,7 @@
       float: left;
     }
     #playlist div {
-      width: 100px;
+      width: 130px;
       height: 25px;
       background-color: #f00;
       margin: 2px;
@@ -134,6 +138,7 @@
     <div id="playlist">
       <div id="vidOne">Video One</div>
       <div id="vidTwo">Video Two</div>
+      <div id="configOne">Alt. Configuration</div>
     </div>
   </div>
 </body>

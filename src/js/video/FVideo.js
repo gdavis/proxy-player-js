@@ -25,7 +25,7 @@ var FVideo = Class.create({
 
   VERSION: '<%= FVIDEO_VERSION %>',
 
-  initialize: function($element, $options, $sources, $controlsClasses, $overlayClasses, $readyCallback) {
+  initialize: function($element, $config, $sources, $controlsClasses, $overlayClasses, $readyCallback) {
 
     // lookup element if we get a string
     if( typeof $element === 'string') {
@@ -39,7 +39,7 @@ var FVideo = Class.create({
 
     // class properties
     this.player = DOMUtil.createElement('div', {className:'fdl-player'}, this.container);
-    this.options = $options || new FVideoConfiguration();
+    this.config = $config || new FVideoConfiguration();
     this.sources = $sources || new FVideoSources();
     this.controlsClasses = $controlsClasses ? $controlsClasses : FVideo.defaultControls ? FVideo.defaultControls : [];
     this.overlayClasses = $overlayClasses ? $overlayClasses : FVideo.defaultOverlays ? FVideo.defaultOverlays : [];
@@ -55,11 +55,11 @@ var FVideo = Class.create({
 
     // force 1 as the volume under iOS.
     if( EnvironmentUtil.iOS ) {
-      this.options.videoOptions.volume = 1;
+      this.config.videoOptions.volume = 1;
       // force browser controls to show on iOS 3.2. otherwise, the video won't play at all.
       // also force under iPhone, since we'll be using the built-in controls on that platform as well.
       if ( EnvironmentUtil.iOS_3 || EnvironmentUtil.iPhone ) {
-        this.options.videoOptions.controls = true;
+        this.config.videoOptions.controls = true;
       }
     }
 
@@ -72,8 +72,6 @@ var FVideo = Class.create({
 
     // brainzzzzz
     this.model = new FVideoModel(this.container);
-    this.model.setSize(this.options.width, this.options.height);
-    this.model.setVolume(this.options.videoOptions.volume);
 
     // listen for model events
     this._addModelListeners();
@@ -102,7 +100,7 @@ var FVideo = Class.create({
     delete this.player;
     delete this._videoElement;
     delete this.sources;
-    delete this.options;
+    delete this.config;
     delete this.controlsClasses;
     delete this.readyCallback;
     delete this.model;
@@ -144,6 +142,12 @@ var FVideo = Class.create({
     this.proxy.seek(parseFloat($time));
   },
 
+  setNewConfiguration: function( $config ) {
+    this.reset();
+    this.config = $config;
+    this._init();
+  },
+
   setNewSources: function( $sources ) {
     this.sources = $sources;
     // rebuild the HTML5 video tag when resetting. some browses (like firefox) behave really buggy when you try to dynamically
@@ -156,7 +160,7 @@ var FVideo = Class.create({
     else {
       this.model.reset();
       this.proxy.load(this.sources.flashVideo);
-      if( this.options.videoOptions.autoplay ) {
+      if( this.config.videoOptions.autoplay ) {
         this.proxy.play();
       }
     }
@@ -288,7 +292,7 @@ var FVideo = Class.create({
     }
     // otherwise, we wait for flash to call _videoReady and we adjust our size while we wait.
     else {
-      this.setSize(this.options.width, this.options.height);
+      this.setSize(this.config.width, this.config.height);
     }
   },
 
@@ -296,6 +300,10 @@ var FVideo = Class.create({
   _startupVideo: function() {
     if (this._isReady) return;
     this._isReady = true;
+
+    // set config options onto the model
+    this.model.setSize(this.config.width, this.config.height);
+    this.model.setVolume(this.config.videoOptions.volume);
 
     // create proxy object
     this.proxy = this._createVideoProxy();
@@ -327,7 +335,7 @@ var FVideo = Class.create({
 
   _createHTMLVideoObject: function() {
     var video = document.createElement('video');
-    FVideo.applyAttributes(video, this.options.videoOptions);
+    FVideo.applyAttributes(video, this.config.videoOptions);
     video.width = this.model.getWidth();
     video.height = this.model.getHeight();
     this.sources.videos.sort(this._sortVideos);
@@ -385,22 +393,22 @@ var FVideo = Class.create({
     // create empty div for swfobject to replace
     DOMUtil.createElement('div', { id:replaceID }, this.player);
 
-    this.options.flashOptions.attributes.id = flashID;
-    this.options.flashOptions.variables.playerId = this.playerId;
-    this.options.flashOptions.variables.src = this.sources.flashVideo;
-    this.options.flashOptions.variables.autoplay = this.options.videoOptions.autoplay;
-    this.options.flashOptions.variables.volume = this.model.getVolume();
+    this.config.flashOptions.attributes.id = flashID;
+    this.config.flashOptions.variables.playerId = this.playerId;
+    this.config.flashOptions.variables.src = this.sources.flashVideo;
+    this.config.flashOptions.variables.autoplay = this.config.videoOptions.autoplay;
+    this.config.flashOptions.variables.volume = this.model.getVolume();
 
     var self = this;
-    swfobject.embedSWF(this.options.flashOptions.swf,
+    swfobject.embedSWF(this.config.flashOptions.swf,
       replaceID,
       this.model.getWidth(),
       this.model.getHeight(),
-      this.options.flashOptions.version,
-      this.options.flashOptions.expressInstall,
-      this.options.flashOptions.variables,
-      this.options.flashOptions.params,
-      this.options.flashOptions.attributes
+      this.config.flashOptions.version,
+      this.config.flashOptions.expressInstall,
+      this.config.flashOptions.variables,
+      this.config.flashOptions.params,
+      this.config.flashOptions.attributes
       );
 
     // using the swfobject callback in IE causes issues, so we use a interval to lookup our flash element.

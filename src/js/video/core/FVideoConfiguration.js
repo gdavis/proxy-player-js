@@ -6,6 +6,9 @@ var FVideoConfiguration = Class.create({
     $variables = $variables || {};
     this.width = $width || 320;
     this.height = $height || 240;
+    this.videoOptions = FVideoConfiguration.mergeOptions(FVideoConfiguration.DEFAULT_VIDEO_OPTIONS, $videoOptions);
+    this.videoOptions.width = this.width;
+    this.videoOptions.height = this.height;
     this.flashOptions = { expressInstall:"expressinstall.swf",
       version:"10",
       swf: $swf,
@@ -13,13 +16,8 @@ var FVideoConfiguration = Class.create({
       params: FVideoConfiguration.mergeOptions(FVideoConfiguration.DEFAULT_FLASH_PARAMS, $parameters),
       attributes: FVideoConfiguration.mergeOptions(FVideoConfiguration.DEFAULT_FLASH_ATTRIBUTES, $attributes)
     };
-    this.videoOptions = FVideoConfiguration.mergeOptions(FVideoConfiguration.DEFAULT_VIDEO_OPTIONS, $videoOptions);
-    this.videoOptions.width = this.width;
-    this.videoOptions.height = this.height;
   }
 });
-
-// defaults
 FVideoConfiguration.DEFAULT_SWF = 'proxy-player.swf';
 FVideoConfiguration.DEFAULT_FLASH_ATTRIBUTES = { bgcolor:"#000" };
 FVideoConfiguration.DEFAULT_VIDEO_OPTIONS = {

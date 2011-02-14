@@ -36,7 +36,6 @@ package com.factorylabs.html5.video
 		private var _player	:FVideo;
 		private var _prevBytesLoaded	:int;
 		private var _prevBytesTotal	:int;
-//		private var _videoElementInterval	:int;
 		
 		
 		/**
@@ -45,7 +44,6 @@ package com.factorylabs.html5.video
 		 */
 		public function ProxyPlayer()
 		{
-			log('as: ProxyPlayer created.');
 			stop();
 			mapFlashVars();
 			initialize();
@@ -60,10 +58,6 @@ package com.factorylabs.html5.video
 		 * Javascript API
 		**************************************************************************************************** */
 		
-		public function jsAddVideoSource() :void
-		{
-		}
-		
 		public function load( $url :String ) :void
 		{
 			_url = $url || _url;
@@ -74,19 +68,16 @@ package com.factorylabs.html5.video
 		{
 			_url = $url || _url;
 			if( $url ) {
-				log('as: fresh url: ' + _url );
 				_player.play( _url );
 			}
 			else {
 				
 				// check if the url is present, if not, its out first time calling play.
 				if( !_player.url ) {
-					log('as: calling play for the first time');
 					_player.play( _url );
 				}
 				// otherwise, the url is loaded and we're likely resuming from pause.
 				else {
-					log('as: resuming player with basic play command.');
 					_player.play();
 				}
 			}
@@ -94,19 +85,16 @@ package com.factorylabs.html5.video
 		
 		public function seek( $time :Number ) :void
 		{
-			log('as: seeking to time: ' + $time );	
 			_player.seek( $time );
 		}
 
 		public function setVolume( $value :Number ) :void
 		{
-			log('as: setVolume to ' + $value );
 			_player.volume = $value;
 		}
 		
 		public function getVolume() :Number
 		{
-			log('as: returning the volume');
 			return _player.volume;
 		}
 		
@@ -155,14 +143,15 @@ package com.factorylabs.html5.video
 		
 		protected function registerCallbacks() :void
 		{
-//			log('registering callbacks on object id: ' + ExternalInterface.objectID );
-//			ExternalInterface.addCallback( '_addVideoSource', jsAddVideoSource );
-			ExternalInterface.addCallback( '_load', load );			ExternalInterface.addCallback( '_play', playVideo );
+			ExternalInterface.addCallback( '_load', load );
+			ExternalInterface.addCallback( '_play', playVideo );
 			ExternalInterface.addCallback( '_pause', _player.pause );
 			ExternalInterface.addCallback( '_seek', _player.seek );
 			ExternalInterface.addCallback( '_stop', _player.stop );
-			ExternalInterface.addCallback( '_setVolume', setVolume );			ExternalInterface.addCallback( '_isPlaying', getIsPlaying );
-			ExternalInterface.addCallback( '_getVolume', getVolume );		}
+			ExternalInterface.addCallback( '_setVolume', setVolume );
+			ExternalInterface.addCallback( '_isPlaying', getIsPlaying );
+			ExternalInterface.addCallback( '_getVolume', getVolume );
+		}
 		
 		protected function addVideoListeners() :void
 		{
@@ -175,19 +164,17 @@ package com.factorylabs.html5.video
 			_player.stateSignal.add( handleState );
 			_player.playheadUpdateSignal.add( handlePlayheadUpdate );
 			_player.completeSignal.add( handleComplete );
-			_player.loadProgressSignal.add( handleLoadProgress );			_player.errorSignal.add( handleError );
+			_player.loadProgressSignal.add( handleLoadProgress );
+			_player.errorSignal.add( handleError );
 		}
 		
 		protected function startup() :void
 		{
-			log('as: startup!');
-						
 			// notify the controller that we're ready for commands. 
 			updateController( '_videoReady' );
 			
 			var autoPlay :String = _vars.get('autoplay');
 			if( autoPlay && autoPlay.match(/true/i))  {
-				log('found autoplay... playing!');
 				_player.play( _url );
 			}
 		}
@@ -206,7 +193,8 @@ package com.factorylabs.html5.video
 		
 		private function handleResize( $e :Event ) :void
 		{
-			_player.width = this.stage.stageWidth;			_player.height = this.stage.stageHeight;
+			_player.width = this.stage.stageWidth;
+			_player.height = this.stage.stageHeight;
 		}
 		
 		/*
@@ -276,14 +264,16 @@ package com.factorylabs.html5.video
 		}
 		
 		
-		private function handleError( $error :Object ) :void
+		private function handleError( $error :String ) :void
 		{
+			error( $error );
 			updateController('_updatePlayerState', [ 'error' ]);	
+			updateController('fallback');
 		}
 		
 		
 		/*
-		 *  ging Methods
+		 *  Logging Methods
 		**************************************************************************************************** */
 		
 		private function error( $msg:String ) :void

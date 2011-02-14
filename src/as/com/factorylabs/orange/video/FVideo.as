@@ -730,7 +730,7 @@ package com.factorylabs.orange.video
 			_stopSignal 				= new Signal();
 			_bandwidthSignal			= new Signal( uint );
 			_autoRewindSignal			= new Signal();
-			_loadProgressSignal			= new Signal( uint, uint );			_errorSignal				= new Signal( Object );
+			_loadProgressSignal			= new Signal( uint, uint );			_errorSignal				= new Signal( String );
 		}
 
 		
@@ -809,14 +809,14 @@ package com.factorylabs.orange.video
 		
 		protected function handleError( $e :OvpEvent ) :void
 		{
-			trace( '[FVideo].handleError() ' );
 			inspectObject( $e.data );
-			_errorSignal.dispatch( $e.data );
+			_errorSignal.dispatch( $e.data['errorDescription'] );
 		}
 		
 		protected function handleAsyncError( $e :AsyncErrorEvent ) :void
 		{
 			trace( '[FVideo].handleAsyncError()' );
+			_errorSignal.dispatch( $e.text );
 		}
 		
 		//-----------------------------------------------------------------

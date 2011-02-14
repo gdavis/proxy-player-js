@@ -21,5 +21,3 @@ var FVideoSource = Class.create({
     this.label = $label;
   }
 });
-
-

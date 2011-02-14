@@ -27,7 +27,7 @@ var FVideo = Class.create({
 
   initialize: function($element, $options, $sources, $controlsClasses, $overlayClasses, $readyCallback) {
 
-    // lookup element
+    // lookup element if we get a string
     if( typeof $element === 'string') {
       var elemID = ( $element.indexOf('#') > -1 ) ? $element.slice( $element.lastIndexOf('#')+1, $element.length ) : $element;
       this.container = document.getElementById( elemID );
@@ -37,7 +37,7 @@ var FVideo = Class.create({
     // add class to container
     DOMUtil.addClass( this.container, 'fdl-video');
 
-    // create container for the player
+    // class properties
     this.player = DOMUtil.createElement('div', {className:'fdl-player'}, this.container);
     this.options = $options || new FVideoConfiguration();
     this.sources = $sources || new FVideoSources();
@@ -78,6 +78,7 @@ var FVideo = Class.create({
     // listen for model events
     this._addModelListeners();
 
+    // startup
     this._init();
   },
 
@@ -109,17 +110,26 @@ var FVideo = Class.create({
     delete this.controls;
   },
 
+  /**
+   * Begins downloading of the video. Under HTML5, invokes the load() method on the <video> object. Under Flash, the progressive
+   * video file begins downloading. You can pass a url parameter which will set the src of the video object with that URL value.
+   *
+   * @param url  [Optional] Specifies a URL value to set as the primary source of the video. USAGE NOTE: If you use this in conjunction with <source> tags, you must remove the <source> tags prior to trying to set the URL manually.
+   * This can be acheived by called reset() on a FVideo instance that has already been setup with <source> tags.
+   */
   load: function() {
-    this.proxy.load();
+    this.proxy.load.apply(this.proxy, arguments);
   },
 
-  play: function($url) {
-    if ($url) {
-      this.proxy.play($url);
-    }
-    else {
-      this.proxy.play();
-    }
+  /**
+   * Starts playback of the video. Under HTML5, invokes the load() method on the <video> object. Under Flash, the progressive
+   * video file begins downloading. You can pass a url parameter which will set the src of the video object with that URL value.
+   *
+   * @param url  [Optional] Specifies a URL value to set as the primary source of the video. USAGE NOTE: If you use this in conjunction with <source> tags, you must remove the <source> tags prior to trying to set the URL manually.
+   * This can be acheived by called reset() on a FVideo instance that has already been setup with <source> tags.
+   */
+  play: function() {
+    this.proxy.play.apply(this.proxy, arguments);
   },
 
   pause: function() {
@@ -210,6 +220,8 @@ var FVideo = Class.create({
   setFullscreen: function($value) {
     this.model.setFullscreen($value);
   },
+  
+  getVideo: function(){ return this._videoElement; },
 
   //////////////////////////////////////////////////////////////////////////////////
   // Methods called from the video player to update state
@@ -261,7 +273,6 @@ var FVideo = Class.create({
   _complete: function() {
     EventUtil.dispatch( this.container, FVideoEvent.COMPLETE);
   },
-
 
   //////////////////////////////////////////////////////////////////////////////////
   // Private API

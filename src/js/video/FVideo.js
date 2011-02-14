@@ -193,6 +193,7 @@ var FVideo = Class.create({
    * when the <video> tag encounters an error.
    */
   fallback: function() {
+    console.log('fallback!');
     this.reset();
     this.player.innerHTML = '';
     this._createAnchorTags(this.player);
@@ -393,7 +394,10 @@ var FVideo = Class.create({
     // create empty div for swfobject to replace
     DOMUtil.createElement('div', { id:replaceID }, this.player);
 
+    // assign same id to the flash object
     this.config.flashOptions.attributes.id = flashID;
+
+    // prep variables
     this.config.flashOptions.variables.playerId = this.playerId;
     this.config.flashOptions.variables.src = this.sources.flashVideo;
     this.config.flashOptions.variables.autoplay = this.config.videoOptions.autoplay;
@@ -402,8 +406,8 @@ var FVideo = Class.create({
     var self = this;
     swfobject.embedSWF(this.config.flashOptions.swf,
       replaceID,
-      this.model.getWidth(),
-      this.model.getHeight(),
+      this.config.width,
+      this.config.height,
       this.config.flashOptions.version,
       this.config.flashOptions.expressInstall,
       this.config.flashOptions.variables,

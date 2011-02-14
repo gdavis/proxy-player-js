@@ -22,11 +22,18 @@ var FControl = Class.create({
   },
 
   /**
+   * @return Boolean  Returns a string representing whether this control is flexible in size or fixed.
+   */
+  resizeType: function() {
+    return FControl.TYPE_FIXED;
+  },
+
+  /**
    * Builds the elements for this control. Only called if canSupportPlatform() returns true.
    */
   build: function() {
-    //  create the main element for this control
-    this.element = DOMUtil.createElement('div', {}, this.container);
+    //  create the main element for this control, with a class identifying how the control resizes
+    this.element = DOMUtil.createElement('div', { className:this.resizeType() }, this.container);
   },
 
   setListeners: function() {
@@ -47,3 +54,6 @@ var FControl = Class.create({
     delete this.container;
   }
 });
+
+FControl.TYPE_FLEXIBLE = 'fdl-flexible';
+FControl.TYPE_FIXED = 'fdl-fixed';

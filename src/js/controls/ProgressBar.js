@@ -12,12 +12,15 @@ var ProgressBar = Class.create(FControl, {
     $super($model, $controller, $container);
   },
 
+  resizeType: function() {
+    return FControl.TYPE_FLEXIBLE;
+  },
+
   build: function($super) {
     $super();
 
     // configure main element with the proper classes
-    DOMUtil.addClass( this.element, 'fdl-control-flexible fdl-progress-bar');
-//    $(this.element).addClass('fdl-control-flexible fdl-progress-bar');
+    DOMUtil.addClass( this.element, 'fdl-progress-bar');
 
     // create download bar
     this.downloadBar = DOMUtil.createElement('div', { className:"fdl-load-progress"}, this.element);

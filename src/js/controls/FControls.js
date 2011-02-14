@@ -118,7 +118,7 @@ var FControls = Class.create({
     for (i = 0; i < dl; i++) {
       var control = this.controls[i];
       el = ( control.tagName !== undefined ) ? control : control.element;
-      if (DOMUtil.hasClass(el, 'fdl-control-flexible')) {
+      if (DOMUtil.hasClass(el, 'fdl-flexible')) {
         flexibles.push(el);
       }
       else {

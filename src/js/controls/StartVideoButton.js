@@ -4,10 +4,6 @@
 //= require <utils/event_util>
 
 var StartVideoButton = Class.create(FControl, {
-  initialize: function($super, $model, $controller, $container) {
-    $super( $model, $controller, $container );
-  },
-
   build: function($super) {
     $super();
     DOMUtil.addClass(this.element, 'fdl-start-video');

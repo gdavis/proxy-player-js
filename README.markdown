@@ -69,7 +69,7 @@ The power of Proxy Player comes in its flexibility to easily add, modify, and cr
 All the controls in Proxy Player inherit from a base FControl class. This class provides the API foundation that the Proxy Player needs to intelligently build controls per-platform, when needed. Here is the basic API structure of FControl:
 
 	initialize: function($model, $controller, $container) {
-	  // part of the prototype class structure, this method should typically not be overridden.
+	  // part of the prototype class structure, this method should typically only be overridden to define instance properties. the parameters should never be changed.
 	},
 
 	canSupportPlatform: function() {

@@ -6,10 +6,6 @@
 //= require <video/core/FVideoEvent>
 
 var StopButton = Class.create(FControl, {
-  initialize: function($super, $model, $controller, $container) {
-    $super($model, $controller, $container);
-  },
-
   build: function($super) {
     $super();
     DOMUtil.addClass( this.element, 'fdl-stop');

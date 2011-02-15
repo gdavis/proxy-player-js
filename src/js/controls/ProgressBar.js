@@ -8,10 +8,6 @@
 
 var ProgressBar = Class.create(FControl, {
 
-  initialize: function($super, $model, $controller, $container) {
-    $super($model, $controller, $container);
-  },
-
   resizeType: function() {
     return FControl.TYPE_FLEXIBLE;
   },

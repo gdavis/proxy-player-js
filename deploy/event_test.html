@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Event Tests</title>
+  <link type="text/css" href="stylesheets/fdl-video.css" rel="stylesheet">
+  <script type="text/javascript" src="../src/js/utils/array_util.js"></script>
+  <script type="text/javascript" src="../src/js/utils/function_util.js"></script>
+  <script type="text/javascript" src="../src/js/utils/event_util.js"></script>
+  <script type="text/javascript">
+
+    function log( $msg ) {
+      var console_elem = document.getElementById('console');
+      var txt = document.createElement('p');
+      txt.innerHTML = $msg;
+      console_elem.appendChild(txt);
+    }
+
+    var self = this;
+    EventUtil.documentReady( function() {
+      log('document ready! ');
+
+      var click_btn = document.getElementById('click');
+      var custom_btn = document.getElementById('custom');
+      var unbind_btn = document.getElementById('unbind');
+
+      EventUtil.bind( click_btn, 'click', self.handleClick.context(self));
+      EventUtil.bind( custom_btn, 'click', self.handleClickAndFireCustomEvent.context(self));
+      EventUtil.bind( unbind_btn, 'click', self.handleUnbinds.context(self));
+
+      // custom type
+      EventUtil.bind( custom_btn, 'testEvent', self.handleCustomEvent.context(self));
+      EventUtil.bind( custom_btn, 'testEvent', self.handleCustomEventInADifferentWay.context(self));
+      EventUtil.bind( document, 'testEvent', self.handleCustomEventFromDocument.context(self));
+    });
+
+    function handleClick( e ) {
+      log('handling click');
+      for( var i=0; i< EventUtil.events['click'].length; i++ ) {
+        log('click handlers: ' + EventUtil.events['click'][i]);
+      }
+    }
+
+    function handleClickAndFireCustomEvent( e ) {
+      log('handleClickAndFireCustomEvent: ' + e.type);
+      var custom_btn = document.getElementById('custom');
+      EventUtil.dispatch( custom_btn, 'testEvent' );
+    }
+
+    function handleCustomEvent( e ) {
+      log('handleCustomEvent: ' + e.type);
+    }
+
+    function handleCustomEventInADifferentWay( e ) {
+      log('handleCustomEventInADifferentWay: ' + e.type);
+    }
+
+    function handleCustomEventFromDocument( e ) {
+      log('handleCustomEventFromDocument: ' + e.type);
+    }
+
+    function handleUnbinds() {
+
+      log('unbinding events!');
+
+      var click_btn = document.getElementById('click');
+      var custom_btn = document.getElementById('custom');
+      var unbind_btn = document.getElementById('unbind');
+
+      EventUtil.unbind( click_btn, 'click', this.handleClick.context(this));
+      EventUtil.unbind( custom_btn, 'click', this.handleClickAndFireCustomEvent.context(this));
+      EventUtil.unbind( unbind_btn, 'click', this.handleUnbinds.context(this));
+
+      // custom events
+      EventUtil.unbind( custom_btn, 'testEvent', this.handleCustomEvent.context(this));
+      EventUtil.unbind( custom_btn, 'testEvent', this.handleCustomEventInADifferentWay.context(this));
+      EventUtil.unbind( document, 'testEvent', this.handleCustomEventFromDocument.context(this));
+    }
+
+  </script>
+  <style type="text/css">
+    .button {
+      color: white;
+      width: 150px;
+      height: 25px;
+      background-color: #f00;
+      margin-right: 5px;
+      float: left;
+    }
+    #console {
+      clear: both;
+    }
+  </style>
+</head>
+<body>
+<div>
+  <div id="click" class="button">
+    Click It.
+  </div>
+  <div id="custom" class="button">
+    Fire Custom Event.
+  </div>
+  <div id="unbind" class="button">
+    Unbind All.
+  </div>
+  <div id="console"></div>
+</div>
+</body>
+</html>

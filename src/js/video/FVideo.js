@@ -319,7 +319,7 @@ var FVideo = Class.create({
     this._updatePlayerState(FVideoState.READY);
 
     // fire ready callback.
-    this.readyCallback.call(this, [this]);
+	if( this.readyCallback ) this.readyCallback.call(this, [this]);
 
     // fire DOM event
     EventUtil.dispatch( this.container, FVideoEvent.PLAYER_READY);

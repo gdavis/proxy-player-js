@@ -53,22 +53,16 @@ EventUtil.bind = (function(window, document) {
     };
   }
   else if (document.attachEvent) {
+    EventUtil.events = {};
+    EventUtil.objectIDs = [];
     // setup prototype function to generate unique IDs for objects under IE.
-    var id = 0;
-    Object.prototype.uniqueId = function() {
-      if( typeof this.__id == 'undefined' ) {
-        this.__id = ++id;
-      }
-      return this.__id;
-    };
     return function (elem, type, cb) {
       if (elem && type && cb) {
-        if (!EventUtil.events) EventUtil.events = {};
         if (!EventUtil.events[type]) EventUtil.events[type] = {};
         var handler = function( e ) {
           return cb.call(elem, e);
         };
-        EventUtil.events[type][cb.uniqueId()] = handler;
+        EventUtil.events[type][EventUtil.getIDForObject(cb)] = handler;
         elem.attachEvent('on' + type, handler);
       }
     };
@@ -83,8 +77,8 @@ EventUtil.unbind = (function(window, document) {
     }
   } else if (document.detachEvent) {
     return function(elem, type, cb) {
-      elem.detachEvent('on' + type, EventUtil.events[type][cb.uniqueId()]);
-      delete EventUtil.events[type][cb.uniqueId()];
+      elem.detachEvent('on' + type, EventUtil.events[type][EventUtil.getIDForObject(cb)]);
+      delete EventUtil.events[type][EventUtil.getIDForObject(cb)];
     }
   }
 })(this, document);
@@ -121,3 +115,16 @@ EventUtil.documentReady = (function(window, document) {
   }
 
 })(this, document);
+
+EventUtil.getIDForObject = function( $obj ) {
+    var da = EventUtil.objectIDs;
+    var dl = da.length;
+    for( var i=0; i < dl; i++ ) {
+        if( da[ i ] === $obj ) {
+            return i;
+        }
+    }
+    var index = EventUtil.objectIDs.length;
+    EventUtil.objectIDs.push( $obj );
+    return index;
+};

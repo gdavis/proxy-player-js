@@ -1,6 +1,6 @@
 require 'rake'
 
-module FVideoHelper
+module ProxyPlayerHelper
   ROOT_DIR        = File.expand_path(File.dirname(__FILE__))
   DEPLOY_DIR      = File.join(ROOT_DIR, 'deploy')
   DEPLOY_JS_DIR   = File.join(DEPLOY_DIR, 'javascripts')
@@ -30,10 +30,10 @@ module FVideoHelper
 
   def self.sprocketize(options = {})
     options = {
-      :source_temp_dest => File.join(JS_DIR, 'fvideo-min.js'),
-      :destination    => File.join(DEPLOY_JS_DIR, 'fvideo.js'),
+      :source_temp_dest => File.join(JS_DIR, 'ProxyPlayer-min.js'),
+      :destination    => File.join(DEPLOY_JS_DIR, 'proxy-player.js'),
       :strip_comments => true,
-      :source => File.join(VIDEO_DIR, 'FVideo.js'),
+      :source => File.join(VIDEO_DIR, 'ProxyPlayer.js'),
       :bundle => File.join(JS_DIR, 'video-bundle.js')
     }.merge(options)
 
@@ -43,7 +43,7 @@ module FVideoHelper
     puts "\nMinions! Begin sprocketizing!\n"
 
 
-    # concatenate the FVideo and its required files
+    # concatenate the ProxyPlayer and its required files
     source_secretary = Sprockets::Secretary.new(
       :root           => ROOT_DIR,
       :load_path      => [JS_DIR],
@@ -51,20 +51,20 @@ module FVideoHelper
       :strip_comments => options[:strip_comments]
     )
     source_secretary.concatenation.save_to(options[:source_temp_dest])
-    puts "\nPreparing FVideo and dependencies to: \n" + options[:source_temp_dest]
+    puts "\nPreparing ProxyPlayer and dependencies to: \n" + options[:source_temp_dest]
 
 
-    # compile FVideo and its dependencies
+    # compile ProxyPlayer and its dependencies
     closure = Closure::Compiler.new(
             :compilation_level => 'SIMPLE_OPTIMIZATIONS',
             :jar_file => File.join(BUILD_DIR,'closure-compiler/compiler.jar')
     )
-    puts "\nCompiling FVideo bundle at: \n" + options[:source_temp_dest]
+    puts "\nCompiling ProxyPlayer bundle at: \n" + options[:source_temp_dest]
     minified = closure.compile(File.open(options[:source_temp_dest], 'r'))
     File.open(options[:source_temp_dest], 'w') { |f| f.write(minified) }
 
     
-    # finally, concatenate the minified FVideo code with the 3rd party libraries
+    # finally, concatenate the minified ProxyPlayer code with the 3rd party libraries
     libs_secretary = Sprockets::Secretary.new(
       :root           => ROOT_DIR,
       :load_path      => [JS_DIR],
@@ -72,7 +72,7 @@ module FVideoHelper
       :strip_comments => options[:strip_comments]
     )
 
-    puts "\nConcatenating 3rd party libararies with FVideo to: \n" + options[:destination]
+    puts "\nConcatenating 3rd party libararies with ProxyPlayer to: \n" + options[:destination]
     libs_secretary.concatenation.save_to(options[:destination])
 
     # remove the temporary minified file
@@ -129,5 +129,5 @@ module FVideoHelper
 end
 
 task :deploy do
-  FVideoHelper.sprocketize
+  ProxyPlayerHelper.sprocketize
 end

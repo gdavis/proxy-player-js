@@ -1,13 +1,13 @@
 //= require <utils/Class>
-//= require <video/proxy/Proxy>
-//= require <video/core/FVideoModel>
-//= require <video/core/FVideoEvent>
-//= require <video/core/FVideoState>
+//= require <video/proxy/PPProxy>
+//= require <video/core/PPVideoModel>
+//= require <video/core/PPVideoEvent>
+//= require <video/core/PPVideoState>
 
 /**
- * Proxy which controls a Flash video object.
+ * PPProxy which controls a Flash video object.
  */
-var FlashVideoProxy = Class.create(Proxy, {
+var FlashVideoProxy = Class.create(PPProxy, {
 
   initialize: function($super, $model, $controller, $video) {
     $super($model, $controller, $video);
@@ -42,8 +42,8 @@ var FlashVideoProxy = Class.create(Proxy, {
   },
 
   destroy: function($super) {
-    EventUtil.unbind(this.model.dispatcher, FVideoEvent.RESIZE, this.resize.context(this));
-    EventUtil.unbind(this.model.dispatcher, FVideoEvent.VOLUME_UPDATE, this.handleVolume.context(this));
+    EventUtil.unbind(this.model.dispatcher, PPVideoEvent.RESIZE, this.resize.context(this));
+    EventUtil.unbind(this.model.dispatcher, PPVideoEvent.VOLUME_UPDATE, this.handleVolume.context(this));
     $super();
   },
 
@@ -71,8 +71,8 @@ var FlashVideoProxy = Class.create(Proxy, {
   },
 
   setListeners: function() {
-    EventUtil.bind(this.model.dispatcher, FVideoEvent.RESIZE, this.resize.context(this));
-    EventUtil.bind(this.model.dispatcher, FVideoEvent.VOLUME_UPDATE, this.handleVolume.context(this));
+    EventUtil.bind(this.model.dispatcher, PPVideoEvent.RESIZE, this.resize.context(this));
+    EventUtil.bind(this.model.dispatcher, PPVideoEvent.VOLUME_UPDATE, this.handleVolume.context(this));
   },
 
   handleVolume: function() {

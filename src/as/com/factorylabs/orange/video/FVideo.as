@@ -19,9 +19,9 @@ package com.factorylabs.orange.video
 	import flash.utils.getTimer;
 
 	/**
-	 * FVideo provides a robust class for steaming or loading progressive videos.
+	 * ProxyPlayer provides a robust class for steaming or loading progressive videos.
 	 * 
-	 * <p>FVideo incorporates the Open Video Player framework to manage network connections.
+	 * <p>ProxyPlayer incorporates the Open Video Player framework to manage network connections.
  	 * <br/><a href="http://openvideoplayer.sourceforge.net/">Open Video Player (OVP)</a></p>
  	 *
  	 * <hr />
@@ -34,7 +34,7 @@ package com.factorylabs.orange.video
 	 * @author		Grant Davis
 	 * @version		0.0.1 :: Mar 1, 2010
 	 */
-	public class FVideo 
+	public class ProxyPlayer
 		extends Video
 			implements IDisposable
 	{
@@ -265,7 +265,8 @@ package com.factorylabs.orange.video
 		public static const STATE_PLAYING		:String = "playing";
 		public static const STATE_STOPPED		:String = "stopped";
 		public static const STATE_PAUSED		:String = "paused";
-		public static const STATE_SEEKING		:String = "seeking";		public static const STATE_ERROR			:String = "error";
+		public static const STATE_SEEKING		:String = "seeking";
+		public static const STATE_ERROR			:String = "error";
 		
 		//-----------------------------------------------------------------
 		// Scale Modes
@@ -316,11 +317,11 @@ package com.factorylabs.orange.video
 		{
 			_autoSetBufferTime = $autoSetBufferTime;
 		}
-		public function get bandwidth() :uint { return FVideo.bandwidth; }
+		public function get bandwidth() :uint { return ProxyPlayer.bandwidth; }
 		public function set bandwidth( $bandwidth :uint ) :void
 		{
 			_userSetBandwidth = $bandwidth;
-			FVideo.bandwidth = $bandwidth;
+			ProxyPlayer.bandwidth = $bandwidth;
 		}
 		public function get maxBufferLength() :Number { return _bufferLength; }
 		public function set maxBufferLength( $maxBufferLength :Number ) :void
@@ -340,7 +341,7 @@ package com.factorylabs.orange.video
 		}
 		/**
 		 * Stores the sting value of the video's align mode. Defaults to <code>ALIGN_CENTER</code>.
-		 * @see 	com.factorylabs.components.video.FVideoAlign
+		 * @see 	com.factorylabs.components.video.ProxyPlayerAlign
 		 * @default	ALIGN_CENTER
 		 */
 		public function get align() : String { return _align; }
@@ -350,8 +351,8 @@ package com.factorylabs.orange.video
 			size();
 		}
 		/**
-		 * Stores the sting value of the video's scale mode. Defaults to <code>FVideoScale.MAINTAIN_ASPECT_RATIO</code>.
-		 * @see 	com.factorylabs.components.video.FVideoScale
+		 * Stores the sting value of the video's scale mode. Defaults to <code>ProxyPlayerScale.MAINTAIN_ASPECT_RATIO</code>.
+		 * @see 	com.factorylabs.components.video.ProxyPlayerScale
 		 * @default SCALE_MAINTAIN_ASPECT_RATIO
 		 */
 		public function get scaleMode() : String { return _scaleMode; }
@@ -402,12 +403,12 @@ package com.factorylabs.orange.video
 			size();
 		}
 		/**
-		 * Returns the width, in pixels, of the FVideo object.
+		 * Returns the width, in pixels, of the ProxyPlayer object.
 		 */
 		public function get actualWidth() : Number { return super.width; }
 		
 		/**
-		 * Returns the height, in pixels, of the FVideo object. 
+		 * Returns the height, in pixels, of the ProxyPlayer object.
 		 */
 		public function get actualHeight() : Number { return super.height; }
 		
@@ -472,7 +473,7 @@ package com.factorylabs.orange.video
 		// Constructor
 		//-----------------------------------------------------------------
 	
-		public function FVideo( $holder :DisplayObjectContainer=null, $initObj :Object=null )
+		public function ProxyPlayer( $holder :DisplayObjectContainer=null, $initObj :Object=null )
 		{
 			super();
 			_holder = $holder;
@@ -489,7 +490,7 @@ package com.factorylabs.orange.video
 		
 		public override function toString() :String 
 		{
-			return 'com.factorylabs.orange.video.FVideo';
+			return 'com.factorylabs.orange.video.ProxyPlayer';
 		}
 		
 		/**
@@ -675,7 +676,8 @@ package com.factorylabs.orange.video
 			_stopSignal.removeAll();
 			_bandwidthSignal.removeAll();
 			_autoRewindSignal.removeAll();
-			_loadProgressSignal.removeAll();			_errorSignal.removeAll();
+			_loadProgressSignal.removeAll();
+			_errorSignal.removeAll();
 			
 			close();
 			
@@ -693,9 +695,10 @@ package com.factorylabs.orange.video
 			_stopSignal = null;
 			_bandwidthSignal = null;
 			_autoRewindSignal = null;
-			_loadProgressSignal = null;			_errorSignal = null;
+			_loadProgressSignal = null;
+			_errorSignal = null;
 			
-			trace( '[FVideo].dispose()' );
+			trace( '[ProxyPlayer].dispose()' );
 		}
 
 		//-----------------------------------------------------------------
@@ -730,7 +733,8 @@ package com.factorylabs.orange.video
 			_stopSignal 				= new Signal();
 			_bandwidthSignal			= new Signal( uint );
 			_autoRewindSignal			= new Signal();
-			_loadProgressSignal			= new Signal( uint, uint );			_errorSignal				= new Signal( String );
+			_loadProgressSignal			= new Signal( uint, uint );
+			_errorSignal				= new Signal( String );
 		}
 
 		
@@ -768,7 +772,7 @@ package com.factorylabs.orange.video
 		
 		protected function handleGoodConnect() :void
 		{
-			trace( '[FVideo].handleGoodConnect()' );
+			trace( '[ProxyPlayer].handleGoodConnect()' );
 			_connectionEstablished = true;
 			buildNetStream();
 			setState( STATE_CONNECTED );
@@ -777,7 +781,7 @@ package com.factorylabs.orange.video
 
 		protected function handleConnectionNetStatus( $e :NetStatusEvent ) :void
 		{
-//			trace( '[FVideo].handleConnectionNetStatus() ' + $e.info['code'] );
+//			trace( '[ProxyPlayer].handleConnectionNetStatus() ' + $e.info['code'] );
 			switch( $e.info['code'] )
 			{
 				case 'NetConnection.Connect.Success':
@@ -785,7 +789,7 @@ package com.factorylabs.orange.video
 					break;
 					
 				case 'NetConnection.Connect.Closed':
-					trace( '[FVideo] onNetConnectionStatus() :: Disconnected unexpectedly!' );
+					trace( '[ProxyPlayer] onNetConnectionStatus() :: Disconnected unexpectedly!' );
 					// TODO: Automatically reconnect?
 					_connectionEstablished = false;
 					setState( STATE_DISCONNECTED );
@@ -797,13 +801,13 @@ package com.factorylabs.orange.video
 		
 		protected function handleSecurityError( $e :SecurityErrorEvent ) :void
 		{
-			trace( '[FVideo].handleSecurityError() ' + $e.text );
+			trace( '[ProxyPlayer].handleSecurityError() ' + $e.text );
 			_errorSignal.dispatch( $e.text );
 		}
 		
 		protected function handleIOError( $e :IOErrorEvent ) :void
 		{
-			trace( '[FVideo].handleIOError() ' + $e.text );
+			trace( '[ProxyPlayer].handleIOError() ' + $e.text );
 			_errorSignal.dispatch( $e.text );
 		}
 		
@@ -815,7 +819,7 @@ package com.factorylabs.orange.video
 		
 		protected function handleAsyncError( $e :AsyncErrorEvent ) :void
 		{
-			trace( '[FVideo].handleAsyncError()' );
+			trace( '[ProxyPlayer].handleAsyncError()' );
 			_errorSignal.dispatch( $e.text );
 		}
 		
@@ -856,7 +860,7 @@ package com.factorylabs.orange.video
 		
 		protected function closeStream() :void
 		{
-			trace( '[FVideo].closeStream()' );
+			trace( '[ProxyPlayer].closeStream()' );
 			_stream.removeEventListener( OvpEvent.COMPLETE, handlePlaybackComplete );
 			_stream.removeEventListener( OvpEvent.NETSTREAM_METADATA, handleMetadata );
 			_stream.removeEventListener( OvpEvent.NETSTREAM_CUEPOINT, handleCuePoint );
@@ -880,14 +884,14 @@ package com.factorylabs.orange.video
 		
 		protected function handleCuePoint( $e : OvpEvent ) :void
 		{
-			trace( '[FVideo].handleCuePoint()' );
+			trace( '[ProxyPlayer].handleCuePoint()' );
 			inspectObject( $e.data );
 //			_cuePointSignal.dispatch();
 		}
 		
 		protected function handleMetadata( $e : OvpEvent ) :void
 		{
-			trace( '[FVideo].handleMetadata() ');
+			trace( '[ProxyPlayer].handleMetadata() ');
 			inspectObject( $e.data );
 			_metadata = $e.data;
 			_duration = _metadata['duration'];
@@ -949,7 +953,7 @@ package com.factorylabs.orange.video
 		
 		protected function handlePlaybackComplete( $e : OvpEvent ) :void
 		{
-//			trace( '[FVideo].handlePlaybackComplete() :: ' + _stream.time + " / " + _duration );
+//			trace( '[ProxyPlayer].handlePlaybackComplete() :: ' + _stream.time + " / " + _duration );
 			
 			_readyToEnd = true;
 			
@@ -967,7 +971,7 @@ package com.factorylabs.orange.video
 		
 		protected function handleNetStatus( $e :NetStatusEvent ):void
 		{
-//			trace( '[FVideo].handleNetStatus() :: ' + $e.info[ 'code' ] );
+//			trace( '[ProxyPlayer].handleNetStatus() :: ' + $e.info[ 'code' ] );
 			switch( $e.info[ 'code' ])
 			{
 				case "NetStream.Seek.Notify":
@@ -981,13 +985,13 @@ package com.factorylabs.orange.video
 					// return to a paused state if we were paused and then told to seek. 
 					else if ( _userPaused )
 					{
-						trace( '[FVideo].handleNetStatus() :: Returning to paused state after seek' );
+						trace( '[ProxyPlayer].handleNetStatus() :: Returning to paused state after seek' );
 						setState( STATE_PAUSED );
 					}
 					break;
 					
 				case "NetStream.Seek.Failed":
-					trace( "[FVideo] onSeekStatus() \n\tSeek failed to complete." );
+					trace( "[ProxyPlayer] onSeekStatus() \n\tSeek failed to complete." );
 					break;
 					
 				case "NetStream.Seek.InvalidTime":
@@ -1018,13 +1022,13 @@ package com.factorylabs.orange.video
 			// request the stream length if we're connected.
 			if( _connectionEstablished ) 
 			{
-				trace( '[FVideo].playRTMPStream(), Connection exists, requesting stream length.' );
+				trace( '[ProxyPlayer].playRTMPStream(), Connection exists, requesting stream length.' );
 				_connection.requestStreamLength( _url );
 			}
 			// otherwise, wait for the connection to establish then connect.
 			else 
 			{
-				trace( '[FVideo].playRTMPStream(), No connect yet. Waiting for connect...' );
+				trace( '[ProxyPlayer].playRTMPStream(), No connect yet. Waiting for connect...' );
 				_connection.addEventListener( NetStatusEvent.NET_STATUS, handleRTMPConnectThenPlay );
 			}
 		}
@@ -1033,7 +1037,7 @@ package com.factorylabs.orange.video
 		{
 			if ( $e.info['code'] == 'NetConnection.Connect.Success' )
 			{
-				trace( '[FVideo].handleConnectThenPlay()\n\tConnection established. Loading stream...' );
+				trace( '[ProxyPlayer].handleConnectThenPlay()\n\tConnection established. Loading stream...' );
 				_connection.removeEventListener( NetStatusEvent.NET_STATUS, handleRTMPConnectThenPlay );
 				_connection.requestStreamLength( _url );
 			}
@@ -1044,12 +1048,12 @@ package com.factorylabs.orange.video
 			_duration = $e.data['streamLength'];
 			if( _checkBandwidth ) 
 			{
-				trace( '[FVideo].handleRTMPStreamLength() :: Bandwidth not set, detecting...' );
+				trace( '[ProxyPlayer].handleRTMPStreamLength() :: Bandwidth not set, detecting...' );
 				_connection.detectBandwidth();
 			}
 			else
 			{
-				trace( '[FVideo].handleRTMPStreamLength() :: Bandwidth detection not needed. Playing stream.' );
+				trace( '[ProxyPlayer].handleRTMPStreamLength() :: Bandwidth detection not needed. Playing stream.' );
 				playStream();
 				if ( _userPaused ) pauseStream();
 			}
@@ -1058,11 +1062,11 @@ package com.factorylabs.orange.video
 		protected function handleRTMPBandwidth( $e :OvpEvent ) :void
 		{
 			_checkBandwidth = false;
-			FVideo.bandwidth = $e.data['bandwidth'];
-//			trace( '[FVideo].handleRTMPBandwidth() :: bandwidth: ' + FVideo.bandwidth );
+			ProxyPlayer.bandwidth = $e.data['bandwidth'];
+//			trace( '[ProxyPlayer].handleRTMPBandwidth() :: bandwidth: ' + ProxyPlayer.bandwidth );
 			playStream();
 			if ( _userPaused ) pauseStream();
-			_bandwidthSignal.dispatch( FVideo.bandwidth );
+			_bandwidthSignal.dispatch( ProxyPlayer.bandwidth );
 		}
 		
 		//-----------------------------------------------------------------
@@ -1071,7 +1075,7 @@ package com.factorylabs.orange.video
 		
 		protected function prepareHTTPStream() :void
 		{
-			trace( '[FVideo].prepareHTTPStream()' );
+			trace( '[ProxyPlayer].prepareHTTPStream()' );
 			setState( STATE_CONNECTING );
 			if( !_httpBandwidthTimer ) 
 			{
@@ -1109,12 +1113,12 @@ package com.factorylabs.orange.video
 		{
 			if( _bytesLoaded < _bytesTotal )
 			{
-				FVideo.bandwidth = getKbps( _bytesLoaded - _lastByteCount, _startTime );
-				trace( '[FVideo].handleHttpBandwidthTimer() :: bandwidth is ' + FVideo.bandwidth );
+				ProxyPlayer.bandwidth = getKbps( _bytesLoaded - _lastByteCount, _startTime );
+				trace( '[ProxyPlayer].handleHttpBandwidthTimer() :: bandwidth is ' + ProxyPlayer.bandwidth );
 				if( _autoSetBufferTime ) calcBufferTime();
 				_lastByteCount = _bytesLoaded;				
 				_startTime = getTimer();
-				_bandwidthSignal.dispatch( FVideo.bandwidth );
+				_bandwidthSignal.dispatch( ProxyPlayer.bandwidth );
 			}
 			else killHttpTimer();
 		}
@@ -1131,7 +1135,7 @@ package com.factorylabs.orange.video
 
 		protected function handleHTTPStreamLength( $e :OvpEvent ) :void
 		{
-//			trace( '[FVideo].handleHTTPStreamLength()' );
+//			trace( '[ProxyPlayer].handleHTTPStreamLength()' );
 //			inspectObject( $e.data );
 			_duration = $e.data['streamLength']; 
 		}
@@ -1148,13 +1152,13 @@ package com.factorylabs.orange.video
 			var videorate : Number = !isNaN( _metadata[ "videodatarate" ] ) ? _metadata[ "videodatarate" ] : 0;
 			var audiorate : Number = !isNaN( _metadata[ "audiodatarate" ] ) ? _metadata[ "audiodatarate" ] : 0;
 			var datarate : Number = videorate + audiorate;
-			var bandwidth : Number = FVideo.bandwidth;
+			var bandwidth : Number = ProxyPlayer.bandwidth;
 			
 			// we can't proceed if the metadata doesn't have the data rates or we don't have a bandwidth reading. 
 			if ( datarate == 0 || isNaN( bandwidth )) 
 			{
-				if ( datarate == 0 ) trace( "[FVideo].calcBufferTime() :: The video loaded does not contain datarate metadata information. Optimal buffer time cannot be calculated." );
-				if ( isNaN( bandwidth )) trace( "[FVideo].calcBufferTime() :: The user bandwidth has not been set. Optimal buffer time cannot be calculated. Either use FVideo.autoDetectBandwidth or manually set it using the FVideo.bandwidth property." );
+				if ( datarate == 0 ) trace( "[ProxyPlayer].calcBufferTime() :: The video loaded does not contain datarate metadata information. Optimal buffer time cannot be calculated." );
+				if ( isNaN( bandwidth )) trace( "[ProxyPlayer].calcBufferTime() :: The user bandwidth has not been set. Optimal buffer time cannot be calculated. Either use ProxyPlayer.autoDetectBandwidth or manually set it using the ProxyPlayer.bandwidth property." );
 //				if ( _httpBandwidthTimer && datarate == 0 ) killHttpTimer();
 				return;
 			}
@@ -1162,7 +1166,7 @@ package com.factorylabs.orange.video
 			// determine % value of download rate to video data rate.
 			var downloadRatio : Number = bandwidth / datarate;
 			
-//			trace( '[FVideo].calcBufferTime() :: downloadRatio is ' + downloadRatio );
+//			trace( '[ProxyPlayer].calcBufferTime() :: downloadRatio is ' + downloadRatio );
 			
 			// if our download ratio is less than sufficient (less than 200% of the total data rate)
 			// then weneed to adjust the bufferTime to a number that will work for the download speed.
@@ -1187,11 +1191,11 @@ package com.factorylabs.orange.video
 					_stream.maxBufferLength = optimalBuffer * 2;
 				}
 				
-				trace( '[FVideo].calcBufferTime() :: Optimal buffer is: ' + optimalBuffer );
+				trace( '[ProxyPlayer].calcBufferTime() :: Optimal buffer is: ' + optimalBuffer );
 			}
 			else
 			{
-//				trace( '[FVideo].calcBufferTime() :: Using default buffer length: ' + _bufferLength );
+//				trace( '[ProxyPlayer].calcBufferTime() :: Using default buffer length: ' + _bufferLength );
 				
 				// otherwise go ahead and use fast start since our connection speed is fast 
 				// enough to keep the buffer filled as the video plays.
@@ -1321,7 +1325,7 @@ package com.factorylabs.orange.video
 		{
 			if( $state != _state )
 			{
-//				trace( '[FVideo].setState() :: ' + $state );
+//				trace( '[ProxyPlayer].setState() :: ' + $state );
 				_state = $state;
 				_stateSignal.dispatch( _state );
 			}

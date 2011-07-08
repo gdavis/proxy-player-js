@@ -1,7 +1,7 @@
 package com.factorylabs.html5.video
 {	
 	import com.factorylabs.orange.core.collections.Map;
-	import com.factorylabs.orange.video.FVideo;
+	import com.factorylabs.orange.video.ProxyPlayer;
 
 	import flash.display.MovieClip;
 	import flash.display.StageAlign;
@@ -33,7 +33,7 @@ package com.factorylabs.html5.video
 		private var _width	:int;
 		private var _height	:int;
 		private var _volume	:Number;
-		private var _player	:FVideo;
+		private var _player	:ProxyPlayer;
 		private var _prevBytesLoaded	:int;
 		private var _prevBytesTotal	:int;
 		
@@ -138,7 +138,7 @@ package com.factorylabs.html5.video
 		
 		protected function createPlayer() :void
 		{
-			_player = new FVideo( this, { width:_width, height:_height, volume: _volume });
+			_player = new ProxyPlayer( this, { width:_width, height:_height, volume: _volume });
 		}
 		
 		protected function registerCallbacks() :void
@@ -183,9 +183,9 @@ package com.factorylabs.html5.video
 		{
 			var js :XML =	<![CDATA[function( $instanceId, $function, $arguments ){
 								if( $arguments ) 
-									FVideo.instances[$instanceId][$function].apply( FVideo.instances[$instanceId], $arguments );
+									ProxyPlayer.instances[$instanceId][$function].apply( ProxyPlayer.instances[$instanceId], $arguments );
 								else 
-									FVideo.instances[$instanceId][$function].apply( FVideo.instances[$instanceId] );
+									ProxyPlayer.instances[$instanceId][$function].apply( ProxyPlayer.instances[$instanceId] );
 							}]]>;
 			ExternalInterface.call( js, _playerId, $function, $args );
 		}
@@ -240,22 +240,22 @@ package com.factorylabs.html5.video
 		private function handleState( $state :String ) :void
 		{
 			switch($state){
-				case FVideo.STATE_LOADING:
+				case ProxyPlayer.STATE_LOADING:
 					updateController('_updatePlayerState', [ 'loading' ]);
 					break;
-				case FVideo.STATE_BUFFERING:
+				case ProxyPlayer.STATE_BUFFERING:
 					updateController('_updatePlayerState', [ 'buffering' ]);
 					break;
-				case FVideo.STATE_PLAYING:
+				case ProxyPlayer.STATE_PLAYING:
 					updateController('_updatePlayerState', [ 'playing' ]);
 					break;
-				case FVideo.STATE_PAUSED:
+				case ProxyPlayer.STATE_PAUSED:
 					updateController('_updatePlayerState', [ 'paused' ]);
 					break;
-				case FVideo.STATE_SEEKING:
+				case ProxyPlayer.STATE_SEEKING:
 					updateController('_updatePlayerState', [ 'seeking' ]);
 					break;
-				case FVideo.STATE_STOPPED:
+				case ProxyPlayer.STATE_STOPPED:
 					updateController('_updatePlayerState', [ 'stopped' ]);
 					break;
 				default:

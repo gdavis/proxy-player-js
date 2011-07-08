@@ -1,18 +1,26 @@
 //= require <libs/swfobject>
 
 /*
- * FVideo <%= FVIDEO_VERSION %>
- * http://factorylabs.com
+ * Proxy Player <%= ProxyPlayer_VERSION %>
+ * http://github.com/gdavis/proxy-player-js
+ *
+ * Copyright (c) 2011 Grant Davis
  *
  * Released under the MIT License
- * http://github.com/factorylabs/orange-actionscript/MIT-LICENSE.txt
  *
- * Copyright (c) 2004-2010 Factory Design Labs, LLC
+ * Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated
+ * documentation files (the "Software"), to deal in the Software without restriction, including without limitation the
+ * rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to
+ * permit persons to whom the Software is furnished to do so, subject to the following conditions:
  *
- * Permission is hereby granted to use, modify, and distribute this file
- * in accordance with the terms of the license agreement accompanying it.
+ * The above copyright notice and this permission notice shall be included in all copies or substantial portions of
+ * the Software.
  *
- * @version: <%= FVIDEO_VERSION %>
- * @author: <%= FVIDEO_AUTHOR %>
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE
+ * WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS
+ * OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+ *
+ * @version: <%= ProxyPlayer_VERSION %>
+ * @author: <%= ProxyPlayer_AUTHOR %>
  */
-//= require <fvideo-min>
+//= require <ProxyPlayer-min>

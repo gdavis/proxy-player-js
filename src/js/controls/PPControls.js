@@ -1,25 +1,25 @@
 //  method 1:
-//  var controls = new FControls( modelInstance, controllerInstance, HTMLContainer, [ PlayPauseButton, StopButton, ProgressBar, VolumeControl, FullscreenButton ]);
+//  var controls = new PPControls( modelInstance, controllerInstance, HTMLContainer, [ PPPlayPauseButton, PPStopButton, PPProgressBar, PPVolumeControl, PPFullscreenButton ]);
 //
 //  method 2:
-//  var controls = new FControls( fVideoInstance );
-//  controls.addControl( PlayPauseButton );
-//  controls.addControl( StopButton );
+//  var controls = new PPControls( ProxyPlayerInstance );
+//  controls.addControl( PPPlayPauseButton );
+//  controls.addControl( PPStopButton );
 //  ...
 //  controls.position();
 //
 //
 //  method 3:
-//  <video data-controls="PlayPauseButton,StopButton,ProgressBar,VolumeControl,FullscreenButton"></video>
+//  <video data-controls="PPPlayPauseButton,PPStopButton,PPProgressBar,PPVolumeControl,PPFullscreenButton"></video>
 
 
 //= require <utils/Class>
 //= require <utils/function_util>
 //= require <utils/event_util>
-//= require <controls/FControl>
-//= require <video/core/FVideoModel>
+//= require <controls/PPControl>
+//= require <video/core/PPVideoModel>
 
-var FControls = Class.create({
+var PPControls = Class.create({
   initialize: function($model, $controller, $container, $controls, $overlays ) {
     this.model = $model;
     this.controller = $controller;
@@ -28,8 +28,8 @@ var FControls = Class.create({
     this.overlays = [];
 
     // create containers for overlays and the control bar
-    this.overlayContainer = DOMUtil.createElement( 'div', { className:'fdl-overlays' }, this.container );
-    this.controlBar = DOMUtil.createElement( 'div', { className:'fdl-control-bar' }, this.container );
+    this.overlayContainer = DOMUtil.createElement( 'div', { className:'pp-overlays' }, this.container );
+    this.controlBar = DOMUtil.createElement( 'div', { className:'pp-control-bar' }, this.container );
 
     // disable dragging and highlighting of elements
     this.container.onmousedown = function() { return false; };
@@ -45,7 +45,7 @@ var FControls = Class.create({
     for (i = 0; i < dl; i++) {
       var control = this.createControl($controls[i], this.controlBar );
       if( control ) {
-        DOMUtil.addClass( control.element, 'fdl-control');
+        DOMUtil.addClass( control.element, 'pp-control');
         this.controls.push(control);
       }
     }
@@ -54,7 +54,7 @@ var FControls = Class.create({
     for (i = 0; i < dl; i++) {
       var overlay = this.createControl($overlays[i], this.overlayContainer );
       if( overlay ) {
-        DOMUtil.addClass( overlay.element, 'fdl-overlay');
+        DOMUtil.addClass( overlay.element, 'pp-overlay');
         this.overlays.push(overlay);
       }
     }
@@ -66,7 +66,7 @@ var FControls = Class.create({
     if( EnvironmentUtil.android || (EnvironmentUtil.iPad && EnvironmentUtil.iOS_3 )) {
       EventUtil.unbind( this.controller.container, 'click', this.controller.play.context(this.controller));
     }
-    EventUtil.unbind(this.model.dispatcher, FVideoEvent.RESIZE, this.position.context(this));
+    EventUtil.unbind(this.model.dispatcher, PPVideoEvent.RESIZE, this.position.context(this));
     var i, dl = this.controls.length;
     for (i = 0; i < dl; i++) {
       var control = this.controls[i];
@@ -106,7 +106,7 @@ var FControls = Class.create({
   },
 
   setListeners: function() {
-    EventUtil.bind(this.model.dispatcher, FVideoEvent.RESIZE, this.position.context(this));
+    EventUtil.bind(this.model.dispatcher, PPVideoEvent.RESIZE, this.position.context(this));
   },
 
   position: function() {
@@ -118,7 +118,7 @@ var FControls = Class.create({
     for (i = 0; i < dl; i++) {
       var control = this.controls[i];
       el = ( control.tagName !== undefined ) ? control : control.element;
-      if (DOMUtil.hasClass(el, 'fdl-flexible')) {
+      if (DOMUtil.hasClass(el, 'pp-flexible')) {
         flexibles.push(el);
       }
       else {

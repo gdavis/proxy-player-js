@@ -7,7 +7,7 @@
 	
 	TODO: Look into adding performance testing
 -->
-<project name="proxy-player-js" basedir="../" default="usage">
+<project name="PPProxy-player-js" basedir="../" default="usage">
 
 <!-- PROPERTY ASSIGNMENT & INITIALIZATION ========================================================================== -->	
     
@@ -67,7 +67,6 @@
     <target name="asunit-tests" 
         description="Compiles, tests and generates reports for the orange.${test.core.packagename} package">
         <echo>[asunit-core] Running unit test tasks for the orange.${test.core.packagename} package</echo>
-
         <antcall target="-compile-mxmlc">
             <param name="param.mainclass" value="${test.core.runner}"/>
             <param name="param.classpath" value="${tests}"/>
@@ -79,19 +78,6 @@
             <param name="param.isDebug" value="true"/>
             <param name="param.reportname" value="${test.core.reportname}"/>
         </antcall>
-        <!--
-        <antcall target="init-junitdocs">
-            <param name="param.package" value="${test.core.packagename}"/>
-        </antcall>
-        
-        <antcall target="-publish-junit-report">
-            <param name="param.package" value="${test.core.packagename}"/>
-        </antcall>
-        -->
-        <antcall target="-publish-link-report">
-            <param name="param.reportname" value="${test.core.reportname}"/>
-        </antcall>
-        
         <echo>[asunit-core] Unit test tasks for the orange.${test.core.packagename} package complete</echo>
     </target>
     
@@ -109,10 +95,6 @@
             <param name="param.color" value="${simple.color}"/>
             <param name="param.isHeadless" value="true"/>
             <param name="param.isDebug" value="false"/>
-            <param name="param.reportname" value="${simple.reportname}"/>
-        </antcall>
-
-        <antcall target="-publish-link-report">
             <param name="param.reportname" value="${simple.reportname}"/>
         </antcall>
         <echo>[compile-simple-player] Compiling of the SimplePlayer is complete.</echo>
@@ -153,22 +135,6 @@
             <param name="param.isDebug" value="true"/>
         </antcall>
     </target>
-	
-	<!--
-    <target name="fdt-gstest-core" description="FDT Specific: Generates performance test for the core package">
-        <antcall target="-compile-fdt">
-            <param name="param.mainclass" value="${perf.core.runner}"/>
-            <param name="param.swf" value="${perf.core.swf}"/>
-            <param name="param.autostart" value="false"/>
-            <param name="param.launcher" value=""/>
-            <param name="param.width" value="${perf.core.width}"/>
-            <param name="param.height" value="${perf.core.height}"/>
-            <param name="param.color" value="${perf.core.color}"/>
-            <param name="param.isDebug" value="false"/>
-        </antcall>
-        <fdt.browse location="${perf.core.url}"/>
-    </target>
-    -->
     
     <!--
 	public -->
@@ -290,39 +256,7 @@
         <echo>[-compile-fdt] fdt.launch.application compiled</echo>
     </target>
 
-<!-- PRIVATE REPORTING ============================================================================================= -->    
-    
-    <!--  
-	 	private: Publishes the results of the asunit test to a junit style report.
-	 	@param param.package	The package directory to generate a report from the xml results of the tests.
- 	-->
-    <target name="-publish-junit-report">
-        <echo>[-publish-junit-report] Publishing junit report</echo>
-        <junitreport todir="${docs.reports.tests}/xml/${param.package}">
-            <fileset dir="${docs.reports.tests}/xml/${param.package}">
-                <include name="TEST-*.xml"/>
-            </fileset>
-            <report format="frames" todir="${docs.reports.tests}/html/${param.package}"/>
-        </junitreport>
-        <echo>[-publish-junit-report] junit report published</echo>
-    </target>
-    
-    <!--  
-	 	private: Performs an XSLT transform on the generated link report xml file.
-	 	@param param.reportname	The name of the report, appropriate file extensions will be appended. 
- 	-->
-    <target name="-publish-link-report">
-        <echo>[-publish-link-report] Publishing ${param.reportname} link report</echo>
-    	<!--
-    	
-        <xslt
-        	in="${docs.reports.link}/xml/${param.reportname}.xml"
-            out="${docs.reports.link}/html/${param.reportname}.html"
-        	style="${docs.reports.link}/xsl/link-report.xsl"
-        />
-        <echo>[-publish-link-report] ${param.reportname} link report published</echo>-->
-    </target>
-    
+<!-- PRIVATE REPORTING ============================================================================================= -->
     <!--  
 	 	private: Generates a time stamp for properies of date.time and date.year. 
  	-->
@@ -355,22 +289,6 @@
         </delete>
         <echo>[clean-junitdocs] The ${param.package} junit report directories are removed</echo>
     </target>
-    
-    <!-- 
-    	protected: This is hidden and used internally, but available from the command line.
-    	Creates the directories within html and xml for the junit reports.
-    	@param param.package	The directory name to create. 
-    -->
-    <target name="init-junitdocs">
-        <antcall target="clean-junitdocs">
-            <param name="param.package" value="${param.package}"/>
-        </antcall>
-        <echo>[init-junitdocs] Creating ${param.package} junit report directories</echo>
-        <mkdir dir="${docs.reports.tests}/html/${param.package}"/>
-        <mkdir dir="${docs.reports.tests}/xml/${param.package}"/>
-        <echo>[init-junitdocs] The ${param.package} junit report directories are created</echo>
-    </target>
-    
     <!-- 
 		protected: This is hidden and used internally, but available from the command line.
 		Cleans out the directories associated with generating ASDocumentation. 

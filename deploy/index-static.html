@@ -1,12 +1,10 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Factory Video (Static)</title>
-    <link type="text/css" href="stylesheets/fdl-video.css" rel="stylesheet">
-
+    <title>PPProxy Player Video (Static)</title>
+    <link type="text/css" href="stylesheets/pp-video.css" rel="stylesheet">
     <!-- libs -->
     <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/swfobject/2.2/swfobject.js"></script>
-
     <!-- utils -->
     <script type="text/javascript" src="../src/js/utils/class.js"></script>
     <script type="text/javascript" src="../src/js/utils/array_util.js"></script>
@@ -15,57 +13,55 @@
     <script type="text/javascript" src="../src/js/utils/mouse_util.js"></script>
     <script type="text/javascript" src="../src/js/utils/dom_util.js"></script>
     <script type="text/javascript" src="../src/js/utils/environment_util.js"></script>
-
     <!-- video -->
-    <script type="text/javascript" src="../src/js/video/FVideo.js"></script>
-    <script type="text/javascript" src="../src/js/video/proxy/Proxy.js"></script>
-    <script type="text/javascript" src="../src/js/video/proxy/HTMLProxy.js"></script>
-    <script type="text/javascript" src="../src/js/video/proxy/FlashProxy.js"></script>
-    <script type="text/javascript" src="../src/js/video/core/FVideoModel.js"></script>
-    <script type="text/javascript" src="../src/js/video/core/FVideoState.js"></script>
-    <script type="text/javascript" src="../src/js/video/core/FVideoEvent.js"></script>
-    <script type="text/javascript" src="../src/js/video/core/FVideoConfiguration.js"></script>
-    <script type="text/javascript" src="../src/js/video/core/FVideoSources.js"></script>
-
+  <script type="text/javascript" src="../src/js/video/ProxyPlayer.js"></script>
+  <script type="text/javascript" src="../src/js/video/PPProxy/PPProxy.js"></script>
+  <script type="text/javascript" src="../src/js/video/PPProxy/PPHTMLProxy.js"></script>
+  <script type="text/javascript" src="../src/js/video/PPProxy/PPFlashProxy.js"></script>
+  <script type="text/javascript" src="../src/js/video/core/PPVideoModel.js"></script>
+  <script type="text/javascript" src="../src/js/video/core/PPVideoState.js"></script>
+  <script type="text/javascript" src="../src/js/video/core/PPVideoEvent.js"></script>
+  <script type="text/javascript" src="../src/js/video/core/PPVideoConfiguration.js"></script>
+  <script type="text/javascript" src="../src/js/video/core/PPVideoSources.js"></script>
     <!-- controls -->
-    <script type="text/javascript" src="../src/js/controls/FControl.js"></script>
-    <script type="text/javascript" src="../src/js/controls/FControls.js"></script>
-    <script type="text/javascript" src="../src/js/controls/StartVideoButton.js"></script>
-    <script type="text/javascript" src="../src/js/controls/StopButton.js"></script>
-    <script type="text/javascript" src="../src/js/controls/FullscreenButton.js"></script>
-    <script type="text/javascript" src="../src/js/controls/TimeDisplay.js"></script>
-    <script type="text/javascript" src="../src/js/controls/ProgressBar.js"></script>
-    <script type="text/javascript" src="../src/js/controls/VolumeControl.js"></script>
-    <script type="text/javascript" src="../src/js/controls/PlayPauseButton.js"></script>
+    <script type="text/javascript" src="../src/js/controls/PPControl.js"></script>
+    <script type="text/javascript" src="../src/js/controls/PPControls.js"></script>
+    <script type="text/javascript" src="../src/js/controls/PPStartVideoButton.js"></script>
+    <script type="text/javascript" src="../src/js/controls/PPStopButton.js"></script>
+    <script type="text/javascript" src="../src/js/controls/PPFullscreenButton.js"></script>
+    <script type="text/javascript" src="../src/js/controls/PPTimeDisplay.js"></script>
+    <script type="text/javascript" src="../src/js/controls/PPProgressBar.js"></script>
+    <script type="text/javascript" src="../src/js/controls/PPVolumeControl.js"></script>
+    <script type="text/javascript" src="../src/js/controls/PPPlayPauseButton.js"></script>
     <script type="text/javascript">
         EventUtil.documentReady(function() {
           
           // set default controls
-          FVideo.defaultControls = [PlayPauseButton,StopButton,'ProgressBar',TimeDisplay,VolumeControl,FullscreenButton];
+          ProxyPlayer.defaultControls = [PPPlayPauseButton,PPStopButton,'PPProgressBar',PPTimeDisplay,PPVolumeControl,PPFullscreenButton];
 
           // activate
-          FVideo.activateAll( function( $fvideo ) {
+          ProxyPlayer.activateAll( function( $ProxyPlayer ) {
               // callback for individual video embeds
           });
         });
     </script>
 </head>
 <body>
-    <div id="video1" class="fdl-video">
-        <video width="320" height="240" data-volume=".5" data-flash-swf="proxy-player.swf" poster="media/poster.png">
+    <div id="video1" class="pp-video">
+        <video width="320" height="240" data-volume=".5" data-flash-swf="PPProxy-player.swf" poster="media/poster.png">
             <source src="http://video-js.zencoder.com/oceans-clip.mp4" type="video/mp4" data-label="Sweet Video (m4v)" data-flash-default='true' />
             <source src="http://video-js.zencoder.com/oceans-clip.mp4" type="video/mp4" data-label="Sweet Video (m4v)"/>
             <source src="http://video-js.zencoder.com/oceans-clip.ogv" type="video/ogg" data-label="Sweet Video (OGG)"/>
         </video>
     </div>
-    <div id="video2" class="fdl-video">
-        <video width="640" height="480" data-volume="0" data-autoplay="true" data-controls-list="PlayPauseButton,StopButton" data-overlays-list="StartVideoButton">
+    <div id="video2" class="pp-video">
+        <video width="640" height="480" data-volume="0" data-autoplay="true" data-controls-list="PPPlayPauseButton,PPStopButton" data-overlays-list="PPStartVideoButton">
             <source src="http://video-js.zencoder.com/oceans-clip.mp4" type="video/mp4" data-label="Sweet Video (m4v)" data-flash-default='true' />
             <source src="http://video-js.zencoder.com/oceans-clip.ogv" type="video/ogg" data-label="Sweet Video (OGG)"/>
         </video>
     </div>
-    <div id="vid3" class="fdl-video">
-        <video width="720" height="588" data-autoplay="false" data-volume=".5" data-flash-swf="proxy-player.swf" data-controls-list="PlayPauseButton,ProgressBar,VolumeControl,FullscreenButton" poster="media/poster.png">
+    <div id="vid3" class="pp-video">
+        <video width="720" height="588" data-autoplay="false" data-volume=".5" data-flash-swf="PPProxy-player.swf" data-controls-list="PPPlayPauseButton,PPProgressBar,PPVolumeControl,PPFullscreenButton" poster="media/poster.png">
             <source src="http://video-js.zencoder.com/oceans-clip.mp4" type="video/mp4" data-label="Sweet Video (m4v)" data-flash-default='true' />
             <source src="http://video-js.zencoder.com/oceans-clip.ogv" type="video/ogg" data-label="Sweet Video (OGG)"/>
         </video>

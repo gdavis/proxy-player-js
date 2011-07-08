@@ -1,26 +1,26 @@
 // require <utils/class>
 
-var FVideoConfiguration = Class.create({
+var PPVideoConfiguration = Class.create({
   initialize: function ($width, $height, $videoOptions, $swf, $variables, $parameters, $attributes) {
-    $swf = $swf || FVideoConfiguration.DEFAULT_SWF;
+    $swf = $swf || PPVideoConfiguration.DEFAULT_SWF;
     $variables = $variables || {};
     this.width = $width || 320;
     this.height = $height || 240;
-    this.videoOptions = FVideoConfiguration.mergeOptions(FVideoConfiguration.DEFAULT_VIDEO_OPTIONS, $videoOptions);
+    this.videoOptions = PPVideoConfiguration.mergeOptions(PPVideoConfiguration.DEFAULT_VIDEO_OPTIONS, $videoOptions);
     this.videoOptions.width = this.width;
     this.videoOptions.height = this.height;
     this.flashOptions = { expressInstall:"expressinstall.swf",
       version:"10",
       swf: $swf,
       variables: $variables,
-      params: FVideoConfiguration.mergeOptions(FVideoConfiguration.DEFAULT_FLASH_PARAMS, $parameters),
-      attributes: FVideoConfiguration.mergeOptions(FVideoConfiguration.DEFAULT_FLASH_ATTRIBUTES, $attributes)
+      params: PPVideoConfiguration.mergeOptions(PPVideoConfiguration.DEFAULT_FLASH_PARAMS, $parameters),
+      attributes: PPVideoConfiguration.mergeOptions(PPVideoConfiguration.DEFAULT_FLASH_ATTRIBUTES, $attributes)
     };
   }
 });
-FVideoConfiguration.DEFAULT_SWF = 'proxy-player.swf';
-FVideoConfiguration.DEFAULT_FLASH_ATTRIBUTES = { bgcolor:"#000" };
-FVideoConfiguration.DEFAULT_VIDEO_OPTIONS = {
+PPVideoConfiguration.DEFAULT_SWF = 'PPProxy-player.swf';
+PPVideoConfiguration.DEFAULT_FLASH_ATTRIBUTES = { bgcolor:"#000" };
+PPVideoConfiguration.DEFAULT_VIDEO_OPTIONS = {
   audio: false,
   autoplay: false,
   autobuffer: false,
@@ -31,7 +31,7 @@ FVideoConfiguration.DEFAULT_VIDEO_OPTIONS = {
   poster: false,
   volume: 1
 };
-FVideoConfiguration.DEFAULT_FLASH_PARAMS = {
+PPVideoConfiguration.DEFAULT_FLASH_PARAMS = {
   scale:"noscale",
   allowScriptAccess:"always",
   quality:"best",
@@ -44,7 +44,7 @@ FVideoConfiguration.DEFAULT_FLASH_PARAMS = {
  * @param $original
  * @param $modified
  */
-FVideoConfiguration.mergeOptions = function($original, $modified) {
+PPVideoConfiguration.mergeOptions = function($original, $modified) {
   if ($modified === undefined) {
     return $original;
   }
@@ -58,7 +58,7 @@ FVideoConfiguration.mergeOptions = function($original, $modified) {
   for (it in $modified) {
     // recurse through child objects
     if (typeof $modified[it] === 'object') {
-      obj[it] = FVideoConfiguration.mergeOptions($original[it], $modified[it]);
+      obj[it] = PPVideoConfiguration.mergeOptions($original[it], $modified[it]);
     } else {
       obj[it] = $modified[it];
     }

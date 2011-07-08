@@ -2,11 +2,11 @@
 //= require <utils/dom_util>
 //= require <utils/function_util>
 //= require <utils/event_util>
-//= require <video/core/FVideoModel>
-//= require <video/core/FVideoEvent>
-//= require <controls/FControl>
+//= require <video/core/PPVideoModel>
+//= require <video/core/PPVideoEvent>
+//= require <controls/PPControl>
 
-var FullscreenButton = Class.create(FControl, {
+var PPFullscreenButton = Class.create(PPControl, {
   initialize: function($super, $model, $controller, $container) {
     $super($model, $controller, $container);
     this.viewportWidth = 0;
@@ -19,18 +19,18 @@ var FullscreenButton = Class.create(FControl, {
 
   build: function($super) {
     $super();
-    DOMUtil.addClass( this.element, 'fdl-fullscreen');
+    DOMUtil.addClass( this.element, 'pp-fullscreen');
   },
 
   setListeners: function() {
     EventUtil.bind(this.element, 'click', this.toggleFullscreen.context(this));
-    EventUtil.bind(this.model.dispatcher, FVideoEvent.TOGGLE_FULLSCREEN, this.handleFullscreen.context(this));
+    EventUtil.bind(this.model.dispatcher, PPVideoEvent.TOGGLE_FULLSCREEN, this.handleFullscreen.context(this));
   },
 
   destroy: function( $super ) {
     EventUtil.unbind( window, 'resize', this.size.context(this));
     EventUtil.unbind(this.element, 'click', this.toggleFullscreen.context(this));
-    EventUtil.unbind(this.model.dispatcher, FVideoEvent.TOGGLE_FULLSCREEN, this.handleFullscreen.context(this));
+    EventUtil.unbind(this.model.dispatcher, PPVideoEvent.TOGGLE_FULLSCREEN, this.handleFullscreen.context(this));
     $super();
   },
 
@@ -55,13 +55,13 @@ var FullscreenButton = Class.create(FControl, {
   enterFullscreen: function() {
     this.size();
     EventUtil.bind(window, 'resize', this.size.context(this));
-    DOMUtil.addClass(this.controller.container, 'fdl-fullscreen');
+    DOMUtil.addClass(this.controller.container, 'pp-fullscreen');
   },
 
   exitFullscreen: function() {
     EventUtil.unbind( window, 'resize', this.size.context(this));
     this.controller.setSize(this.origWidth, this.origHeight);
-    DOMUtil.removeClass(this.controller.container, 'fdl-fullscreen');
+    DOMUtil.removeClass(this.controller.container, 'pp-fullscreen');
   },
 
   getViewportSize: function() {

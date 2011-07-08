@@ -1,8 +1,8 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>Factory Video (Dynamic)</title>
-  <link type="text/css" href="stylesheets/fdl-video.css" rel="stylesheet">
+  <title>PPProxy Player Video (Dynamic)</title>
+  <link type="text/css" href="stylesheets/pp-video.css" rel="stylesheet">
   <!-- libs -->
   <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/swfobject/2.2/swfobject.js"></script>
   <!-- utils -->
@@ -14,74 +14,74 @@
   <script type="text/javascript" src="../src/js/utils/dom_util.js"></script>
   <script type="text/javascript" src="../src/js/utils/environment_util.js"></script>
   <!-- video -->
-  <script type="text/javascript" src="../src/js/video/FVideo.js"></script>
-  <script type="text/javascript" src="../src/js/video/proxy/Proxy.js"></script>
-  <script type="text/javascript" src="../src/js/video/proxy/HTMLProxy.js"></script>
-  <script type="text/javascript" src="../src/js/video/proxy/FlashProxy.js"></script>
-  <script type="text/javascript" src="../src/js/video/core/FVideoModel.js"></script>
-  <script type="text/javascript" src="../src/js/video/core/FVideoState.js"></script>
-  <script type="text/javascript" src="../src/js/video/core/FVideoEvent.js"></script>
-  <script type="text/javascript" src="../src/js/video/core/FVideoConfiguration.js"></script>
-  <script type="text/javascript" src="../src/js/video/core/FVideoSources.js"></script>
+  <script type="text/javascript" src="../src/js/video/ProxyPlayer.js"></script>
+  <script type="text/javascript" src="../src/js/video/PPProxy/PPProxy.js"></script>
+  <script type="text/javascript" src="../src/js/video/PPProxy/PPHTMLProxy.js"></script>
+  <script type="text/javascript" src="../src/js/video/PPProxy/PPFlashProxy.js"></script>
+  <script type="text/javascript" src="../src/js/video/core/PPVideoModel.js"></script>
+  <script type="text/javascript" src="../src/js/video/core/PPVideoState.js"></script>
+  <script type="text/javascript" src="../src/js/video/core/PPVideoEvent.js"></script>
+  <script type="text/javascript" src="../src/js/video/core/PPVideoConfiguration.js"></script>
+  <script type="text/javascript" src="../src/js/video/core/PPVideoSources.js"></script>
   <!-- controls -->
-  <script type="text/javascript" src="../src/js/controls/FControl.js"></script>
-  <script type="text/javascript" src="../src/js/controls/FControls.js"></script>
-  <script type="text/javascript" src="../src/js/controls/StartVideoButton.js"></script>
-  <script type="text/javascript" src="../src/js/controls/StopButton.js"></script>
-  <script type="text/javascript" src="../src/js/controls/FullscreenButton.js"></script>
-  <script type="text/javascript" src="../src/js/controls/TimeDisplay.js"></script>
-  <script type="text/javascript" src="../src/js/controls/ProgressBar.js"></script>
-  <script type="text/javascript" src="../src/js/controls/VolumeControl.js"></script>
-  <script type="text/javascript" src="../src/js/controls/PlayPauseButton.js"></script>
+  <script type="text/javascript" src="../src/js/controls/PPControl.js"></script>
+  <script type="text/javascript" src="../src/js/controls/PPControls.js"></script>
+  <script type="text/javascript" src="../src/js/controls/PPStartVideoButton.js"></script>
+  <script type="text/javascript" src="../src/js/controls/PPStopButton.js"></script>
+  <script type="text/javascript" src="../src/js/controls/PPFullscreenButton.js"></script>
+  <script type="text/javascript" src="../src/js/controls/PPTimeDisplay.js"></script>
+  <script type="text/javascript" src="../src/js/controls/PPProgressBar.js"></script>
+  <script type="text/javascript" src="../src/js/controls/PPVolumeControl.js"></script>
+  <script type="text/javascript" src="../src/js/controls/PPPlayPauseButton.js"></script>
   <script type="text/javascript">
 
     var video;
     
     EventUtil.documentReady(function() {
 
-      var config = new FVideoConfiguration(636, 264, { poster:"media/poster.png", autoplay:false, volume:0 }, "proxy-player.swf");
+      var config = new PPVideoConfiguration(636, 264, { poster:"media/poster.png", autoplay:false, volume:0 }, "PPProxy-player.swf");
       
       // create the video object
-      var sources = new FVideoSources();
+      var sources = new ProxyPlayerSources();
       sources.addVideo('http://video-js.zencoder.com/oceans-clip.ogv', 'video/ogg', 'Link Label');
       sources.addVideo('http://video-js.zencoder.com/oceans-clip.mp4', 'video/mp4', 'Link Label', true);
 
-      // test setting default controls for all FVideo instances. values must reference the classname of a FControl subclass. can either be passed as an Object reference or string.
-      FVideo.defaultControls = [PlayPauseButton,StopButton,'ProgressBar',TimeDisplay,VolumeControl,FullscreenButton];
-      FVideo.defaultOverlays = [StartVideoButton];
+      // test setting default controls for all ProxyPlayer instances. values must reference the classname of a PPControl subclass. can either be passed as an Object reference or string.
+      ProxyPlayer.defaultControls = [PPPlayPauseButton,PPStopButton,'PPProgressBar',PPTimeDisplay,PPVolumeControl,PPFullscreenButton];
+      ProxyPlayer.defaultOverlays = [PPStartVideoButton];
 
-      video = new FVideo('#video1', config, sources, null, null, function() {
+      video = new ProxyPlayer('#video1', config, sources, null, null, function() {
         // ready handler
       });
 
-      EventUtil.bind( document.getElementById('video1'), FVideoEvent.STATE_CHANGE, handleStateEvent );
-      EventUtil.bind( document.getElementById('video1'), FVideoEvent.READY, handleVideoEvent );
-      EventUtil.bind( document.getElementById('video1'), FVideoEvent.COMPLETE, handleVideoEvent );
-      EventUtil.bind( document.getElementById('video1'), FVideoEvent.LOAD_PROGRESS, handleVideoEvent );
-      EventUtil.bind( document.getElementById('video1'), FVideoEvent.METADATA, handleVideoEvent );
-      EventUtil.bind( document.getElementById('video1'), FVideoEvent.PLAY_STATE_CHANGE, handleVideoEvent );
-      EventUtil.bind( document.getElementById('video1'), FVideoEvent.RESIZE, handleVideoEvent );
-//      EventUtil.bind( document.getElementById('video1'), FVideoEvent.TIME_UPDATE, handleVideoEvent );
-      EventUtil.bind( document.getElementById('video1'), FVideoEvent.TOGGLE_FULLSCREEN, handleVideoEvent );
-      EventUtil.bind( document.getElementById('video1'), FVideoEvent.VOLUME_UPDATE, handleVideoEvent );
-      EventUtil.bind( document.getElementById('video1'), FVideoEvent.PLAYER_READY, handleVideoEvent );
+      EventUtil.bind( document.getElementById('video1'), PPVideoEvent.STATE_CHANGE, handleStateEvent );
+      EventUtil.bind( document.getElementById('video1'), PPVideoEvent.READY, handleVideoEvent );
+      EventUtil.bind( document.getElementById('video1'), PPVideoEvent.COMPLETE, handleVideoEvent );
+      EventUtil.bind( document.getElementById('video1'), PPVideoEvent.LOAD_PROGRESS, handleVideoEvent );
+      EventUtil.bind( document.getElementById('video1'), PPVideoEvent.METADATA, handleVideoEvent );
+      EventUtil.bind( document.getElementById('video1'), PPVideoEvent.PLAY_STATE_CHANGE, handleVideoEvent );
+      EventUtil.bind( document.getElementById('video1'), PPVideoEvent.RESIZE, handleVideoEvent );
+//      EventUtil.bind( document.getElementById('video1'), PPVideoEvent.TIME_UPDATE, handleVideoEvent );
+      EventUtil.bind( document.getElementById('video1'), PPVideoEvent.TOGGLE_FULLSCREEN, handleVideoEvent );
+      EventUtil.bind( document.getElementById('video1'), PPVideoEvent.VOLUME_UPDATE, handleVideoEvent );
+      EventUtil.bind( document.getElementById('video1'), PPVideoEvent.PLAYER_READY, handleVideoEvent );
       
       EventUtil.bind( document.getElementById('vidOne'), 'click', function() {
-        var sources = new FVideoSources();
+        var sources = new ProxyPlayerSources();
         sources.addVideo('http://video-js.zencoder.com/oceans-clip.ogv', 'video/ogg', 'Link Label');
         sources.addVideo('http://video-js.zencoder.com/oceans-clip.mp4', 'video/mp4', 'Link Label', true);
         video.setNewSources(sources);
       });
 
       EventUtil.bind( document.getElementById('vidTwo'), 'click', function() {
-        var sources = new FVideoSources();
+        var sources = new ProxyPlayerSources();
         sources.addVideo('media/Source-Code.ogv', 'video/ogg', 'Link Label');
         sources.addVideo('media/Source-Code.mov', 'video/mov', 'Link Label', true);
         video.setNewSources(sources);
       });
 
       EventUtil.bind( document.getElementById('configOne'), 'click', function() {
-        var config = new FVideoConfiguration(1024, 512, { poster:"media/birds-poster.jpg", autoplay:false, volume:0 });
+        var config = new PPVideoConfiguration(1024, 512, { poster:"media/birds-poster.jpg", autoplay:false, volume:0 });
         video.setNewConfiguration(config);
       });
 

@@ -1,15 +1,15 @@
-//= require <controls/FControl>
+//= require <controls/PPControl>
 //= require <utils/dom_util>
 //= require <utils/event_util>
 //= require <utils/function_util>
-//= require <video/core/FVideoModel>
-//= require <video/core/FVideoEvent>
+//= require <video/core/PPVideoModel>
+//= require <video/core/PPVideoEvent>
 
-var VolumeControl = Class.create(FControl, {
+var PPVolumeControl = Class.create(PPControl, {
 
   initialize: function($super, $model, $controller, $container) {
     this.wrapper = false;
-    this.progressBar = false;
+    this.PPProgressBar = false;
     this.numBars = 7;
     this.barWidth = 3;
     this.maxBarHeight = 15;
@@ -19,9 +19,9 @@ var VolumeControl = Class.create(FControl, {
 
   build: function($super) {
     $super();
-    DOMUtil.addClass( this.element, 'fdl-volume');
+    DOMUtil.addClass( this.element, 'pp-volume');
 
-    this.wrapper = DOMUtil.createElement('div', { className:'fdl-volume-wrapper' }, this.element);
+    this.wrapper = DOMUtil.createElement('div', { className:'pp-volume-wrapper' }, this.element);
 
     // create volume bars
     for (var i = 0; i < this.numBars; i++) {
@@ -39,7 +39,7 @@ var VolumeControl = Class.create(FControl, {
 
   setListeners: function() {
     EventUtil.bind(this.element, 'mousedown', this.handleMouseDown.context(this));
-    EventUtil.bind(this.model.dispatcher, FVideoEvent.VOLUME_UPDATE, this.update.context(this));
+    EventUtil.bind(this.model.dispatcher, PPVideoEvent.VOLUME_UPDATE, this.update.context(this));
   },
 
   canSupportPlatform: function() {
@@ -62,7 +62,7 @@ var VolumeControl = Class.create(FControl, {
 
   destroy: function( $super ) {
     EventUtil.unbind(this.element, 'mousedown', this.handleMouseDown.context(this));
-    EventUtil.unbind(this.model.dispatcher, FVideoEvent.VOLUME_UPDATE, this.update.context(this));
+    EventUtil.unbind(this.model.dispatcher, PPVideoEvent.VOLUME_UPDATE, this.update.context(this));
     EventUtil.unbind(this.element, 'mousemove', this.handleMouseMove.context(this));
     EventUtil.unbind(document, 'mouseup', this.handleMouseUp.context(this));
     $super();

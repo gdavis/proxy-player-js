@@ -1,13 +1,13 @@
 //= require <utils/Class>
-//= require <video/proxy/Proxy>
-//= require <video/core/FVideoModel>
-//= require <video/core/FVideoEvent>
-//= require <video/core/FVideoState>
+//= require <video/proxy/PPProxy>
+//= require <video/core/PPVideoModel>
+//= require <video/core/PPVideoEvent>
+//= require <video/core/PPVideoState>
 
 /**
- * Proxy which controlls an HTML video object.
+ * PPProxy which controlls an HTML video object.
  */
-var HTMLVideoProxy = Class.create(Proxy, {
+var HTMLVideoProxy = Class.create(PPProxy, {
   initialize: function($super, $model, $controller, $video) {
     this.bufferInterval = false;
     this.videoEvents = [
@@ -28,8 +28,8 @@ var HTMLVideoProxy = Class.create(Proxy, {
       { type:"durationchange",  handler:this.handleDurationChange.context(this) }
     ];
     this.modelEvents = [
-      { type:FVideoEvent.RESIZE,          handler:this.resize.context(this) },
-      { type:FVideoEvent.VOLUME_UPDATE,   handler:this._updateVolume.context(this) }
+      { type:PPVideoEvent.RESIZE,          handler:this.resize.context(this) },
+      { type:PPVideoEvent.VOLUME_UPDATE,   handler:this._updateVolume.context(this) }
     ];
     $super($model, $controller, $video);
 
@@ -148,7 +148,7 @@ var HTMLVideoProxy = Class.create(Proxy, {
   },
 
   handleError: function($e) {
-    this.controller._updatePlayerState(FVideoState.ERROR);
+    this.controller._updatePlayerState(PPVideoState.ERROR);
     var video = $e.target;
     if( video.networkState === 4 ) {
       this.controller.fallback();
@@ -178,11 +178,11 @@ var HTMLVideoProxy = Class.create(Proxy, {
   },
 
   handleLoadStart: function($e) {
-    this.controller._updatePlayerState(FVideoState.LOADING);
+    this.controller._updatePlayerState(PPVideoState.LOADING);
   },
 
   handleBuffering: function($e) {
-    this.controller._updatePlayerState(FVideoState.BUFFERING);
+    this.controller._updatePlayerState(PPVideoState.BUFFERING);
   },
 
   handlePlay: function($e) {
@@ -190,22 +190,22 @@ var HTMLVideoProxy = Class.create(Proxy, {
       this.startBufferInterval();
     }
     this.controller._updateIsPlaying(true);
-    this.controller._updatePlayerState(FVideoState.PLAYING);
+    this.controller._updatePlayerState(PPVideoState.PLAYING);
   },
 
   handlePause: function($e) {
     this.controller._updateIsPlaying(false);
     if (this.video.currentTime == 0 && this.video.paused) {
-      this.controller._updatePlayerState(FVideoState.STOPPED);
+      this.controller._updatePlayerState(PPVideoState.STOPPED);
     }
     else {
-      this.controller._updatePlayerState(FVideoState.PAUSED);
+      this.controller._updatePlayerState(PPVideoState.PAUSED);
     }
   },
 
   handleSeek: function($e) {
     this.controller._updateIsPlaying(false);
-    this.controller._updatePlayerState(FVideoState.SEEKING);
+    this.controller._updatePlayerState(PPVideoState.SEEKING);
   },
 
   handleSeeked: function($e) {
@@ -220,7 +220,7 @@ var HTMLVideoProxy = Class.create(Proxy, {
 
   handleEnd: function($e) {
     this.controller._updateIsPlaying(false);
-    this.controller._updatePlayerState(FVideoState.STOPPED);
+    this.controller._updatePlayerState(PPVideoState.STOPPED);
     this.controller._complete();
   },
 

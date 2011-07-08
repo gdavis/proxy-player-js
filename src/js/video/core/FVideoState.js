@@ -1,9 +1,0 @@
-FVideoState                   = {};
-FVideoState.READY             = "ready";
-FVideoState.ERROR             = "error";
-FVideoState.PAUSED            = "paused";
-FVideoState.LOADING           = "loading";
-FVideoState.PLAYING           = "playing";
-FVideoState.STOPPED           = "stopped";
-FVideoState.SEEKING           = "seeking";
-FVideoState.BUFFERING         = "buffering";

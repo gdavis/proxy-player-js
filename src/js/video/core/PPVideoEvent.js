@@ -1,0 +1,11 @@
+PPVideoEvent                         = {};
+PPVideoEvent.RESIZE                  = "PPVideoEvent.resize";
+PPVideoEvent.COMPLETE                = "PPVideoEvent.complete";
+PPVideoEvent.METADATA                = "PPVideoEvent.metadata";
+PPVideoEvent.TIME_UPDATE             = "PPVideoEvent.timeUpdate";
+PPVideoEvent.PLAYER_READY            = "PPVideoEvent.playerReady";
+PPVideoEvent.LOAD_PROGRESS           = "PPVideoEvent.loadProgress";
+PPVideoEvent.VOLUME_UPDATE           = "PPVideoEvent.volumeUpdate";
+PPVideoEvent.PLAY_STATE_CHANGE       = "PPVideoEvent.playStateChange";
+PPVideoEvent.TOGGLE_FULLSCREEN       = "PPVideoEvent.toggleFullscreen";
+PPVideoEvent.STATE_CHANGE            = "PPVideoEvent.stateChange";

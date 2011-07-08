@@ -4,7 +4,7 @@
 /**
  * Base class for creating all media element controls.
  */
-var FControl = Class.create({
+var PPControl = Class.create({
 
   initialize: function($model, $controller, $container) {
     this.model = $model;
@@ -25,7 +25,7 @@ var FControl = Class.create({
    * @return Boolean  Returns a string representing whether this control is flexible in size or fixed.
    */
   resizeType: function() {
-    return FControl.TYPE_FIXED;
+    return PPControl.TYPE_FIXED;
   },
 
   /**
@@ -55,5 +55,5 @@ var FControl = Class.create({
   }
 });
 
-FControl.TYPE_FLEXIBLE = 'fdl-flexible';
-FControl.TYPE_FIXED = 'fdl-fixed';
+PPControl.TYPE_FLEXIBLE = 'pp-flexible';
+PPControl.TYPE_FIXED = 'pp-fixed';

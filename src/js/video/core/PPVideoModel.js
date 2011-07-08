@@ -1,7 +1,7 @@
 //= require <utils/Class>
-//= require <video/core/FVideoEvent>
+//= require <video/core/PPVideoEvent>
 
-var FVideoModel = Class.create({
+var PPVideoModel = Class.create({
 
   initialize: function($dispatcher) {
     this.dispatcher = $dispatcher;
@@ -29,21 +29,21 @@ var FVideoModel = Class.create({
     if (this._width == $width && this._height == $height) return;
     this._width = $width;
     this._height = $height;
-    EventUtil.dispatch(this.dispatcher, FVideoEvent.RESIZE);
+    EventUtil.dispatch(this.dispatcher, PPVideoEvent.RESIZE);
   },
 
   getWidth: function() { return this._width; },
   setWidth: function($value) {
     if (this._width === $value) return;
     this._width = $value;
-    EventUtil.dispatch(this.dispatcher, FVideoEvent.RESIZE);
+    EventUtil.dispatch(this.dispatcher, PPVideoEvent.RESIZE);
   },
 
   getHeight: function() { return this._height; },
   setHeight: function($value) {
     if (this._height === $value) return;
     this._height = $value;
-    EventUtil.dispatch(this.dispatcher, FVideoEvent.RESIZE);
+    EventUtil.dispatch(this.dispatcher, PPVideoEvent.RESIZE);
   },
 
   getVolume: function() { return this._volume; },
@@ -53,55 +53,55 @@ var FVideoModel = Class.create({
     $value = ( $value > 1 ) ? 1 : ( $value < 0 ) ? 0 : $value;
     if (this._volume == $value) return;
     this._volume = $value;
-    EventUtil.dispatch(this.dispatcher, FVideoEvent.VOLUME_UPDATE);
+    EventUtil.dispatch(this.dispatcher, PPVideoEvent.VOLUME_UPDATE);
   },
 
   getTime: function() { return this._time; },
   setTime: function($value) {
     if (this._time == $value) return;
     this._time = $value;
-    EventUtil.dispatch(this.dispatcher, FVideoEvent.TIME_UPDATE);
+    EventUtil.dispatch(this.dispatcher, PPVideoEvent.TIME_UPDATE);
   },
 
   getDuration: function() { return this._duration; },
   setDuration: function($value) {
     if (this._duration == $value) return;
     this._duration = $value;
-    EventUtil.dispatch(this.dispatcher, FVideoEvent.TIME_UPDATE);
+    EventUtil.dispatch(this.dispatcher, PPVideoEvent.TIME_UPDATE);
   },
 
   getPlaying: function() { return this._playing; },
   setPlaying: function($value) {
     if (this._playing == $value) return;
     this._playing = $value;
-    EventUtil.dispatch(this.dispatcher, FVideoEvent.PLAY_STATE_CHANGE);
+    EventUtil.dispatch(this.dispatcher, PPVideoEvent.PLAY_STATE_CHANGE);
   },
 
   getState: function() { return this._state; },
   setState: function($value) {
     if (this._state === $value) return;
     this._state = $value;
-    EventUtil.dispatch(this.dispatcher, FVideoEvent.STATE_CHANGE);
+    EventUtil.dispatch(this.dispatcher, PPVideoEvent.STATE_CHANGE);
   },
 
   getBytesLoaded: function() { return this._bytesLoaded; },
   setBytesLoaded: function($value) {
     if (this._bytesLoaded == $value) return;
     this._bytesLoaded = $value;
-    EventUtil.dispatch(this.dispatcher, FVideoEvent.LOAD_PROGRESS);
+    EventUtil.dispatch(this.dispatcher, PPVideoEvent.LOAD_PROGRESS);
   },
 
   getBytesTotal: function() { return this._bytesTotal; },
   setBytesTotal: function($value) {
     if (this._bytesTotal == $value) return;
     this._bytesTotal = $value;
-    EventUtil.dispatch(this.dispatcher, FVideoEvent.LOAD_PROGRESS);
+    EventUtil.dispatch(this.dispatcher, PPVideoEvent.LOAD_PROGRESS);
   },
 
   getFullscreen: function() { return this._fullscreen; },
   setFullscreen: function($value) {
     if (this._fullscreen == $value) return;
     this._fullscreen = $value;
-    EventUtil.dispatch(this.dispatcher, FVideoEvent.TOGGLE_FULLSCREEN);
+    EventUtil.dispatch(this.dispatcher, PPVideoEvent.TOGGLE_FULLSCREEN);
   }
 });

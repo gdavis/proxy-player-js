@@ -1,9 +1,9 @@
 //= require <utils/Class>
 
 /**
- * Base class for video proxy objects.
+ * Base class for video PPProxy objects.
  */
-var Proxy = Class.create({
+var PPProxy = Class.create({
   initialize: function($model, $controller, $video) {
     this.model = $model;
     this.controller = $controller;

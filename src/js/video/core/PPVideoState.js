@@ -1,0 +1,9 @@
+PPVideoState                   = {};
+PPVideoState.READY             = "ready";
+PPVideoState.ERROR             = "error";
+PPVideoState.PAUSED            = "paused";
+PPVideoState.LOADING           = "loading";
+PPVideoState.PLAYING           = "playing";
+PPVideoState.STOPPED           = "stopped";
+PPVideoState.SEEKING           = "seeking";
+PPVideoState.BUFFERING         = "buffering";

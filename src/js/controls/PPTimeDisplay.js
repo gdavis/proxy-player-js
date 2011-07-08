@@ -1,11 +1,11 @@
-//= require <controls/FControl>
+//= require <controls/PPControl>
 //= require <utils/dom_util>
 //= require <utils/event_util>
 //= require <utils/function_util>
-//= require <video/core/FVideoModel>
-//= require <video/core/FVideoEvent>
+//= require <video/core/PPVideoModel>
+//= require <video/core/PPVideoEvent>
 
-var TimeDisplay = Class.create(FControl, {
+var PPTimeDisplay = Class.create(PPControl, {
 
   initialize: function($super, $model, $controller, $container) {
     this.currentTime = false;
@@ -15,14 +15,14 @@ var TimeDisplay = Class.create(FControl, {
 
   build: function($super) {
     $super();
-    DOMUtil.addClass( this.element, 'fdl-time-display');
-    this.currentTime = DOMUtil.createElement('span', { className:"fdl-current-time"}, this.element);
-    this.separator = DOMUtil.createElement('span', { className:"fdl-time-separator"}, this.element);
-    this.totalTime = DOMUtil.createElement('span', { className:"fdl-total-time"}, this.element);
+    DOMUtil.addClass( this.element, 'pp-time-display');
+    this.currentTime = DOMUtil.createElement('span', { className:"pp-current-time"}, this.element);
+    this.separator = DOMUtil.createElement('span', { className:"pp-time-separator"}, this.element);
+    this.totalTime = DOMUtil.createElement('span', { className:"pp-total-time"}, this.element);
   },
 
   setListeners: function() {
-    EventUtil.bind(this.model.dispatcher, FVideoEvent.TIME_UPDATE, this.update.context(this));
+    EventUtil.bind(this.model.dispatcher, PPVideoEvent.TIME_UPDATE, this.update.context(this));
   },
 
   update: function() {
@@ -31,7 +31,7 @@ var TimeDisplay = Class.create(FControl, {
   },
 
   destroy: function( $super ) {
-    EventUtil.unbind(this.model.dispatcher, FVideoEvent.TIME_UPDATE, this.update.context(this));
+    EventUtil.unbind(this.model.dispatcher, PPVideoEvent.TIME_UPDATE, this.update.context(this));
     $super();
   },
 

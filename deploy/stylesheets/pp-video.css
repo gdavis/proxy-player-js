@@ -3,22 +3,22 @@
   padding: 0;
 }
 
-/*--- FVideo ---*/
-.fdl-video {
+/*--- ProxyPlayer ---*/
+.pp-video {
   position: relative;
   background-color: #000;
 }
-.fdl-video .player {
+.pp-video .player {
   z-index: 665;
   position: absolute;
   height: 100%;
 }
-.fdl-video .player object {
+.pp-video .player object {
   outline: none;
 }
 
 /*--- Controls ---*/
-.fdl-video .fdl-controls {
+.pp-video .pp-controls {
   position: absolute;
   z-index: 666;
   top:0;
@@ -26,16 +26,16 @@
   width: 100%;
   height: 100%;
 }
-.fdl-control,
-.fdl-control-fixed,
-.fdl-control-flexible {
+.pp-control,
+.pp-control-fixed,
+.pp-control-flexible {
   float: left;
 }
-.fdl-video .fdl-overlays,
-.fdl-control-absolute {
+.pp-video .pp-overlays,
+.pp-control-absolute {
   position: absolute;
 }
-.fdl-video .fdl-controls .fdl-control-bar {
+.pp-video .pp-controls .pp-control-bar {
   position: absolute;
   height: 20px;
   bottom: 0;
@@ -44,7 +44,7 @@
 }
 
 /*--- Start Video Button ---*/
-.fdl-video .fdl-controls .fdl-start-video .button {
+.pp-video .pp-controls .pp-start-video .button {
   display: none;
   position: absolute;
   left: 50%;
@@ -55,54 +55,54 @@
   height: 20px;
   background-color: #f0f;
 }
-.ready .fdl-controls .fdl-start-video .button,
-.loading .fdl-controls .fdl-start-video .button,
-.paused .fdl-controls .fdl-start-video .button,
-.stopped .fdl-controls .fdl-start-video .button,
-.buffering .fdl-controls .fdl-start-video .button {
+.ready .pp-controls .pp-start-video .button,
+.loading .pp-controls .pp-start-video .button,
+.paused .pp-controls .pp-start-video .button,
+.stopped .pp-controls .pp-start-video .button,
+.buffering .pp-controls .pp-start-video .button {
   display: block;
 }
 
 /*--- Play Button ---*/
-.fdl-controls .fdl-play-pause {
+.pp-controls .pp-play-pause {
   width: 20px;
   height: 20px;
   background-color: #ff0;
 }
-.ready .fdl-controls .fdl-play-pause,
-.loading .fdl-controls .fdl-play-pause,
-.buffering .fdl-controls .fdl-play-pause,
-.stopped .fdl-controls .fdl-play-pause,
-.paused .fdl-controls .fdl-play-pause {
+.ready .pp-controls .pp-play-pause,
+.loading .pp-controls .pp-play-pause,
+.buffering .pp-controls .pp-play-pause,
+.stopped .pp-controls .pp-play-pause,
+.paused .pp-controls .pp-play-pause {
   background-color: #0f0;
 }
 
 /*--- Stop Button ---*/
-.fdl-controls .fdl-stop {
+.pp-controls .pp-stop {
   width: 20px;
   height: 20px;
   background-color: #f00;
 }
 
 /*--- Progress Bar ---*/
-.fdl-controls .fdl-progress-bar {
+.pp-controls .pp-progress-bar {
   position: relative;
   height: 20px;
   background-color: #0ff;
   overflow: hidden;
 }
-.fdl-controls .fdl-progress-bar .fdl-load-progress,
-.fdl-controls .fdl-progress-bar .fdl-play-progress {
+.pp-controls .pp-progress-bar .pp-load-progress,
+.pp-controls .pp-progress-bar .pp-play-progress {
   position: absolute;
   height: 100%;
 }
-.fdl-controls .fdl-progress-bar .fdl-play-progress {
+.pp-controls .pp-progress-bar .pp-play-progress {
   background-color: #999;
 }
-.fdl-controls .fdl-progress-bar .fdl-load-progress {
+.pp-controls .pp-progress-bar .pp-load-progress {
   background-color: #666;
 }
-.fdl-controls .fdl-progress-bar .fdl-handle {
+.pp-controls .pp-progress-bar .pp-handle {
   width: 1px;
   height: 100%;
   background-color: #f00;
@@ -110,24 +110,24 @@
 }
 
 /*--- Fullscreen Button ---*/
-.fdl-video.fdl-fullscreen {
+.pp-video.pp-fullscreen {
   position: fixed;
   top: 0;
   left: 0;
   margin: 0;
   overflow: hidden;
 }
-.fdl-fullscreen .fdl-controls {
+.pp-fullscreen .pp-controls {
   bottom: 0;
 }
-.fdl-controls .fdl-fullscreen {
+.pp-controls .pp-fullscreen {
   width: 20px;
   height: 20px;
   background-color: #f0f;
 }
 
 /*--- Time Display ---*/
-.fdl-controls .fdl-time-separator {
+.pp-controls .pp-time-separator {
   display: inline-block;
   width: 1px;
   height: 10px;
@@ -136,17 +136,17 @@
 }
 
 /*--- Volume Control ---*/
-.fdl-controls .fdl-volume {
+.pp-controls .pp-volume {
   position: relative;
   width: 40px;
   background-color: #000;
 }
-.fdl-controls .fdl-volume-wrapper div {
+.pp-controls .pp-volume-wrapper div {
   float: left;
   margin-right: 2px;
   background-color: #f0f;
   overflow: hidden;
 }
-.fdl-controls .fdl-volume-wrapper div.on {
+.pp-controls .pp-volume-wrapper div.on {
   background-color: #0f0;
 }

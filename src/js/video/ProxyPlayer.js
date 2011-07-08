@@ -1,29 +1,34 @@
+//  Core Classes: Probably shouldn't change these!
+
 //= require <utils/Class>
 //= require <utils/function_util>
 //= require <utils/dom_util>
 //= require <utils/function_util>
 //= require <utils/environment_util>
-//= require <controls/FControls>
-//= require <video/core/FVideoConfiguration>
-//= require <video/core/FVideoModel>
-//= require <video/core/FVideoEvent>
-//= require <video/core/FVideoState>
-//= require <video/core/FVideoSources>
-//= require <video/proxy/HTMLProxy>
-//= require <video/proxy/FlashProxy>
+//= require <controls/PPControls>
+//= require <video/core/PPVideoConfiguration>
+//= require <video/core/PPVideoModel>
+//= require <video/core/PPVideoEvent>
+//= require <video/core/PPVideoState>
+//= require <video/core/PPVideoSources>
+//= require <video/proxy/PPHTMLProxy>
+//= require <video/proxy/PPFlashProxy>
+
 
 //  CONTROLS: Be sure to omit any controls you don't plan on using.
-//= require <controls/StartVideoButton>
-//= require <controls/PlayPauseButton>
-//= require <controls/StopButton>
-//= require <controls/ProgressBar>
-//= require <controls/TimeDisplay>
-//= require <controls/VolumeControl>
-//= require <controls/FullscreenButton>
 
-var FVideo = Class.create({
+//= require <controls/PPStartVideoButton>
+//= require <controls/PPPlayPauseButton>
+//= require <controls/PPStopButton>
+//= require <controls/PPProgressBar>
+//= require <controls/PPTimeDisplay>
+//= require <controls/PPVolumeControl>
+//= require <controls/PPFullscreenButton>
 
-  VERSION: '<%= FVIDEO_VERSION %>',
+
+var ProxyPlayer = Class.create({
+
+  VERSION: '<%= ProxyPlayer_VERSION %>',
 
   initialize: function($element, $config, $sources, $controlsClasses, $overlayClasses, $readyCallback) {
 
@@ -35,17 +40,17 @@ var FVideo = Class.create({
     else this.container = $element;
 
     // add class to container
-    DOMUtil.addClass( this.container, 'fdl-video');
+    DOMUtil.addClass( this.container, 'pp-video');
 
     // class properties
-    this.player = DOMUtil.createElement('div', {className:'fdl-player'}, this.container);
-    this.config = $config || new FVideoConfiguration();
-    this.sources = $sources || new FVideoSources();
-    this.controlsClasses = $controlsClasses ? $controlsClasses : FVideo.defaultControls ? FVideo.defaultControls : [];
-    this.overlayClasses = $overlayClasses ? $overlayClasses : FVideo.defaultOverlays ? FVideo.defaultOverlays : [];
+    this.player = DOMUtil.createElement('div', {className:'pp-player'}, this.container);
+    this.config = $config || new PPVideoConfiguration();
+    this.sources = $sources || new ProxyPlayerSources();
+    this.controlsClasses = $controlsClasses ? $controlsClasses : ProxyPlayer.defaultControls ? ProxyPlayer.defaultControls : [];
+    this.overlayClasses = $overlayClasses ? $overlayClasses : ProxyPlayer.defaultOverlays ? ProxyPlayer.defaultOverlays : [];
     this.readyCallback = $readyCallback;
     this.model = false;
-    this.proxy = false;
+    this.PPProxy = false;
     this.controls = false;
     this._isVideoReady = false;
     this._isVideoEmbedded = false;
@@ -64,14 +69,14 @@ var FVideo = Class.create({
     }
 
     // check browser capabilities
-    this._useHTMLVideo = FVideo.canBrowserPlayVideo();
+    this._useHTMLVideo = ProxyPlayer.canBrowserPlayVideo();
 
     // create a uniquely named player container for the video. used for flash fallback
     this.playerId = parseInt(Math.random() * 100000, 10);
-    FVideo.instances[this.playerId] = this;
+    ProxyPlayer.instances[this.playerId] = this;
 
     // brainzzzzz
-    this.model = new FVideoModel(this.container);
+    this.model = new PPVideoModel(this.container);
 
     // listen for model events
     this._addModelListeners();
@@ -89,7 +94,7 @@ var FVideo = Class.create({
   destroy: function() {
     DOMUtil.removeClass(this.container, this.model.getState());
     this._removeModelListeners();
-    this.proxy.destroy();
+    this.PPProxy.destroy();
     if( this.controls ) {
       this.controls.destroy();
       delete this.controls;
@@ -104,7 +109,7 @@ var FVideo = Class.create({
     delete this.controlsClasses;
     delete this.readyCallback;
     delete this.model;
-    delete this.proxy;
+    delete this.PPProxy;
     delete this.controls;
   },
 
@@ -113,10 +118,10 @@ var FVideo = Class.create({
    * video file begins downloading. You can pass a url parameter which will set the src of the video object with that URL value.
    *
    * @param url  [Optional] Specifies a URL value to set as the primary source of the video. USAGE NOTE: If you use this in conjunction with <source> tags, you must remove the <source> tags prior to trying to set the URL manually.
-   * This can be acheived by called reset() on a FVideo instance that has already been setup with <source> tags.
+   * This can be acheived by called reset() on a ProxyPlayer instance that has already been setup with <source> tags.
    */
   load: function() {
-    this.proxy.load.apply(this.proxy, arguments);
+    this.PPProxy.load.apply(this.PPProxy, arguments);
   },
 
   /**
@@ -124,22 +129,22 @@ var FVideo = Class.create({
    * video file begins downloading. You can pass a url parameter which will set the src of the video object with that URL value.
    *
    * @param url  [Optional] Specifies a URL value to set as the primary source of the video. USAGE NOTE: If you use this in conjunction with <source> tags, you must remove the <source> tags prior to trying to set the URL manually.
-   * This can be acheived by called reset() on a FVideo instance that has already been setup with <source> tags.
+   * This can be acheived by called reset() on a ProxyPlayer instance that has already been setup with <source> tags.
    */
   play: function() {
-    this.proxy.play.apply(this.proxy, arguments);
+    this.PPProxy.play.apply(this.PPProxy, arguments);
   },
 
   pause: function() {
-    this.proxy.pause();
+    this.PPProxy.pause();
   },
 
   stop: function() {
-    this.proxy.stop();
+    this.PPProxy.stop();
   },
 
   seek: function($time) {
-    this.proxy.seek(parseFloat($time));
+    this.PPProxy.seek(parseFloat($time));
   },
 
   setNewConfiguration: function( $config ) {
@@ -159,21 +164,21 @@ var FVideo = Class.create({
     // don't rebuild the flash player when possible to prevent memory leaks in browsers such as IE.
     else {
       this.model.reset();
-      this.proxy.load(this.sources.flashVideo);
+      this.PPProxy.load(this.sources.flashVideo);
       if( this.config.videoOptions.autoplay ) {
-        this.proxy.play();
+        this.PPProxy.play();
       }
     }
   },
 
   /**
    * Returns the player to its initialized state as if it was just constructed. When used,
-   * the FVideo.setNewSources() method should be called to reinitialize the player with new source videos.
+   * the ProxyPlayer.setNewSources() method should be called to reinitialize the player with new source videos.
    */
   reset: function() {
-    this.proxy.destroy();
+    this.PPProxy.destroy();
     this._videoElement.parentNode.removeChild(this._videoElement);
-    delete this.proxy;
+    delete this.PPProxy;
     delete this._videoElement;
     if( this.controls ) {
       this.controls.destroy();
@@ -188,7 +193,7 @@ var FVideo = Class.create({
   },
 
   /**
-   * Forces the FVideo instance to remove any HTML5 <video> tags, and replace
+   * Forces the ProxyPlayer instance to remove any HTML5 <video> tags, and replace
    * with the Flash fallback SWF. This method is typically internally called
    * when the <video> tag encounters an error.
    */
@@ -276,7 +281,7 @@ var FVideo = Class.create({
   },
 
   _complete: function() {
-    EventUtil.dispatch( this.container, FVideoEvent.COMPLETE);
+    EventUtil.dispatch( this.container, PPVideoEvent.COMPLETE);
   },
 
   //////////////////////////////////////////////////////////////////////////////////
@@ -306,8 +311,8 @@ var FVideo = Class.create({
     this.model.setSize(this.config.width, this.config.height);
     this.model.setVolume(this.config.videoOptions.volume);
 
-    // create proxy object
-    this.proxy = this._createVideoProxy();
+    // create PPProxy object
+    this.PPProxy = this._createVideoProxy();
 
     // create ui
     this._createControls();
@@ -316,13 +321,13 @@ var FVideo = Class.create({
     this._handleResize();
 
     // set player to the ready state.
-    this._updatePlayerState(FVideoState.READY);
+    this._updatePlayerState(PPVideoState.READY);
 
     // fire ready callback.
 	if( this.readyCallback ) this.readyCallback.call(this, [this]);
 
     // fire DOM event
-    EventUtil.dispatch( this.container, FVideoEvent.PLAYER_READY);
+    EventUtil.dispatch( this.container, PPVideoEvent.PLAYER_READY);
   },
 
   _createVideo: function() {
@@ -336,7 +341,7 @@ var FVideo = Class.create({
 
   _createHTMLVideoObject: function() {
     var video = document.createElement('video');
-    FVideo.applyAttributes(video, this.config.videoOptions);
+    ProxyPlayer.applyAttributes(video, this.config.videoOptions);
     video.width = this.model.getWidth();
     video.height = this.model.getHeight();
     this.sources.videos.sort(this._sortVideos);
@@ -389,7 +394,7 @@ var FVideo = Class.create({
 
   _createFlashVideoObject: function() {
     var replaceID = 'player-wrapper-' + this.playerId;
-    var flashID = "fdl-player-" + this.playerId;
+    var flashID = "pp-player-" + this.playerId;
 
     // create empty div for swfobject to replace
     DOMUtil.createElement('div', { id:replaceID }, this.player);
@@ -435,8 +440,8 @@ var FVideo = Class.create({
   },
 
   _createControls: function() {
-    this.controlsContainer = DOMUtil.createElement('div', { className:'fdl-controls' }, this.container);
-    this.controls = new FControls(this.model, this, this.controlsContainer, this.controlsClasses, this.overlayClasses );
+    this.controlsContainer = DOMUtil.createElement('div', { className:'pp-controls' }, this.container);
+    this.controls = new PPControls(this.model, this, this.controlsContainer, this.controlsClasses, this.overlayClasses );
   },
 
   _createVideoProxy: function() {
@@ -449,13 +454,13 @@ var FVideo = Class.create({
   },
 
   _addModelListeners: function() {
-    EventUtil.bind(this.model.dispatcher, FVideoEvent.RESIZE, this._handleResize.context(this));
-    EventUtil.bind(this.model.dispatcher, FVideoEvent.STATE_CHANGE, this._handleState.context(this));
+    EventUtil.bind(this.model.dispatcher, PPVideoEvent.RESIZE, this._handleResize.context(this));
+    EventUtil.bind(this.model.dispatcher, PPVideoEvent.STATE_CHANGE, this._handleState.context(this));
   },
 
   _removeModelListeners: function() {
-    EventUtil.unbind(this.model.dispatcher, FVideoEvent.RESIZE, this._handleResize.context(this));
-    EventUtil.unbind(this.model.dispatcher, FVideoEvent.STATE_CHANGE, this._handleState.context(this));
+    EventUtil.unbind(this.model.dispatcher, PPVideoEvent.RESIZE, this._handleResize.context(this));
+    EventUtil.unbind(this.model.dispatcher, PPVideoEvent.STATE_CHANGE, this._handleState.context(this));
   },
 
   // applies the current state as a css class to the video container
@@ -478,13 +483,13 @@ var FVideo = Class.create({
 // this value allows default controls to be specified for all video instances created.
 // when constructing a new instance and no controls are passed into the constructor, the player will check
 // for this variable and use these if defined.
-FVideo.defaultControls = null;
-FVideo.defaultOverlays = null;
+ProxyPlayer.defaultControls = null;
+ProxyPlayer.defaultOverlays = null;
 
-// class variable for storing all created FVideo instances on the page.
-FVideo.instances = {};
+// class variable for storing all created ProxyPlayer instances on the page.
+ProxyPlayer.instances = {};
 
-FVideo.canBrowserPlayVideo = function() {
+ProxyPlayer.canBrowserPlayVideo = function() {
   var vid = document.createElement('video');
   var canPlay = vid.play;
   return canPlay !== undefined;
@@ -495,15 +500,15 @@ FVideo.canBrowserPlayVideo = function() {
  * Searches the DOM and creates and activates all video players on the page.
  * @param $callback
  */
-FVideo.activateAll = function($callback) {
+ProxyPlayer.activateAll = function($callback) {
 
-  var videos = document.getElementsByClassName('fdl-video');
+  var videos = document.getElementsByClassName('pp-video');
   for( var i=0; i<videos.length; i++ ) {
     
     var container = videos[i];
     var videoElement = container.getElementsByTagName('video').item(0);
 
-    if(FVideo.canBrowserPlayVideo()) {
+    if(ProxyPlayer.canBrowserPlayVideo()) {
       videoElement.pause();
       videoElement.src = '';
       if (EnvironmentUtil.firefox_3) {
@@ -511,7 +516,7 @@ FVideo.activateAll = function($callback) {
       }
     }
 
-    var sourceList = new FVideoSources();
+    var sourceList = new ProxyPlayerSources();
     var sourceElements = container.getElementsByTagName('source');
     for( var j=0; j< sourceElements.length; j++) {
       var sourceElement = sourceElements.item(j);
@@ -568,13 +573,13 @@ FVideo.activateAll = function($callback) {
     }
 
     // create options for video
-    var options = new FVideoConfiguration(videoElement.width, videoElement.height, videoOptions, flashSwf);
+    var options = new PPVideoConfiguration(videoElement.width, videoElement.height, videoOptions, flashSwf);
 
     // clear out container contents
     container.innerHTML = '';
 
-    // create new FVideo obj
-    new FVideo(container, options, sourceList, classList, overlayList, $callback);
+    // create new ProxyPlayer obj
+    new ProxyPlayer(container, options, sourceList, classList, overlayList, $callback);
   }
 };
 
@@ -583,7 +588,7 @@ FVideo.activateAll = function($callback) {
  * @param $elem The HTMLElement to apply attributes to
  * @param $attr An object populated with name/value pairs to map as attributes onto the HTMLElement
  */
-FVideo.applyAttributes = function($elem, $attr) {
+ProxyPlayer.applyAttributes = function($elem, $attr) {
   for (var it in $attr) {
     it = it.toLowerCase();
     if (it == 'width' || it == 'height') {

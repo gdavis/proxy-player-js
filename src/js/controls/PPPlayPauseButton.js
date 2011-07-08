@@ -1,15 +1,14 @@
-//= require <controls/FControl>
+//= require <controls/PPControl>
 //= require <utils/dom_util>
 //= require <utils/function_util>
 //= require <utils/event_util>
+//= require <video/core/PPVideoModel>
 
-var StartVideoButton = Class.create(FControl, {
+var PPPlayPauseButton = Class.create(PPControl, {
+
   build: function($super) {
     $super();
-    DOMUtil.addClass(this.element, 'fdl-start-video');
-
-    // create centered button
-    DOMUtil.createElement( 'div', { className:'button' }, this.element );
+    DOMUtil.addClass(this.element, 'pp-play-pause');
   },
 
   setListeners: function() {

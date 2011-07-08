@@ -1,27 +1,27 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Factory Video Demo</title>
-    <link type="text/css" href="stylesheets/fdl-video.css" rel="stylesheet">
-    <script type="text/javascript" src="javascripts/fvideo.js"></script>
+    <title>Proxy Player Demo</title>
+    <link type="text/css" href="stylesheets/pp-video.css" rel="stylesheet">
+    <script type="text/javascript" src="javascripts/proxy-player.js"></script>
     <script type="text/javascript">
 
         var video;
 
         EventUtil.documentReady(function() {
 
-            var options = new FVideoConfiguration( 636, 264, { poster:"media/poster.png", autoplay:true, volume:0 }, "proxy-player.swf" );
+            var options = new PPVideoConfiguration( 636, 264, { poster:"media/poster.png", autoplay:true, volume:0 }, "PPProxy-player.swf" );
 
             // create the video object
-            var sources = new FVideoSources();
+            var sources = new ProxyPlayerSources();
             sources.addVideo( 'http://video-js.zencoder.com/oceans-clip.mp4', 'video/mp4', 'Link Label', true );
             sources.addVideo( 'http://video-js.zencoder.com/oceans-clip.ogv', 'video/ogg', 'Link Label' );
 
-            // test setting default controls for all FVideo instances.
-            FVideo.defaultControls = [PlayPauseButton,StopButton,'ProgressBar',TimeDisplay,VolumeControl,FullscreenButton];
-            FVideo.defaultOverlays = [StartVideoButton];
+            // test setting default controls for all ProxyPlayer instances.
+            ProxyPlayer.defaultControls = [PPPlayPauseButton,PPStopButton,'PPProgressBar',PPTimeDisplay,PPVolumeControl,PPFullscreenButton];
+            ProxyPlayer.defaultOverlays = [PPStartVideoButton];
 
-            video = new FVideo( '#video1', options, sources, null, null, function() {
+            video = new ProxyPlayer( '#video1', options, sources, null, null, function() {
                 // ready handler
             });
         });
@@ -36,7 +36,7 @@
 <body>
     <div>
         <div class="container">
-            <div id="video1" class="fdl-video"></div>
+            <div id="video1" class="pp-video"></div>
         </div>
     </div>
 </body>
